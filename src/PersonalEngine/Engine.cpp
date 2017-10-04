@@ -3,17 +3,13 @@
 #include <GL/freeglut.h>
 #include <exception>
 
-Engine* Engine::m_instance = nullptr;
-
 void Engine::Initialise(int argc, char* argv[])
 {
 	//singleton assurance
-	if (m_instance != nullptr)
+	if (!m_instance.lock())
 	{
-		throw std::exception();
-		return;
+		m_instance.lock().reset(new Engine());
 	}
-	m_instance = new Engine();
 
 	//initialise glut 
 	glutInit(&argc, argv);

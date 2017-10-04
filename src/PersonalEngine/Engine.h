@@ -1,6 +1,8 @@
 #ifndef _ENGINE_H_
 #define _ENGINE_H_
 
+#include <memory> //consider moving to cpp to avoid include loops
+
 class Engine
 {
 public:
@@ -9,7 +11,7 @@ public:
 private:
 	static void Display();
 	static void Update();
-	static Engine* m_instance;
+	static std::weak_ptr<Engine> m_instance;
 };
 
 #endif
