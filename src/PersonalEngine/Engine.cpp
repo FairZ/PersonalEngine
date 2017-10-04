@@ -35,16 +35,14 @@ void Engine::Initialise(int argc, char* argv[])
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_FRONT);
 
+	//Begin GLUT main loop
+	glutMainLoop();
+
 }
 
 void Engine::Close()
 {
 	//add closing code here
-}
-
-void Engine::Begin()
-{
-	glutMainLoop();
 }
 
 void Engine::Display()
