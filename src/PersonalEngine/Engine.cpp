@@ -1,7 +1,8 @@
 #include "Engine.h"
 #include <GL/glew.h>
 #include <GL/freeglut.h>
-#include <exception>
+
+std::weak_ptr<Engine> Engine::m_instance;
 
 void Engine::Initialise(int argc, char* argv[])
 {
