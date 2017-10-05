@@ -1,25 +1,26 @@
 #ifndef _INPUT_H_
 #define _INPUT_H_
-#include <list>
+#include <vector>
 
 
 class Input
 {
+	friend class Engine;
 public:
-	static bool GetKey(int _keycode);
-	static bool GetKeyUp(int _keycode);
-	static bool GetKeyDown(int _keycode);
+	static bool GetKey(unsigned char _key);
+	static bool GetKeyUp(unsigned char _key);
+	static bool GetKeyDown(unsigned char _key);
 	static bool GetMouseButton(int _buttoncode);
 	static bool GetMouseButtonDown(int _buttoncode);
 	static bool GetMouseButtonUp(int _buttoncode);
 
 private:
-	static std::list<int> m_keys;
-	static std::list<int> m_downKeys;
-	static std::list<int> m_upKeys;
-	static std::list<int> m_mouseButtons;
-	static std::list<int> m_downMouseButtons;
-	static std::list<int> m_upMouseButtons;
+	static std::vector<unsigned char> m_keys;
+	static std::vector<unsigned char> m_downKeys;
+	static std::vector<unsigned char> m_upKeys;
+	static std::vector<int> m_mouseButtons;
+	static std::vector<int> m_downMouseButtons;
+	static std::vector<int> m_upMouseButtons;
 
 };
 
