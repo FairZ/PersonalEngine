@@ -1,6 +1,24 @@
 #include "Window.h"
+#include <GL/glew.h>
+
+int Window::m_width;
+int Window::m_height;
 
 int Window::GetWidth()
 {
-	return 0;
+	return m_width;
+}
+
+int Window::GetHeight()
+{
+	return m_height;
+}
+
+void Window::Resize(int _width, int _height)
+{
+	m_width = _width;
+	m_height = _height;
+	glViewport(0, 0, m_width, m_height);
+
+	//TODO add aspect ratio switching either by linking to cameras or using gluPerspective
 }

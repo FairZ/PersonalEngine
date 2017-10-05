@@ -1,20 +1,31 @@
 #ifndef _ENGINE_H_
 #define _ENGINE_H_
 
-#include <memory> //consider moving to cpp to avoid include loops
+#include <memory>
 
-class Window;
+class Engine;
+class Input;
 
-//TODO: figure out how you want to do other parts of the engine, should they be static, should they be singletons,
-//if not how will they be accessed, if so how will they be set up (Maybe use a context like karsten)
+struct Subsystems
+{
+	//subsystem instances ordered in terms of dependency
+
+	std::weak_ptr<Engine> engineInstance;
+	std::weak_ptr<Input> inputInstance;
+};
+
 class Engine
 {
+	friend class Input;
+
 public:
 	static void Initialise(int argc, char* argv[]);
 	static void Close();
 private:
+	static std::shared_ptr<Subsystems> subsystems;
 	static void Display();
 	static void Update();
+	static void Resize(int _width, int _height);
 	
 	static std::weak_ptr<Engine> m_instance;
 };

@@ -22,7 +22,9 @@ endif()
 add_executable(PersonalEngine
 
   src/PersonalEngine/main.cpp
-  src/PersonalEngine/Engine.cpp  
+  src/PersonalEngine/Engine.cpp
+  src/PersonalEngine/Window.cpp
+  src/PersonalEngine/Input.cpp  
 
 )
 
