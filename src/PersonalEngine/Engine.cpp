@@ -9,8 +9,9 @@ std::shared_ptr<Subsystems> Engine::subsystems;
 
 void Engine::Initialise(int argc, char* argv[])
 {
-	//singleton assurance
-	//PRETTY SURE THIS DOES ABSOLUTELY NOTHING ATM
+	//subsystem intialisation
+	//THIS DOES ABSOLUTELY NOTHING ATM
+	//it also probably doesn't want to be called subsystems, it's more of the like scene basically like it should have all of the stuff that is used in a scene like the gameobjects and textures and such
 	if (!subsystems)
 	{
 		subsystems.reset(new Subsystems());

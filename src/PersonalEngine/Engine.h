@@ -10,9 +10,7 @@ struct Subsystems
 {
 	//subsystem instances ordered in terms of dependency
 
-	//PRETTY SURE THIS DOES ABSOLUTELY NOTHING ATM
-	std::weak_ptr<Engine> engineInstance;
-	std::weak_ptr<Input> inputInstance;
+	//THIS DOES NOTHING AT THE MOMENT
 };
 
 class Engine
@@ -29,8 +27,8 @@ private:
 	static void KeyUp(unsigned char _key, int _mouseX, int _mouseY);
 	static void MouseClick(int _button, int _state, int _x, int _y);
 
-	
-	static std::weak_ptr<Engine> m_instance;
+	//THIS ALSO DOESN'T DO ANYTHING
+	//static std::weak_ptr<Engine> m_instance;
 };
 
 #endif
