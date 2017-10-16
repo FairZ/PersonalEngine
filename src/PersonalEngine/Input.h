@@ -2,7 +2,7 @@
 #define _INPUT_H_
 #include <vector>
 
-
+/// \brief Input interface
 class Input
 {
 	friend class Engine;

@@ -5,16 +5,16 @@
 #include "Input.h"
 
 //initialisation of static variable
-std::shared_ptr<Subsystems> Engine::subsystems;
+std::shared_ptr<Scene> Engine::m_currentScene;
 
 void Engine::Initialise(int argc, char* argv[])
 {
 	//subsystem intialisation
 	//THIS DOES ABSOLUTELY NOTHING ATM
 	//it also probably doesn't want to be called subsystems, it's more of the like scene basically like it should have all of the stuff that is used in a scene like the gameobjects and textures and such
-	if (!subsystems)
+	if (!m_currentScene)
 	{
-		subsystems.reset(new Subsystems());
+		m_currentScene.reset(new Scene());
 	}
 
 	//initialise glut 
@@ -51,7 +51,7 @@ void Engine::Initialise(int argc, char* argv[])
 void Engine::Close()
 {
 	//reset of subsystems will delete all smart pointers contained within effectively unloading the entire engine
-	subsystems.reset();
+	m_currentScene.reset();
 }
 
 void Engine::Display()
