@@ -24,7 +24,13 @@ add_executable(PersonalEngine
   src/PersonalEngine/main.cpp
   src/PersonalEngine/Engine.cpp
   src/PersonalEngine/Window.cpp
-  src/PersonalEngine/Input.cpp  
+  src/PersonalEngine/Input.cpp
+  src/PersonalEngine/Component.cpp
+  src/PersonalEngine/Entity.cpp
+  src/PersonalEngine/Transform.cpp
+  
+  #remove for final build:
+  src/PersonalEngine/plank.cpp
 
 )
 

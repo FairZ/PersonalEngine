@@ -9,9 +9,8 @@ std::shared_ptr<Scene> Engine::m_currentScene;
 
 void Engine::Initialise(int argc, char* argv[])
 {
-	//subsystem intialisation
+	//scene intialisation
 	//THIS DOES ABSOLUTELY NOTHING ATM
-	//it also probably doesn't want to be called subsystems, it's more of the like scene basically like it should have all of the stuff that is used in a scene like the gameobjects and textures and such
 	if (!m_currentScene)
 	{
 		m_currentScene.reset(new Scene());
