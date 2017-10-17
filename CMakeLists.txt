@@ -18,7 +18,7 @@ endif()
 # END DIRECTORY SETUP
 
 
-# SETTING UP INDIGO ENGINE LIB
+# SETTING UP PERSONAL ENGINE EXE
 add_executable(PersonalEngine
 
   src/PersonalEngine/main.cpp
@@ -28,6 +28,7 @@ add_executable(PersonalEngine
   src/PersonalEngine/Component.cpp
   src/PersonalEngine/Entity.cpp
   src/PersonalEngine/Transform.cpp
+  src/PersonalEngine/Scene.cpp
   
   #remove for final build:
   src/PersonalEngine/plank.cpp

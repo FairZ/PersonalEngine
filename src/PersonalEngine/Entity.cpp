@@ -2,26 +2,39 @@
 #include "Component.h"
 #include "Transform.h"
 #include "Engine.h"
+#include "ExceptionHandler.h"
 
-//ON HOLD weak_ptr<Scene> Entity::m_scene = Engine::m_currentScene;
+weak_ptr<Scene> Entity::m_scene = Engine::m_currentScene;
 
 std::string Entity::GetName()
 {
 	return m_name;
 }
 
-/*ON HOLD
-std::weak_ptr<Entity> Entity::CreateEntity()
+unsigned char Entity::GetLayer()
 {
-	//function to create a new entity and add it to the scene graph
+	return m_layer;
 }
 
+std::weak_ptr<Entity> Entity::CreateEntity()
+{
+	weak_ptr<Entity> retval;
 
+	m_scene = Engine::m_currentScene;
+	assert(!m_scene.expired());
+
+	shared_ptr<Entity> newEntity = std::make_shared<Entity>(); //parameters should go into constructor
+	m_scene.lock()->AddEntity(newEntity);
+	retval = newEntity;
+
+	return retval;
+}
+
+/*
 std::weak_ptr<Entity> Entity::FindEntity(std::string _name)
 {
 	m_scene.lock();
-}
-*/
+}*/
 
 void Entity::Update()
 {

@@ -1,16 +1,8 @@
 #ifndef _ENGINE_H_
 #define _ENGINE_H_
 
-#include <memory>
-#include <string>
 #include "Entity.h"
-
-class Scene
-{
-	//scene stuff
-
-	//THIS DOES NOTHING AT THE MOMENT
-};
+#include "Scene.h"
 
 /// \brief Class linking all other engine subsystems and containing the current game scene.
 ///

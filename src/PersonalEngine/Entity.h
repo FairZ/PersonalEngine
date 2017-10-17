@@ -19,17 +19,17 @@ public:
 	shared_ptr<Transform> m_transform;
 
 	string GetName();
-	/*ON HOLD
+	unsigned char GetLayer();
 	static weak_ptr<Entity> CreateEntity();
-	static weak_ptr<Entity> FindEntity(string _name);
-	*/
+	//static weak_ptr<Entity> FindEntity(string _name);
+
 
 private:
 	string m_name;
+	unsigned char m_layer;
 	vector<shared_ptr<Component>> m_components;
-	//ON HOLD static weak_ptr<Scene> m_scene;
+	static weak_ptr<Scene> m_scene;
 
-	void Create(weak_ptr<Scene> _currScene);
 	void Update();
 	//void Render(); may not be neccessary depends on rendering engine 
 	void Awake();
