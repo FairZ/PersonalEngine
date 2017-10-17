@@ -3,6 +3,8 @@
 #include "Engine.h"
 #include "Window.h"
 #include "Input.h"
+#include "Scene.h"
+#include "Transform.h"
 
 //initialisation of static variable
 std::shared_ptr<Scene> Engine::m_currentScene;

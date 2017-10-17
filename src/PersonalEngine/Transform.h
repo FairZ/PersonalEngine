@@ -4,6 +4,14 @@
 
 class Transform : public Component
 {
+	friend class Entity;
+public:
+
+
+private:
+	void Update(){}//temp
+	void Awake(){}//temp
+	void Destroy(){}//temp
 
 };
 

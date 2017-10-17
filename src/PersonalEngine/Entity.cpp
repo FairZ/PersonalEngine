@@ -16,25 +16,41 @@ unsigned char Entity::GetLayer()
 	return m_layer;
 }
 
-std::weak_ptr<Entity> Entity::CreateEntity()
+std::weak_ptr<Entity> Entity::CreateEntity(std::string _name)
 {
 	weak_ptr<Entity> retval;
 
 	m_scene = Engine::m_currentScene;
 	assert(!m_scene.expired());
 
-	shared_ptr<Entity> newEntity = std::make_shared<Entity>(); //parameters should go into constructor
+	shared_ptr<Entity> newEntity = make_shared<Entity>(_name); //parameters should go into constructor
 	m_scene.lock()->AddEntity(newEntity);
 	retval = newEntity;
 
 	return retval;
 }
 
-/*
+
 std::weak_ptr<Entity> Entity::FindEntity(std::string _name)
 {
-	m_scene.lock();
-}*/
+	weak_ptr<Entity> retval;
+
+	for(auto i : m_scene.lock()->m_entities)
+	{
+		if (i->m_name == _name)
+		{
+			retval = i;
+			break;
+		}
+	}
+
+	return retval;
+}
+
+Entity::Entity(std::string _name)
+{
+	m_name = _name;
+}
 
 void Entity::Update()
 {
