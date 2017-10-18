@@ -58,9 +58,15 @@ void Engine::Close()
 void Engine::Display()
 {
 	//call renderer draw function in future
+
+	//TEST STUFF
 	if (Input::GetKey('a'))
 	{
 		glClearColor(255.0f / 255.0f, 0, 0, 1.0f);
+		std::weak_ptr<Entity> Hello = Entity::CreateEntity("Hello");
+		Hello.lock()->AddComponent<Transform>();
+		Hello.lock()->GetComponent<Transform>();
+
 	}
 	else
 	{

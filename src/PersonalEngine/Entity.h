@@ -9,36 +9,34 @@
 class Transform;
 class Scene;
 
-using namespace std;
-
 class Entity
 {
 	friend class Engine;
 
 public:
-	Entity(string _name);
-	shared_ptr<Transform> m_transform;
+	Entity(std::string _name);
+	std::shared_ptr<Transform> m_transform;
 
-	string GetName();
+	std::string GetName();
 	unsigned char GetLayer();
 	void Destroy();
 
 	template<typename T>
-	weak_ptr<T> AddComponent()
+	std::weak_ptr<T> AddComponent()
 	{
-		static_assert(is_base_of<Component,T>::value,"Added class must be derived from component");
-		shared_ptr<T> newComponent = make_shared<T>();
+		static_assert(std::is_base_of<Component,T>::value,"Added class must be derived from component");
+		std::shared_ptr<T> newComponent = std::make_shared<T>();
 		m_components.push_back(newComponent);
 
-		weak_ptr<T> retval = newComponent;
+		std::weak_ptr<T> retval = newComponent;
 		return retval;
 	}
 	
 	template<typename T>
-	weak_ptr<T> GetComponent()
+	std::weak_ptr<T> GetComponent()
 	{
-		static_assert(is_base_of<Component,T>::value,"Searched for class must be derived from component");
-		weak_ptr<T> retval;
+		static_assert(std::is_base_of<Component,T>::value,"Searched for class must be derived from component");
+		std::weak_ptr<T> retval;
 
 		for(unsigned int i = 0; i < m_components.size();i++)
 		{
@@ -46,23 +44,24 @@ public:
 	
 			if (check != nullptr)
 			{
-				retval = m_components.at(i);
+				retval = std::dynamic_pointer_cast<T>(m_components.at(i));
+				break;
 			}
 		}
 	
 		return retval;
 	}
 
-	static weak_ptr<Entity> CreateEntity(string _name);
-	static weak_ptr<Entity> FindEntity(string _name);
+	static std::weak_ptr<Entity> CreateEntity(std::string _name);
+	static std::weak_ptr<Entity> FindEntity(std::string _name);
 
 
 
 private:
-	string m_name;
+	std::string m_name;
 	unsigned char m_layer;
-	vector<shared_ptr<Component>> m_components;
-	static weak_ptr<Scene> m_scene;
+	std::vector<std::shared_ptr<Component>> m_components;
+	static std::weak_ptr<Scene> m_scene;
 
 	void Update();
 	//void Render(); may not be neccessary depends on rendering engine 

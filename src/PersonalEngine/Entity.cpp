@@ -4,7 +4,7 @@
 #include "Engine.h"
 #include "ExceptionHandler.h"
 
-weak_ptr<Scene> Entity::m_scene = Engine::m_currentScene;
+std::weak_ptr<Scene> Entity::m_scene = Engine::m_currentScene;
 
 std::string Entity::GetName()
 {
@@ -18,12 +18,12 @@ unsigned char Entity::GetLayer()
 
 std::weak_ptr<Entity> Entity::CreateEntity(std::string _name)
 {
-	weak_ptr<Entity> retval;
+	std::weak_ptr<Entity> retval;
 
 	m_scene = Engine::m_currentScene;
 	assert(!m_scene.expired());
 
-	shared_ptr<Entity> newEntity = make_shared<Entity>(_name); //parameters should go into constructor
+	std::shared_ptr<Entity> newEntity = std::make_shared<Entity>(_name); //parameters should go into constructor
 	m_scene.lock()->AddEntity(newEntity);
 	retval = newEntity;
 
