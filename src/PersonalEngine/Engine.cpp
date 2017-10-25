@@ -43,6 +43,7 @@ void Engine::Initialise(int argc, char* argv[])
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_FRONT);
+	glViewport(0, 0, 800, 600);
 
 	//Begin GLUT main loop
 	glutMainLoop();
