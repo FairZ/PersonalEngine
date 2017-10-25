@@ -11,10 +11,11 @@ public:
 
 
 protected:
-	std::weak_ptr<Entity> m_entity;
+	Entity* m_entity;
 
 	virtual void Update(){}
 	virtual void Awake(){}
+	virtual void Render(){}
 	virtual void Destroy(){}
 };
 

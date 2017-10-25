@@ -50,6 +50,7 @@ void Transform::SetScale(glm::vec3 _scale)
 
 void Transform::AddChild(std::weak_ptr<Entity> _childEntity)
 {
+	m_children.push_back(_childEntity);
 }
 
 void Transform::Translate(glm::vec3 _translation)

@@ -4,6 +4,7 @@
 #include <memory>
 #include <vector>
 #include <string>
+#include <glm/glm.hpp>
 #include "Component.h"
 
 class Transform;
@@ -27,7 +28,7 @@ public:
 		static_assert(std::is_base_of<Component,T>::value,"Added class must be derived from component");
 		std::shared_ptr<T> newComponent = std::make_shared<T>();
 		m_components.push_back(newComponent);
-
+		newComponent->m_entity = this;
 		std::weak_ptr<T> retval = newComponent;
 		return retval;
 	}
@@ -52,6 +53,7 @@ public:
 		return retval;
 	}
 
+	static std::weak_ptr<Entity> CreateEntity(std::string _name, glm::vec3 _position, glm::vec3 _rotation, glm::vec3 _scale);
 	static std::weak_ptr<Entity> CreateEntity(std::string _name);
 	static std::weak_ptr<Entity> FindEntity(std::string _name);
 
