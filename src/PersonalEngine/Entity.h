@@ -12,7 +12,7 @@ class Scene;
 
 class Entity
 {
-	friend class Engine;
+	friend class Scene;
 
 public:
 	Entity(std::string _name);
@@ -66,7 +66,7 @@ private:
 	static std::weak_ptr<Scene> m_scene;
 
 	void Update();
-	//void Render(); may not be neccessary depends on rendering engine 
+	void Render(); 
 	void Awake();
 
 	//further functions can be added here

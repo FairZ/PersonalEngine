@@ -30,6 +30,9 @@ add_executable(PersonalEngine
   src/PersonalEngine/Transform.cpp
   src/PersonalEngine/Scene.cpp
   src/PersonalEngine/Camera.cpp
+  src/PersonalEngine/Shader.cpp
+  src/PersonalEngine/Material.cpp
+  src/PersonalEngine/Resource.cpp
   
   #remove for final build:
   src/PersonalEngine/plank.cpp

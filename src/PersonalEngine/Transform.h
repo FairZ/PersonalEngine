@@ -7,6 +7,7 @@
 class Transform : public Component
 {
 	friend class Entity;
+	friend class Scene;
 public:
 	glm::vec3 GetPosition();
 	glm::vec3 GetEulerRotation();

@@ -5,6 +5,7 @@
 #include "Input.h"
 #include "Scene.h"
 #include "Transform.h"
+#include "Shader.h"
 
 //initialisation of static variable
 std::shared_ptr<Scene> Engine::m_currentScene;
@@ -44,6 +45,8 @@ void Engine::Initialise(int argc, char* argv[])
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_FRONT);
 	glViewport(0, 0, 800, 600);
+
+	Shader Happy(std::string("woot"),"ModelVertexNormal.txt","ModelFragmentNormal.txt");
 
 	//Begin GLUT main loop
 	glutMainLoop();

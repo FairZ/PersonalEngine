@@ -79,7 +79,16 @@ void Entity::Update()
 		i->Update();
 	}
 	//run recursive Update function for children of current entity
-	m_transform->Update();
+}
+
+void Entity::Render()
+{
+	//go through every component and Awake it
+	for (auto i : m_components)
+	{
+		i->Render();
+	}
+	//run recursive Awake function for children of current entity
 }
 
 void Entity::Awake()
