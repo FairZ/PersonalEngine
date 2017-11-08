@@ -16,12 +16,12 @@ public:
 	std::weak_ptr<Entity> GetParent();
 
 	void SetPosition(glm::vec3 _position);
-	void SetEulerRotation(glm::vec3 _rotation);
+	void SetEulerRotation(glm::vec3 _rotationInRadians);
 	void SetScale(glm::vec3 _scale);
 	void AddChild(std::weak_ptr<Entity> _childEntity);
 
 	void Translate(glm::vec3 _translation);
-	void Rotate(glm::vec3 _rotation);
+	void Rotate(glm::vec3 _rotationInRadians);
 	void Scale(glm::vec3 _scale);
 
 private:

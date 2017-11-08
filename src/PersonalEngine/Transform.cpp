@@ -38,9 +38,9 @@ void Transform::SetPosition(glm::vec3 _position)
 	m_position = _position;
 }
 
-void Transform::SetEulerRotation(glm::vec3 _rotation)
+void Transform::SetEulerRotation(glm::vec3 _rotationInRadians)
 {
-	m_rotation = _rotation;
+	m_rotation = _rotationInRadians;
 }
 
 void Transform::SetScale(glm::vec3 _scale)
@@ -58,12 +58,18 @@ void Transform::Translate(glm::vec3 _translation)
 	m_position += _translation;
 }
 
-void Transform::Rotate(glm::vec3 _rotation)
+void Transform::Rotate(glm::vec3 _rotationInRadians)
 {
-	m_rotation += _rotation;
+	m_rotation += _rotationInRadians;
+	if(m_rotation.x >= 6.2831f)
+		m_rotation.x -= 6.2831f;
+	if(m_rotation.y >= 6.2831f)
+		m_rotation.y -= 6.2831f;
+	if(m_rotation.z >= 6.2831f)
+		m_rotation.z -= 6.2831f;
 }
 
 void Transform::Scale(glm::vec3 _scale)
 {
-	m_scale += _scale;
+	m_scale *= _scale;
 }

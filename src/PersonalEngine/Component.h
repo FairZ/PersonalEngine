@@ -3,6 +3,8 @@
 
 #include <memory>
 
+class ResourceManager;
+
 class Component
 {
 	friend class Entity;
@@ -12,6 +14,8 @@ public:
 
 protected:
 	Entity* m_entity;
+
+	std::weak_ptr<ResourceManager> m_resourceManager;
 
 	virtual void Update(){}
 	virtual void Awake(){}

@@ -25,6 +25,7 @@ std::weak_ptr<Entity> Entity::CreateEntity(std::string _name, glm::vec3 _positio
 
 	std::shared_ptr<Entity> newEntity = std::make_shared<Entity>(_name); //parameters should go into constructor
 	m_scene.lock()->AddEntity(newEntity);
+	newEntity->m_transform = std::make_shared<Transform>();
 	newEntity->m_transform->m_position = _position;
 	newEntity->m_transform->m_rotation = _rotation;
 	newEntity->m_transform->m_scale = _scale;
@@ -42,8 +43,9 @@ std::weak_ptr<Entity> Entity::CreateEntity(std::string _name)
 
 	std::shared_ptr<Entity> newEntity = std::make_shared<Entity>(_name); //parameters should go into constructor
 	m_scene.lock()->AddEntity(newEntity);
-	newEntity->m_transform->m_position = glm::vec3(0);
-	newEntity->m_transform->m_rotation = glm::vec3(0);
+	newEntity->m_transform = std::make_shared<Transform>();
+	newEntity->m_transform->m_position = glm::vec3();
+	newEntity->m_transform->m_rotation = glm::vec3();
 	newEntity->m_transform->m_scale = glm::vec3(1,1,1);
 	retval = newEntity;
 

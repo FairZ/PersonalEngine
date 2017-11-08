@@ -33,9 +33,13 @@ add_executable(PersonalEngine
   src/PersonalEngine/Shader.cpp
   src/PersonalEngine/Material.cpp
   src/PersonalEngine/Resource.cpp
+  src/PersonalEngine/ResourceManager.cpp
+  src/PersonalEngine/Mesh.cpp
+  src/PersonalEngine/MeshRenderer.cpp
+  src/PersonalEngine/TurnTable.cpp
   
   #remove for final build:
-  src/PersonalEngine/plank.cpp
+  #src/PersonalEngine/plank.cpp
 
 )
 

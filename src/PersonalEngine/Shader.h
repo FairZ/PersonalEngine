@@ -22,6 +22,7 @@ public:
 	//change out constructor for static void CreateShader()
 	Shader(std::string _name, const char* _vertTXT, const char* _fragTXT);
 	bool GetCompiled(){return m_compiled;}
+	GLint GetProgram(){return m_program;}
 	
 protected:
 	bool m_compiled;

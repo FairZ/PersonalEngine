@@ -6,6 +6,9 @@
 #include "Scene.h"
 #include "Transform.h"
 #include "Shader.h"
+#include "Camera.h"
+#include "MeshRenderer.h"
+#include "ResourceManager.h"
 
 //initialisation of static variable
 std::shared_ptr<Scene> Engine::m_currentScene;
@@ -13,7 +16,6 @@ std::shared_ptr<Scene> Engine::m_currentScene;
 void Engine::Initialise(int argc, char* argv[])
 {
 	//scene intialisation
-	//THIS DOES ABSOLUTELY NOTHING ATM
 	if (!m_currentScene)
 	{
 		m_currentScene.reset(new Scene());
@@ -43,10 +45,12 @@ void Engine::Initialise(int argc, char* argv[])
 	glEnable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
-	glCullFace(GL_FRONT);
+	glCullFace(GL_BACK);
 	glViewport(0, 0, 800, 600);
+	glClearColor(255.0f / 255.0f, 0, 0, 1.0f);
 
-	Shader Happy(std::string("woot"),"ModelVertexNormal.txt","ModelFragmentNormal.txt");
+	//This will be where loading of everything occurs
+	m_currentScene->LoadScene();
 
 	//Begin GLUT main loop
 	glutMainLoop();
@@ -62,29 +66,16 @@ void Engine::Close()
 void Engine::Display()
 {
 	//call renderer draw function in future
-
-	//TEST STUFF
-	if (Input::GetKey('a'))
-	{
-		glClearColor(255.0f / 255.0f, 0, 0, 1.0f);
-		std::weak_ptr<Entity> Hello = Entity::CreateEntity("Hello");
-		Hello.lock()->AddComponent<Transform>();
-		Hello.lock()->GetComponent<Transform>();
-
-	}
-	else
-	{
-		glClearColor(0, 0, 0, 1.0f);
-	}
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glViewport(0, 0, 800, 600);
+	m_currentScene->Render();
 
 	glutSwapBuffers();
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void Engine::Update()
 {
 	//call scene graph update function in future
+	m_currentScene->Update();
 
 	//clear up and down keys and buttons at end of update
 	Input::m_upKeys.clear();

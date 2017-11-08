@@ -2,16 +2,42 @@
 #include "Entity.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include "Window.h"
+#include "Transform.h"
 
 std::weak_ptr<Camera> Camera::mainCamera;
+
+void Camera::SetFOV(float _FOV)
+{
+	m_fieldOfView = glm::radians(_FOV);
+}
+
+void Camera::SetOrthographic(bool _orthographic)
+{
+	m_orthographic = _orthographic;
+}
+
+void Camera::SetNearClipPlane(float _nearClipPlane)
+{
+	m_nearClipPlane = _nearClipPlane;
+}
+
+void Camera::SetFarClipPlane(float _farClipPlane)
+{
+	m_farClipPlane = _farClipPlane;
+}
 
 void Camera::SetAsMainCamera()
 {
 	Camera::mainCamera = m_entity->GetComponent<Camera>();
-	CalculateProjectionMatrix();
 }
 
 void Camera::CalculateProjectionMatrix()
 {
-	m_projectionMatrix = glm::perspective<float>(m_fieldOFView,(float)(Window::GetWidth()/Window::GetHeight()),m_nearClipPlane,m_farClipPlane);
+	m_projectionMatrix = glm::perspective<float>(m_fieldOfView,(float)Window::GetWidth()/(float)Window::GetHeight(),m_nearClipPlane,m_farClipPlane);
+}
+
+void Camera::CalculateViewMatrix()
+{
+	//May need to be inversed
+	m_viewMatrix = glm::inverse(m_entity->m_transform->GetTransformationMatrix());
 }

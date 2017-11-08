@@ -6,13 +6,14 @@
 #include <glm/glm.hpp>
 
 class Shader;
+class Texture;
 
 class Material : public Resource
 {
 public:
-	//static void CreateMaterial(std::weak_ptr<Shader> _shader) ADD SOON
+	Material(std::weak_ptr<Shader> _shader, std::string _name);
 	
-	void SetTexture(std::string _uniformName, std::string _filepath);
+	void SetTexture(std::string _uniformName, std::weak_ptr<Texture> _texture);
 	void SetMat4(std::string _uniformName, glm::mat4 _matrix);
 	void SetVec3(std::string _uniformName, glm::vec3 _vector);
 	void SetVec4(std::string _uniformName, glm::vec4 _vector);
@@ -23,7 +24,7 @@ public:
 	void ReadyForDraw();
 
 private:
-	std::unique_ptr<Shader> m_shader;
+	std::weak_ptr<Shader> m_shader;
 
 	std::map<std::string, GLint> m_textures;
 	std::map<std::string, glm::mat4> m_matrix4s;

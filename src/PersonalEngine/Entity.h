@@ -29,6 +29,7 @@ public:
 		std::shared_ptr<T> newComponent = std::make_shared<T>();
 		m_components.push_back(newComponent);
 		newComponent->m_entity = this;
+		newComponent->m_resourceManager = m_scene.lock()->GetResourceManager();
 		std::weak_ptr<T> retval = newComponent;
 		return retval;
 	}

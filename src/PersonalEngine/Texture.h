@@ -7,8 +7,8 @@
 class Texture : public Resource
 {
 public:
-	static std::weak_ptr<Texture> LoadImage(std::string _filePath);
-	GLint GetTexIndex();
+	//static std::weak_ptr<Texture> LoadImage(std::string _filePath){};
+	GLint GetTexIndex(){return texIndex;}
 private:
 	GLint texIndex;
 };
