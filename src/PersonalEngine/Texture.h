@@ -2,15 +2,17 @@
 #define _TEXTURE_H_
 
 #include "Resource.h"
-#include <glm/glm.hpp>
+#include <GL/glew.h>
 
 class Texture : public Resource
 {
 public:
-	//static std::weak_ptr<Texture> LoadImage(std::string _filePath){};
-	GLint GetTexIndex(){return texIndex;}
+	Texture(std::string _filePath, std::string _textureName);
+	~Texture();
+
+	GLuint GetTexIndex(){return m_texIndex;}
 private:
-	GLint texIndex;
+	GLuint m_texIndex;
 };
 
 #endif

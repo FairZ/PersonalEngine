@@ -47,7 +47,7 @@ void Engine::Initialise(int argc, char* argv[])
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 	glViewport(0, 0, 800, 600);
-	glClearColor(255.0f / 255.0f, 0, 0, 1.0f);
+	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
 	//This will be where loading of everything occurs
 	m_currentScene->LoadScene();

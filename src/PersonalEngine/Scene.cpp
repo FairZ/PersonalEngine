@@ -27,21 +27,24 @@ bool Scene::LoadScene()
 	std::weak_ptr<Entity> thing = Entity::CreateEntity("Thing");
 
 	m_resourceManager->AddShader("ModelVertex.txt","ModelFragment.txt","Basic");
-	m_resourceManager->AddMesh("teapot.obj","Log");
+	m_resourceManager->AddMesh("Log_pine.obj","Log");
 	m_resourceManager->AddMaterial(m_resourceManager->GetShader("Basic"),"BasicMat");
+	m_resourceManager->AddTexture("Log_pine_color.png","texture");
 
 	std::weak_ptr<Camera> camComp = cam.lock()->AddComponent<Camera>();
 	camComp.lock()->SetAsMainCamera();
 	camComp.lock()->SetFOV(75.0f);
 	camComp.lock()->SetNearClipPlane(0.1f);
 	camComp.lock()->SetFarClipPlane(100.0f);
-	cam.lock()->m_transform->Translate(glm::vec3(0,0,5));
+	cam.lock()->m_transform->Translate(glm::vec3(0,-1,5));
 
 	std::weak_ptr<MeshRenderer> meshrenderer = thing.lock()->AddComponent<MeshRenderer>();
 	meshrenderer.lock()->SetMesh("Log");
 	meshrenderer.lock()->SetMaterial("BasicMat");
+	std::weak_ptr<Material> mat = meshrenderer.lock()->GetMaterial();
+	mat.lock()->SetTexture("colourTexture",m_resourceManager->GetTexture("texture"));
 	thing.lock()->AddComponent<TurnTable>();
-	thing.lock()->m_transform->Scale(glm::vec3(0.5f,0.5f,0.5f));
+	thing.lock()->m_transform->Scale(glm::vec3(0.1f,0.1f,0.1f));
 
 	Awake();
 	return true;

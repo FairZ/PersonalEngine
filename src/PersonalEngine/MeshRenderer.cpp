@@ -15,6 +15,11 @@ void MeshRenderer::SetMaterial(std::string _materialName)
 	m_material = m_resourceManager.lock()->GetMaterial(_materialName);
 }
 
+std::weak_ptr<Material> MeshRenderer::GetMaterial()
+{
+	return m_material;
+}
+
 void MeshRenderer::Awake()
 {
 	modelMat = "modelMat";

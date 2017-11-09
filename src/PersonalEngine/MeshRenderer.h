@@ -12,7 +12,7 @@ class MeshRenderer : public Component
 public:
 	void SetMesh(std::string _meshName);
 	void SetMaterial(std::string _materialName);
-
+	std::weak_ptr<Material> GetMaterial();
 private:
 	std::weak_ptr<Mesh> m_mesh;
 	std::weak_ptr<Material> m_material;

@@ -72,14 +72,13 @@ void ResourceManager::AddShader(std::string _vertTXT, std::string _fragTXT, std:
 
 void ResourceManager::AddMaterial(std::weak_ptr<Shader> _baseShader, std::string _materialName)
 {
-	std::shared_ptr<Material> material = std::make_shared<Material>(_baseShader,_materialName);//must add material auto creation and name assigning to either material constructor or this function
+	std::shared_ptr<Material> material = std::make_shared<Material>(_baseShader,_materialName);
 	m_materials.push_back(material);
 }
 
 void ResourceManager::AddTexture(std::string _filePath, std::string _textureName)
 {
-	std::shared_ptr<Texture> texture = std::make_shared<Texture>();//add name assigning and file loading to texture constructor
-	//texture->LoadImage(_fileName);
+	std::shared_ptr<Texture> texture = std::make_shared<Texture>(_filePath, _textureName);
 	m_textures.push_back(texture);
 }
 

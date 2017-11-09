@@ -37,13 +37,15 @@ add_executable(PersonalEngine
   src/PersonalEngine/Mesh.cpp
   src/PersonalEngine/MeshRenderer.cpp
   src/PersonalEngine/TurnTable.cpp
+  src/PersonalEngine/Texture.cpp
   
   #remove for final build:
+  #messes with OBJloader
   #src/PersonalEngine/plank.cpp
 
 )
 
-# LINKING NECESSARY DLLs
+# LINKING NECESSARY Libraries
 if(WIN32)
-  target_link_libraries(PersonalEngine glew32 freeglut)
+  target_link_libraries(PersonalEngine glew32 freeglut SOIL)
 endif()
