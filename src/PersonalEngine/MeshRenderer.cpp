@@ -40,6 +40,7 @@ void MeshRenderer::Render()
 	glEnableVertexAttribArray(1);
 	glEnableVertexAttribArray(2);
 	glEnableVertexAttribArray(3);
+	glEnableVertexAttribArray(4);
 	
 	//draw the mesh
 	glDrawArrays(GL_TRIANGLES, 0, m_mesh.lock()->GetNumOfVertices());
@@ -49,5 +50,6 @@ void MeshRenderer::Render()
 	glDisableVertexAttribArray(1);
 	glDisableVertexAttribArray(2);
 	glDisableVertexAttribArray(3);
+	glDisableVertexAttribArray(4);
 	glBindVertexArray(0);
 }

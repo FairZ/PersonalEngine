@@ -27,18 +27,18 @@ bool Scene::LoadScene()
 	std::weak_ptr<Entity> thing = Entity::CreateEntity("Thing");
 	std::weak_ptr<Entity> thing2 = Entity::CreateEntity("Thing2","Thing",glm::vec3(0.0f,1.0f,2.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(1,1,1));
 
-	m_resourceManager->AddShader("ModelVertex.txt","ModelFragment.txt","Basic");
-	m_resourceManager->AddMesh("Log_pine.obj","Log", 0.03f);
+	m_resourceManager->AddShader("ModelVertexNormal.txt","ModelFragmentNormal.txt","Basic");
+	m_resourceManager->AddMesh("Main Mesh.obj","Log", 0.04f);
 	m_resourceManager->AddMaterial(m_resourceManager->GetShader("Basic"),"BasicMat");
-	m_resourceManager->AddTexture("Log_pine_color.png","texture");
-	m_resourceManager->AddTexture("Log_pin_normal.png", "normal");
+	m_resourceManager->AddTexture("Diffuse 4096x4096.jpg","texture");
+	m_resourceManager->AddTexture("Normal 4096x4096.jpg", "normal");
 
 	std::weak_ptr<Camera> camComp = cam.lock()->AddComponent<Camera>();
 	camComp.lock()->SetAsMainCamera();
 	camComp.lock()->SetFOV(75.0f);
 	camComp.lock()->SetNearClipPlane(0.1f);
 	camComp.lock()->SetFarClipPlane(100.0f);
-	cam.lock()->m_transform->Translate(glm::vec3(0,0,5));
+	cam.lock()->m_transform->Translate(glm::vec3(0,1,3));
 
 	std::weak_ptr<MeshRenderer> meshrenderer = thing.lock()->AddComponent<MeshRenderer>();
 	meshrenderer.lock()->SetMesh("Log");

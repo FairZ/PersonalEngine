@@ -35,6 +35,7 @@ void Mesh::LoadOBJ(std::string _fileName, float _importScale)
 		std::vector<glm::vec3> orderedPositionData;
 		std::vector<glm::vec3> orderedNormalData;
 		std::vector<glm::vec3> tangentData;
+		std::vector<glm::vec3> bitangentData;
 		std::string currentLine;
 		while( std::getline( inputFile, currentLine ) )
 		{
@@ -161,11 +162,23 @@ void Mesh::LoadOBJ(std::string _fileName, float _importScale)
 					tangent.y = scalarFraction * (deltaV2*edge1.y - deltaV1*edge2.y);
 					tangent.z = scalarFraction * (deltaV2*edge1.z - deltaV1*edge2.z);
 					//normalize it
-					glm::normalize(tangent);
+					tangent = glm::normalize(tangent);
 					//add tangent data to all vertices used in the calculations
 					tangentData.push_back(tangent);
 					tangentData.push_back(tangent);
 					tangentData.push_back(tangent);
+
+					glm::vec3 bitangent;
+
+					bitangent.x = scalarFraction * (-deltaU2*edge1.x + deltaU1*edge2.x);
+					bitangent.y = scalarFraction * (-deltaU2*edge1.y + deltaU1*edge2.y);
+					bitangent.z = scalarFraction * (-deltaU2*edge1.z + deltaU1*edge2.z);
+
+					bitangent = glm::normalize(bitangent);
+
+					bitangentData.push_back(bitangent);
+					bitangentData.push_back(bitangent);
+					bitangentData.push_back(bitangent);
 				}
 
 				//generate the tangent buffer and push the data to the graphics card
@@ -175,6 +188,13 @@ void Mesh::LoadOBJ(std::string _fileName, float _importScale)
 				glBufferData(GL_ARRAY_BUFFER, sizeof(float) * m_numOfVertices * 3, &tangentData[0], GL_STATIC_DRAW);
 				glVertexAttribPointer(3,3,GL_FLOAT,GL_FALSE,0,0);
 				glEnableVertexAttribArray(3);
+
+				GLuint bitangentBuffer = 0;
+				glGenBuffers(1, &bitangentBuffer);
+				glBindBuffer(GL_ARRAY_BUFFER, bitangentBuffer);
+				glBufferData(GL_ARRAY_BUFFER, sizeof(float) * m_numOfVertices * 3, &bitangentData[0], GL_STATIC_DRAW);
+				glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0, 0);
+				glEnableVertexAttribArray(4);
 				//end of what I added
 			}
 		}
@@ -188,5 +208,6 @@ void Mesh::LoadOBJ(std::string _fileName, float _importScale)
 	glDisableVertexAttribArray(1);
 	glDisableVertexAttribArray(2);
 	glDisableVertexAttribArray(3);
+	glDisableVertexAttribArray(4);
 }
 //end of function
