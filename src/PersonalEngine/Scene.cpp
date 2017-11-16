@@ -28,9 +28,10 @@ bool Scene::LoadScene()
 	std::weak_ptr<Entity> thing2 = Entity::CreateEntity("Thing2","Thing",glm::vec3(0.0f,1.0f,2.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(1,1,1));
 
 	m_resourceManager->AddShader("ModelVertex.txt","ModelFragment.txt","Basic");
-	m_resourceManager->AddMesh("Log_pine.obj","Log", 0.1f);
+	m_resourceManager->AddMesh("Log_pine.obj","Log", 0.03f);
 	m_resourceManager->AddMaterial(m_resourceManager->GetShader("Basic"),"BasicMat");
 	m_resourceManager->AddTexture("Log_pine_color.png","texture");
+	m_resourceManager->AddTexture("Log_pin_normal.png", "normal");
 
 	std::weak_ptr<Camera> camComp = cam.lock()->AddComponent<Camera>();
 	camComp.lock()->SetAsMainCamera();
@@ -44,6 +45,7 @@ bool Scene::LoadScene()
 	meshrenderer.lock()->SetMaterial("BasicMat");
 	std::weak_ptr<Material> mat = meshrenderer.lock()->GetMaterial();
 	mat.lock()->SetTexture("colourTexture",m_resourceManager->GetTexture("texture"));
+	mat.lock()->SetTexture("normalTexture", m_resourceManager->GetTexture("normal"));
 	thing.lock()->AddComponent<TurnTable>();
 
 	meshrenderer = thing2.lock()->AddComponent<MeshRenderer>();
