@@ -22,13 +22,16 @@ std::weak_ptr<Material> MeshRenderer::GetMaterial()
 
 void MeshRenderer::Awake()
 {
+	//initialise the string to avoid a string being generated every frame when passing in the model matrix
 	modelMat = "modelMat";
 }
 
 void MeshRenderer::Render()
 {
+	//pass the model matrix to the material
 	m_material.lock()->SetMat4(modelMat, m_entity->m_transform->GetTransformationMatrix());
 
+	//pass all set uniforms into the shader
 	m_material.lock()->ReadyForDraw();
 
 	//bind VAO and enable attributes

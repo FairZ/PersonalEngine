@@ -19,7 +19,6 @@ void Window::Resize(int _width, int _height)
 {
 	m_width = _width;
 	m_height = _height;
+	//resize viewport to ensure correct drawing
 	glViewport(0, 0, m_width, m_height);
-	Camera::mainCamera.lock()->CalculateProjectionMatrix();
-	//TODO add aspect ratio switching either by linking to cameras or using gluPerspective
 }

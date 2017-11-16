@@ -64,26 +64,30 @@ std::weak_ptr<Mesh> ResourceManager::GetMesh(std::string _meshName)
 	return retVal;
 }
 
+//creates and adds a shader to the shader list
 void ResourceManager::AddShader(std::string _vertTXT, std::string _fragTXT, std::string _shaderName)
 {
 	std::shared_ptr<Shader> shader = std::make_shared<Shader>(_shaderName,_vertTXT.c_str(),_fragTXT.c_str());
 	m_shaders.push_back(shader);
 }
 
+//creates and adds a material to the material list
 void ResourceManager::AddMaterial(std::weak_ptr<Shader> _baseShader, std::string _materialName)
 {
 	std::shared_ptr<Material> material = std::make_shared<Material>(_baseShader,_materialName);
 	m_materials.push_back(material);
 }
 
+//creates and adds a texture to the texture list
 void ResourceManager::AddTexture(std::string _filePath, std::string _textureName)
 {
 	std::shared_ptr<Texture> texture = std::make_shared<Texture>(_filePath, _textureName);
 	m_textures.push_back(texture);
 }
 
-void ResourceManager::AddMesh(std::string _filePath, std::string _meshName)
+//creates and adds a mesh to the mesh list
+void ResourceManager::AddMesh(std::string _filePath, std::string _meshName, float _importScale)
 {
-	std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>(_meshName, _filePath);
+	std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>(_meshName, _filePath, _importScale);
 	m_meshes.push_back(mesh);
 }

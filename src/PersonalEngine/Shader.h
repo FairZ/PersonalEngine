@@ -15,12 +15,16 @@ struct UniformInfo
 	}
 };
 
+/// \brief Resource which handles the loading, compiling and storing of shader programs
 class Shader : public Resource
 {
 	friend class Material;
 public:
-	//change out constructor for static void CreateShader()
+	/// \private
 	Shader(std::string _name, const char* _vertTXT, const char* _fragTXT);
+	/// \private
+	~Shader();
+
 	bool GetCompiled(){return m_compiled;}
 	GLint GetProgram(){return m_program;}
 	

@@ -49,7 +49,7 @@ void Engine::Initialise(int argc, char* argv[])
 	glViewport(0, 0, 800, 600);
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 
-	//This will be where loading of everything occurs
+	//Load the specified scene
 	m_currentScene->LoadScene();
 
 	//Begin GLUT main loop
@@ -59,25 +59,27 @@ void Engine::Initialise(int argc, char* argv[])
 
 void Engine::Close()
 {
-	//reset of subsystems will delete all smart pointers contained within effectively unloading the entire engine
+	//reset of scene will delete all smart pointers contained within to clear up any allocated memory
 	m_currentScene.reset();
 }
 
 void Engine::Display()
 {
-	//call renderer draw function in future
+	//render all elements in the current scene
 	m_currentScene->Render();
 
+	//show the rnedered frame
 	glutSwapBuffers();
+	//clear the back buffer
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void Engine::Update()
 {
-	//call scene graph update function in future
+	//Update all elements in scene
 	m_currentScene->Update();
 
-	//clear up and down keys and buttons at end of update
+	//clear up and down keys once all input dependant code has been run
 	Input::m_upKeys.clear();
 	Input::m_upMouseButtons.clear();
 	Input::m_downKeys.clear();
@@ -89,9 +91,10 @@ void Engine::Update()
 
 void Engine::Resize(int _width, int _height)
 {
-	//call the window resize function
 	Window::Resize(_width, _height);
 }
+
+#pragma region Input Handling
 
 void Engine::KeyDown(unsigned char _key, int _mouseX, int _mouseY)
 {
@@ -140,3 +143,5 @@ void Engine::MouseClick(int _button, int _state, int _x, int _y)
 		Input::m_upMouseButtons.push_back(_button);
 	}
 }
+
+#pragma endregion

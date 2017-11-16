@@ -2,16 +2,23 @@
 #define _MATERIAL_H_
 #include "Resource.h"
 #include <map>
+#include <vector>
 #include <GL/glew.h>
 #include <glm/glm.hpp>
 
 class Shader;
 class Texture;
 
+/// \brief Resource to handle the input and storage of uniforms into a Shader
+///
+/// There can be many Materials to one Shader in order to store certain looks
 class Material : public Resource
 {
 public:
+	/// \private
 	Material(std::weak_ptr<Shader> _shader, std::string _name);
+
+	std::vector<std::string> GetListOfUniforms();
 	
 	void SetTexture(std::string _uniformName, std::weak_ptr<Texture> _texture);
 	void SetMat4(std::string _uniformName, glm::mat4 _matrix);
@@ -21,6 +28,7 @@ public:
 	void SetInt(std::string _uniformName, int _int);
 	void SetBool(std::string _uniformName, bool _bool);
 
+	/// \brief Passes stored uniform values into shader, must be called before drawing
 	void ReadyForDraw();
 
 private:

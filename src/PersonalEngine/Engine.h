@@ -13,13 +13,13 @@ class Engine
 public:
 	/// \brief Must be called within main to initialise the engine
 	static void Initialise(int argc, char* argv[]);
-	/// \brief Must be called at end of user program to shut down the engine safely
+	/// \brief Must be called at end of main to shut down the engine safely
 	static void Close();
-	/// \brief attempts to load the specified scene.
+
 	/// \return false or true depending on failure or success respectively
 	static bool LoadScene(std::string _filePath);
+
 private:
-	/// \brief The currently loaded scene
 	static std::shared_ptr<Scene> m_currentScene;
 
 	static void Display();

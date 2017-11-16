@@ -6,6 +6,7 @@
 
 class ResourceManager;
 
+/// \brief Container and manager for everything needed per game level
 class Scene
 {
 	friend class Entity;

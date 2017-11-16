@@ -4,6 +4,10 @@
 #include <memory>
 #include <glm/glm.hpp>
 
+
+/// \brief Camera component, contains camera values used in the creation of a projection matrix
+///
+/// Instantiates a static reference to a Camera component which is used by the engine to render to the screen
 class Camera : public Component
 {
 	friend class Engine;

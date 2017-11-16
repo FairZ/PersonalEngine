@@ -19,6 +19,7 @@ glm::vec3 Transform::GetScale()
 
 glm::mat4x4 Transform::GetTransformationMatrix()
 {
+	//recursively move up the heirarchy to include the transformation of parents or start from an identity matrix if there is no parent
 	m_parent.expired() ? m_transformationMatrix = glm::mat4(1) : m_transformationMatrix = m_parent.lock()->m_transform->GetTransformationMatrix();
 	m_transformationMatrix = glm::translate(m_transformationMatrix, m_position);
 	m_transformationMatrix = glm::rotate(m_transformationMatrix, m_rotation.z, glm::vec3(0, 0, 1.0f));
@@ -51,6 +52,7 @@ void Transform::SetScale(glm::vec3 _scale)
 void Transform::AddChild(std::weak_ptr<Entity> _childEntity)
 {
 	m_children.push_back(_childEntity);
+	_childEntity.lock()->m_transform->m_parent = Entity::FindEntity(m_entity->GetName());
 }
 
 void Transform::Translate(glm::vec3 _translation)
@@ -60,16 +62,32 @@ void Transform::Translate(glm::vec3 _translation)
 
 void Transform::Rotate(glm::vec3 _rotationInRadians)
 {
+	//reset the value to 0 after reaching 2pi radians either way to eliminate overflow errors
 	m_rotation += _rotationInRadians;
 	if(m_rotation.x >= 6.2831f)
 		m_rotation.x -= 6.2831f;
+	else if (m_rotation.x <= -6.2831f)
+		m_rotation.x += 6.2831f;
 	if(m_rotation.y >= 6.2831f)
 		m_rotation.y -= 6.2831f;
+	else if (m_rotation.y <= -6.2831f)
+		m_rotation.y += 6.2831f;
 	if(m_rotation.z >= 6.2831f)
 		m_rotation.z -= 6.2831f;
+	else if (m_rotation.z <= -6.2831f)
+		m_rotation.z += 6.2831f;
 }
 
 void Transform::Scale(glm::vec3 _scale)
 {
 	m_scale *= _scale;
+}
+
+void Transform::Destroy()
+{
+	// recursively destroy all children of this entity
+	for(auto i : m_children)
+	{
+		i.lock()->Destroy();
+	}
 }

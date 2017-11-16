@@ -10,6 +10,7 @@ class Shader;
 class Texture;
 class Mesh;
 
+/// \brief Handler for loading and getting resources within a scene
 class ResourceManager
 {
 	friend class Scene;
@@ -30,7 +31,7 @@ private:
 	void AddShader(std::string _vertTXT, std::string _fragTXT, std::string _shaderName);
 	void AddMaterial(std::weak_ptr<Shader> _baseShader, std::string _materialName);
 	void AddTexture(std::string _filePath, std::string _textureName);
-	void AddMesh(std::string _filePath, std::string _meshName);
+	void AddMesh(std::string _filePath, std::string _meshName, float _importScale);
 };
 
 

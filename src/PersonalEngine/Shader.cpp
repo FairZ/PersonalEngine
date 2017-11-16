@@ -29,6 +29,11 @@ Shader::Shader(std::string _name, const char* _vertTXT, const char* _fragTXT)
 	glLinkProgram(m_program);
 	glUseProgram(m_program);
 
+	//clear shaders now that the program is set up
+	glDeleteShader(vertex);
+	glDeleteShader(fragment);
+
+	//create a map of all uniforms used within the loaded shader
 	GLint numOfUniforms;
 	GLint sizeOfUniform;
 	GLenum typeOfUniform;
@@ -44,6 +49,11 @@ Shader::Shader(std::string _name, const char* _vertTXT, const char* _fragTXT)
 		glGetActiveUniform(m_program, (GLuint) i, maxNameLength, &lengthOfName, &sizeOfUniform, &typeOfUniform, nameOfUniform);		
 		m_uniforms.emplace(std::string(nameOfUniform),UniformInfo(glGetUniformLocation(m_program,std::string(nameOfUniform).c_str()),typeOfUniform));
 	}
+}
+
+Shader::~Shader()
+{
+	glDeleteProgram(m_program);
 }
 
 std::string Shader::LoadShader(const char* _fileName)

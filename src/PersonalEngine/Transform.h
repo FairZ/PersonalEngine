@@ -4,6 +4,7 @@
 #include <vector>
 #include <glm/glm.hpp>
 
+/// \brief Component which handles transformations and parent-child hierarchy
 class Transform : public Component
 {
 	friend class Entity;
@@ -18,10 +19,15 @@ public:
 	void SetPosition(glm::vec3 _position);
 	void SetEulerRotation(glm::vec3 _rotationInRadians);
 	void SetScale(glm::vec3 _scale);
+
+	/// \brief Set another entity to be this entity's child
 	void AddChild(std::weak_ptr<Entity> _childEntity);
 
+	/// \brief Translate the entity by the given vector
 	void Translate(glm::vec3 _translation);
+	/// \brief Rotate the entity by the given vector
 	void Rotate(glm::vec3 _rotationInRadians);
+	/// \brief Scale the entity by the given vector
 	void Scale(glm::vec3 _scale);
 
 private:
@@ -33,9 +39,7 @@ private:
 	glm::vec3 m_scale;
 	glm::mat4x4 m_transformationMatrix;
 
-	void Update(){}//temp
-	void Awake(){}//temp
-	void Destroy(){}//temp
+	void Destroy();
 
 };
 

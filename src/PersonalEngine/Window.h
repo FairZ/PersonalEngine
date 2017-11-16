@@ -1,6 +1,7 @@
 #ifndef _WINDOW_H_
 #define _WINDOW_H_
 
+/// \brief Handler for windowing
 class Window
 {
 	friend class Engine;

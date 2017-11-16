@@ -38,6 +38,5 @@ void Camera::CalculateProjectionMatrix()
 
 void Camera::CalculateViewMatrix()
 {
-	//May need to be inversed
 	m_viewMatrix = glm::inverse(m_entity->m_transform->GetTransformationMatrix());
 }

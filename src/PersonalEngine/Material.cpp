@@ -10,11 +10,23 @@ Material::Material(std::weak_ptr<Shader> _shader, std::string _name)
 	m_shader = _shader;
 }
 
+std::vector<std::string> Material::GetListOfUniforms()
+{
+	std::vector<std::string> retVal;
+	for(auto i = m_shader.lock()->m_uniforms.begin(); i != m_shader.lock()->m_uniforms.end(); i++)
+	{
+		retVal.push_back(i->first);
+	}
+	return retVal;
+}
+
 //When first setting a value in the material it checks whether the shader contains a uniform of the given name
 //if it does it compares it to the type of uniform that the specific container can handle
 //if it fits then it will create an entry for the uniform in the material's container
 //this means that it will not try to access a non-existent uniform, it will not store data of the wrong type for a given uniform
-//and allows some uniforms to not be given values resulting in them taking the default value given in the shader program
+//and allows some uniforms to not be given values resulting in them taking the default value given in the shader code
+
+//Any uniforms which the material already contains simply gets overwritten
 void Material::SetTexture(std::string _uniformName, std::weak_ptr<Texture> _texture)
 {
 	if(m_textures.count(_uniformName))
@@ -123,8 +135,10 @@ void Material::SetBool(std::string _uniformName, bool _bool)
 
 void Material::ReadyForDraw()
 {
+	//set opengl to start using the correct shader
 	glUseProgram(m_shader.lock()->GetProgram());
 
+	//go through every type of uniform stored and send them to the shader
 	for( auto i = m_matrix4s.begin(); i != m_matrix4s.end(); i++)
 	{
 		glUniformMatrix4fv(m_shader.lock()->m_uniforms.at(i->first).location,1,GL_FALSE,glm::value_ptr(i->second));
@@ -150,6 +164,7 @@ void Material::ReadyForDraw()
 		glUniform1i(m_shader.lock()->m_uniforms.at(i->first).location,i->second);
 	}
 	int texCount = 0;
+	//if sending multiple textures to a shader then assign them to different texture units
 	for( auto i = m_textures.begin(); i != m_textures.end(); i++)
 	{
 		glUniform1i(m_shader.lock()->m_uniforms.at(i->first).location, texCount);
@@ -157,9 +172,4 @@ void Material::ReadyForDraw()
 		glBindTexture(GL_TEXTURE_2D,i->second);
 		texCount++;
 	}
-
-
-
-
-
 }

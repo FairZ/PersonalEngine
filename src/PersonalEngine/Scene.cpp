@@ -25,9 +25,10 @@ bool Scene::LoadScene()
 
 	std::weak_ptr<Entity> cam = Entity::CreateEntity("Camera");
 	std::weak_ptr<Entity> thing = Entity::CreateEntity("Thing");
+	std::weak_ptr<Entity> thing2 = Entity::CreateEntity("Thing2","Thing",glm::vec3(0.0f,1.0f,2.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(1,1,1));
 
 	m_resourceManager->AddShader("ModelVertex.txt","ModelFragment.txt","Basic");
-	m_resourceManager->AddMesh("Log_pine.obj","Log");
+	m_resourceManager->AddMesh("Log_pine.obj","Log", 0.1f);
 	m_resourceManager->AddMaterial(m_resourceManager->GetShader("Basic"),"BasicMat");
 	m_resourceManager->AddTexture("Log_pine_color.png","texture");
 
@@ -36,7 +37,7 @@ bool Scene::LoadScene()
 	camComp.lock()->SetFOV(75.0f);
 	camComp.lock()->SetNearClipPlane(0.1f);
 	camComp.lock()->SetFarClipPlane(100.0f);
-	cam.lock()->m_transform->Translate(glm::vec3(0,-1,5));
+	cam.lock()->m_transform->Translate(glm::vec3(0,0,5));
 
 	std::weak_ptr<MeshRenderer> meshrenderer = thing.lock()->AddComponent<MeshRenderer>();
 	meshrenderer.lock()->SetMesh("Log");
@@ -44,7 +45,12 @@ bool Scene::LoadScene()
 	std::weak_ptr<Material> mat = meshrenderer.lock()->GetMaterial();
 	mat.lock()->SetTexture("colourTexture",m_resourceManager->GetTexture("texture"));
 	thing.lock()->AddComponent<TurnTable>();
-	thing.lock()->m_transform->Scale(glm::vec3(0.1f,0.1f,0.1f));
+
+	meshrenderer = thing2.lock()->AddComponent<MeshRenderer>();
+	meshrenderer.lock()->SetMesh("Log");
+	meshrenderer.lock()->SetMaterial("BasicMat");
+	mat = meshrenderer.lock()->GetMaterial();
+	mat.lock()->SetTexture("colourTexture",m_resourceManager->GetTexture("texture"));
 
 	Awake();
 	return true;
@@ -57,6 +63,7 @@ void Scene::AddEntity(std::shared_ptr<Entity> _entity)
 
 void Scene::Awake()
 {
+	//call the awake function in all entities
 	for(auto i : m_entities)
 	{
 		i->Awake();
@@ -65,6 +72,16 @@ void Scene::Awake()
 
 void Scene::Update()
 {
+	//sweep and destroy any dead entities
+	for(unsigned int i = 0; i < m_entities.size() ; i++)
+	{
+		if(m_entities[i]->m_destroyed)
+		{
+			m_entities.erase(m_entities.begin()+i);
+			i--;
+		}
+	}
+	//run update function for all entities
 	for(auto i : m_entities)
 	{
 		i->Update();
@@ -73,16 +90,16 @@ void Scene::Update()
 
 void Scene::Render()
 {
-	//set camera view and projection matricies in all materials before drawing to avoid repeated calls
+	//calculate and set camera view and projection matricies in all materials before drawing to avoid repeated calls
 	Camera::mainCamera.lock()->CalculateProjectionMatrix();
 	Camera::mainCamera.lock()->CalculateViewMatrix();
-
 	for (auto i : m_resourceManager->m_materials)
 	{
 		i->SetMat4("viewMat",Camera::mainCamera.lock()->GetViewMatrix());
 		i->SetMat4("projMat",Camera::mainCamera.lock()->GetProjectionMatrix());
 	}
 
+	//run render function for all entities
 	for(auto i : m_entities)
 	{
 		i->Render();

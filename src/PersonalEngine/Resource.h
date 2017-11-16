@@ -5,6 +5,7 @@
 
 class Scene;
 
+/// \brief Abstract base class for resources
 class Resource
 {
 public:

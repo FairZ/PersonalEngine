@@ -7,6 +7,7 @@
 class Mesh;
 class Material;
 
+/// \brief Component for rendering meshes
 class MeshRenderer : public Component
 {
 public:

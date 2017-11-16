@@ -6,13 +6,13 @@
 #include <sstream>
 #include <iostream>
 
-Mesh::Mesh(std::string _name, std::string _filePath)
+Mesh::Mesh(std::string _name, std::string _filePath, float _importScale)
 {
 	m_name = _name;
 	m_VAOIndex = 0;
 	m_numOfVertices = 0;
 	glGenVertexArrays(1, &m_VAOIndex);
-	LoadOBJ(_filePath);
+	LoadOBJ(_filePath, _importScale);
 }
 
 Mesh::~Mesh()
@@ -22,7 +22,7 @@ Mesh::~Mesh()
 
 //This function was originally written by Leigh Mcloughlin
 //Tangent calculations and handling were added by myself
-void Mesh::LoadOBJ(std::string _fileName)
+void Mesh::LoadOBJ(std::string _fileName, float _importScale)
 {
 	std::ifstream inputFile( _fileName );
 
@@ -58,7 +58,7 @@ void Mesh::LoadOBJ(std::string _fileName)
 				std::string junk;
 				float x, y, z;
 				currentLineStream >> junk >> x >> y >> z;
-				rawPositionData.push_back(glm::vec3(x,y,z));
+				rawPositionData.push_back(glm::vec3(x*_importScale,y*_importScale,z*_importScale));
 			}
 			else if( !currentLine.substr(0,2).compare( 0, 1,"f") )
 			{

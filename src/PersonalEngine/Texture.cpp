@@ -4,7 +4,7 @@
 Texture::Texture(std::string _filePath, std::string _textureName)
 {
 	m_name = _textureName;
-
+	//use SOIL to load in and set up a texture for the given image
 	m_texIndex = SOIL_load_OGL_texture(_filePath.c_str(),
 																		SOIL_LOAD_AUTO,
 																		SOIL_CREATE_NEW_ID,
