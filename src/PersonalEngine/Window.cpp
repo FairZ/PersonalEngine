@@ -2,8 +2,8 @@
 #include "Camera.h"
 #include <GL/glew.h>
 
-int Window::m_width;
-int Window::m_height;
+int Window::m_width = 800;
+int Window::m_height = 600;
 
 int Window::GetWidth()
 {

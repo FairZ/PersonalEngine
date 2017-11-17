@@ -92,9 +92,6 @@ void Scene::Update()
 
 void Scene::Render()
 {
-	//calculate and set camera view and projection matricies in all materials before drawing to avoid repeated calls
-	Camera::mainCamera.lock()->CalculateProjectionMatrix();
-	Camera::mainCamera.lock()->CalculateViewMatrix();
 	for (auto i : m_resourceManager->m_materials)
 	{
 		i->SetMat4("viewMat",Camera::mainCamera.lock()->GetViewMatrix());

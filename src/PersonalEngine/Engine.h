@@ -10,6 +10,7 @@
 class Engine
 {
 	friend class Entity;
+	friend class RenderController;
 public:
 	/// \brief Must be called within main to initialise the engine
 	static void Initialise(int argc, char* argv[]);
@@ -21,6 +22,8 @@ public:
 
 private:
 	static std::shared_ptr<Scene> m_currentScene;
+
+	static std::shared_ptr<RenderController> m_renderController;
 
 	static void Display();
 	static void Update();

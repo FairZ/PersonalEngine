@@ -11,6 +11,7 @@ class Scene
 {
 	friend class Entity;
 	friend class Engine;
+	friend class RenderController;
 public:
 	std::weak_ptr<ResourceManager> GetResourceManager();
 	Scene();

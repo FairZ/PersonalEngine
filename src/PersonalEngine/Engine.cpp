@@ -9,17 +9,16 @@
 #include "Camera.h"
 #include "MeshRenderer.h"
 #include "ResourceManager.h"
+#include "RenderController.h"
 
-//initialisation of static variable
+//initialisation of static variables
 std::shared_ptr<Scene> Engine::m_currentScene;
+std::shared_ptr<RenderController> Engine::m_renderController;
 
 void Engine::Initialise(int argc, char* argv[])
-{
-	//scene intialisation
-	if (!m_currentScene)
-	{
-		m_currentScene.reset(new Scene());
-	}
+{	
+	m_currentScene = std::make_shared<Scene>();
+	m_renderController = std::make_shared<RenderController>();
 
 	//initialise glut 
 	glutInit(&argc, argv);
@@ -52,6 +51,9 @@ void Engine::Initialise(int argc, char* argv[])
 	//Load the specified scene
 	m_currentScene->LoadScene();
 
+	//set up the rendercontroller
+	m_renderController->Generate();
+
 	//Begin GLUT main loop
 	glutMainLoop();
 
@@ -65,13 +67,11 @@ void Engine::Close()
 
 void Engine::Display()
 {
-	//render all elements in the current scene
-	m_currentScene->Render();
+	//run rendercontroller to render scene and apply postprocessing
+	m_renderController->Render();
 
-	//show the rnedered frame
+	//show the rendered frame
 	glutSwapBuffers();
-	//clear the back buffer
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void Engine::Update()
@@ -92,6 +92,7 @@ void Engine::Update()
 void Engine::Resize(int _width, int _height)
 {
 	Window::Resize(_width, _height);
+	m_renderController->ResizeBuffer();
 }
 
 #pragma region Input Handling

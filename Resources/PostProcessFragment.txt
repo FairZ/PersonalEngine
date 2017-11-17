@@ -1,0 +1,16 @@
+#version 430 core
+
+out vec4 fragColour;
+  
+in vec2 texCoords_vert;
+
+uniform sampler2D screenTexture;
+
+void main()
+{ 
+    fragColour = texture(screenTexture, texCoords_vert);
+	//HDR mapping
+	fragColour.rgb = fragColour.rgb / (fragColour.rgb+vec3(1.0f));
+	//Gamma correction
+	fragColour.rgb = pow(fragColour.rgb,vec3(1/2.2f));
+}

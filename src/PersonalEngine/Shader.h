@@ -19,6 +19,7 @@ struct UniformInfo
 class Shader : public Resource
 {
 	friend class Material;
+	friend class RenderController;
 public:
 	/// \private
 	Shader(std::string _name, const char* _vertTXT, const char* _fragTXT);

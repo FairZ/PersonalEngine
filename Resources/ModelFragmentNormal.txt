@@ -6,7 +6,7 @@ in mat3 TBNMatrix;
 
 uniform vec3 lightColour = {1.0f,0.6f,0.6f};
 uniform vec3 emissiveColour = {0,0,0};
-uniform vec3 ambientColour  = {0.2f,0.2f,0.2f};
+uniform vec3 ambientColour  = {0.1f,0.1f,0.1f};
 uniform vec3 diffuseColour  = {1.0f,1.0f,1.0f};
 uniform float alpha         = 1.0f;
 uniform vec4 worldSpaceLightPosition = {0,1,0,1};
@@ -32,9 +32,5 @@ void main()
 	vec3 diffuse = diffuseColour * lightColour * max( dot(normal, normalize(toLight)), 0)  / (lightDistanceSquared/lightPower);
 
 	fragColour = vec4( emissiveColour + texColour*(ambientColour + diffuse), alpha);
-	
-	//TODO: add these as a post-process effect
-	//HDR: fragColour.rgb = fragColour.rgb / (fragColour.rgb+vec3(1.0f));
-	//GAMMA: fragColour.rgb = pow(fragColour.rgb,vec3(1/2.2f));
 }
 

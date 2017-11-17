@@ -38,6 +38,7 @@ add_executable(PersonalEngine
   src/PersonalEngine/MeshRenderer.cpp
   src/PersonalEngine/TurnTable.cpp
   src/PersonalEngine/Texture.cpp
+  src/PersonalEngine/RenderController.cpp
   
   #remove for final build:
   #messes with OBJloader
