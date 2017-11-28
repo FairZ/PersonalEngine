@@ -27,7 +27,7 @@ public:
 	std::shared_ptr<Transform> m_transform;
 
 	std::string GetName();
-	unsigned char GetLayer();
+	std::weak_ptr<Scene> GetScene();
 
 	void Destroy();
 
@@ -83,7 +83,6 @@ public:
 
 private:
 	std::string m_name;
-	unsigned char m_layer;
 	std::vector<std::shared_ptr<Component>> m_components;
 	static std::weak_ptr<Scene> m_scene;
 	bool m_destroyed;

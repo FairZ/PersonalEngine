@@ -10,6 +10,7 @@
 #include "MeshRenderer.h"
 #include "ResourceManager.h"
 #include "RenderController.h"
+#include "Time.h"
 
 //initialisation of static variables
 std::shared_ptr<Scene> Engine::m_currentScene;
@@ -46,13 +47,14 @@ void Engine::Initialise(int argc, char* argv[])
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 	glViewport(0, 0, 800, 600);
-	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 
 	//Load the specified scene
 	m_currentScene->LoadScene();
 
 	//set up the rendercontroller
 	m_renderController->Generate();
+
+	Time::m_lastTime = glutGet(GLUT_ELAPSED_TIME);
 
 	//Begin GLUT main loop
 	glutMainLoop();
@@ -76,6 +78,10 @@ void Engine::Display()
 
 void Engine::Update()
 {
+	int currentTime = glutGet(GLUT_ELAPSED_TIME);
+	Time::m_deltaTime = currentTime - Time::m_lastTime;
+	Time::m_lastTime = currentTime;
+
 	//Update all elements in scene
 	m_currentScene->Update();
 

@@ -1,6 +1,7 @@
 #ifndef _MESH_H
 #define _MESH_H
 #include "Resource.h"
+#include <vector>
 #include <GL/glew.h>
 
 /// \brief Resource to handle the loading and storage of meshes
@@ -14,14 +15,15 @@ public:
 	/// \private
 	~Mesh();
 
-	GLuint GetVAOIndex(){return m_VAOIndex;}
-	unsigned int GetNumOfVertices(){return m_numOfVertices;}
+	GLuint GetVAOIndex(unsigned int _index);
+	unsigned int GetNumOfIndices(unsigned int _index);
 
+	int GetNumOfVAOs(){return m_VAOs.size();}
 private:
-	void LoadOBJ(std::string _filePath, float _importScale);
+	void LoadMesh(std::string _filePath, float _importScale);
 
-	GLuint m_VAOIndex;
-	unsigned int m_numOfVertices;
+	std::vector<GLuint> m_VAOs;
+	std::vector<unsigned int> m_indexNumbers;
 };
 
 

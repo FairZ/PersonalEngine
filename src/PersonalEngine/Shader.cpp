@@ -1,5 +1,6 @@
 #include "Shader.h"
 #include <fstream>
+#include <vector>
 
 Shader::Shader(std::string _name, const char* _vertTXT, const char* _fragTXT)
 {
@@ -20,10 +21,36 @@ Shader::Shader(std::string _name, const char* _vertTXT, const char* _fragTXT)
 	glCompileShader(vertex);
 	glAttachShader(m_program, vertex);
 
+	glGetShaderiv(vertex, GL_COMPILE_STATUS, &m_compiled);
+
 	GLuint fragment = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragment,1,&m_fragment,NULL);
 	glCompileShader(fragment);
 	glAttachShader(m_program, fragment);
+
+	if(m_compiled == GL_TRUE)
+	{
+		glGetShaderiv(fragment, GL_COMPILE_STATUS, &m_compiled);
+		if(m_compiled == GL_FALSE)
+		{
+			GLint maxLength = 0;
+			glGetShaderiv(fragment, GL_INFO_LOG_LENGTH, &maxLength);
+
+			// The maxLength includes the NULL character
+			std::vector<GLchar> errorLog(maxLength);
+			glGetShaderInfoLog(fragment, maxLength, &maxLength, &errorLog[0]);
+
+		}
+	}
+	else
+	{
+		GLint maxLength = 0;
+		glGetShaderiv(vertex, GL_INFO_LOG_LENGTH, &maxLength);
+
+		// The maxLength includes the NULL character
+		std::vector<GLchar> errorLog(maxLength);
+		glGetShaderInfoLog(vertex, maxLength, &maxLength, &errorLog[0]);
+	}
 
 	//link the program together
 	glLinkProgram(m_program);

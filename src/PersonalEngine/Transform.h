@@ -11,17 +11,30 @@ class Transform : public Component
 	friend class Scene;
 public:
 	glm::vec3 GetPosition();
-	glm::vec3 GetEulerRotation();
 	glm::vec3 GetScale();
+	glm::vec3 GetRotation();
+	glm::vec3 GetLocalPosition();
+	glm::vec3 GetLocalRotation();
+	glm::vec3 GetLocalScale();
+	glm::vec3 GetForward();
+	void SetForward(glm::vec3 _direction);
+	glm::vec3 GetRight();
+	glm::vec3 GetUp();
 	glm::mat4x4 GetTransformationMatrix();
 	std::weak_ptr<Entity> GetParent();
 
+	void SetLocalPosition(glm::vec3 _position);
+	void SetLocalRotation(glm::vec3 _rotationInRadians);
+	void SetLocalScale(glm::vec3 _scale);
+
 	void SetPosition(glm::vec3 _position);
-	void SetEulerRotation(glm::vec3 _rotationInRadians);
+	void SetRotation(glm::vec3 _rotationInRadians);
 	void SetScale(glm::vec3 _scale);
 
 	/// \brief Set another entity to be this entity's child
 	void AddChild(std::weak_ptr<Entity> _childEntity);
+
+	void DetachChildren();
 
 	/// \brief Translate the entity by the given vector
 	void Translate(glm::vec3 _translation);
@@ -37,8 +50,10 @@ private:
 	glm::vec3 m_position;
 	glm::vec3 m_rotation;
 	glm::vec3 m_scale;
+	glm::vec3 m_forward;
 	glm::mat4x4 m_transformationMatrix;
 
+	void Awake();
 	void Destroy();
 
 };

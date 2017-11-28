@@ -1,0 +1,42 @@
+#version 430 core
+in vec4 vertexEyePosition_vertex;
+in vec4 lightEyePosition_vertex;
+in vec2 texCoord_vertex;
+in mat3 TBNMatrix;
+
+
+uniform vec3 lightColour = {1.0f,1.0f,1.0f};
+uniform vec3 ambientColour  = {0.01f,0.01f,0.01f};
+uniform float shininess     = 16.0f;
+uniform float alpha         = 1.0f;
+
+
+uniform sampler2D colourTexture;
+uniform sampler2D normalTexture;
+uniform sampler2D specularTexture;
+
+out vec4 fragColour;
+
+void main()
+{	
+	vec3 toLight = lightEyePosition_vertex.xyz - vertexEyePosition_vertex.xyz;
+	vec3 lightDir = normalize(toLight);
+	vec3 normal = texture(normalTexture, texCoord_vertex).rgb;
+	normal = normalize(normal * 2.0f - 1.0f);
+	normal = normalize(TBNMatrix * normal);
+
+	float lightDistanceSquared = pow(toLight.x,2) + pow(toLight.y,2) + pow(toLight.z,2);
+	float lightPower = 2;
+
+	vec3 texColour = vec3(texture(colourTexture,texCoord_vertex));
+	vec3 diffuse = texColour * lightColour * max( dot(normal, lightDir), 0)  / (lightDistanceSquared/lightPower);
+
+	vec3 eyeDir = normalize( -vertexEyePosition_vertex.xyz);
+	vec3 halfVec = normalize( eyeDir + lightDir );
+	
+	float specularPower = pow(max( dot( normal, halfVec ), 0), shininess)  / (lightDistanceSquared/lightPower);
+	vec3 specular = specularPower * texture(specularTexture, texCoord_vertex).rgb * lightColour;
+	
+	fragColour = vec4((ambientColour + diffuse + specular), alpha);
+}
+

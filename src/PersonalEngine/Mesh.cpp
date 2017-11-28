@@ -1,213 +1,139 @@
 #include "Mesh.h"
-#include <fstream>
-#include <vector>
 #include <glm/glm.hpp>
 #include <GL/glew.h>
-#include <sstream>
-#include <iostream>
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
 
 Mesh::Mesh(std::string _name, std::string _filePath, float _importScale)
 {
 	m_name = _name;
-	m_VAOIndex = 0;
-	m_numOfVertices = 0;
-	glGenVertexArrays(1, &m_VAOIndex);
-	LoadOBJ(_filePath, _importScale);
+	LoadMesh(_filePath, _importScale);
 }
 
 Mesh::~Mesh()
 {
-	glDeleteVertexArrays(1, &m_VAOIndex);
+	for (unsigned int i = 0; i < m_VAOs.size(); i++)
+	{
+		glDeleteVertexArrays(1, &m_VAOs.at(i));
+	}
 }
 
-//This function was originally written by Leigh Mcloughlin
-//Tangent calculations and handling were added by myself
-void Mesh::LoadOBJ(std::string _fileName, float _importScale)
+GLuint Mesh::GetVAOIndex(unsigned int _index)
 {
-	std::ifstream inputFile( _fileName );
+	GLuint RetVal = 0;
 
-	if( inputFile.is_open() )
+	if (_index >= 0 && _index < m_indexNumbers.size())
 	{
+		RetVal = m_VAOs.at(_index);
+	}
+
+	return RetVal;
+}
+
+unsigned int Mesh::GetNumOfIndices(unsigned int _index)
+{
+	unsigned int RetVal;
+
+	if (_index >= 0 && _index < m_indexNumbers.size())
+	{
+		RetVal = m_indexNumbers.at(_index);
+	}
+
+	return RetVal;
+}
+
+void Mesh::LoadMesh(std::string _fileName, float _importScale)
+{
+	Assimp::Importer importer;
+	const aiScene* scene = importer.ReadFile(_fileName, aiProcess_CalcTangentSpace | aiProcess_Triangulate  | aiProcess_FlipUVs);
+
+	for (unsigned int i = 0; i < scene->mNumMeshes; i++)
+	{
+		aiMesh* mesh = scene->mMeshes[i];
+
 		std::vector<glm::vec2> rawUVData;
 		std::vector<glm::vec3> rawPositionData;
-		std::vector<glm::vec3> rawNormalData;		
-		std::vector<glm::vec2> orderedUVData;
-		std::vector<glm::vec3> orderedPositionData;
-		std::vector<glm::vec3> orderedNormalData;
-		std::vector<glm::vec3> tangentData;
-		std::vector<glm::vec3> bitangentData;
-		std::string currentLine;
-		while( std::getline( inputFile, currentLine ) )
+		std::vector<glm::vec3> rawNormalData;
+		std::vector<glm::vec3> rawTangentData;
+		std::vector<glm::vec3> rawBitangentData;
+		std::vector<unsigned int> indices;
+
+		for (unsigned int j = 0; j < mesh->mNumVertices; j++)
 		{
-			std::stringstream currentLineStream(currentLine);					
-			if( !currentLine.substr(0,2).compare( 0, 2, "vt") )
+			rawPositionData.push_back(glm::vec3(mesh->mVertices[j].x * _importScale, mesh->mVertices[j].y * _importScale, mesh->mVertices[j].z * _importScale));
+			rawUVData.push_back(glm::vec2(mesh->mTextureCoords[0][j].x,mesh->mTextureCoords[0][j].y));
+			rawNormalData.push_back(glm::vec3(mesh->mNormals[j].x,mesh->mNormals[j].y, mesh->mNormals[j].z));
+			rawTangentData.push_back(glm::vec3(mesh->mTangents[j].x,mesh->mTangents[j].y, mesh->mTangents[j].z));
+			rawBitangentData.push_back(glm::vec3(mesh->mBitangents[j].x,mesh->mBitangents[j].y, mesh->mBitangents[j].z));
+		}
+		for(unsigned int f = 0; f < mesh->mNumFaces; f++)
+		{
+			aiFace face = mesh->mFaces[f];
+			for(unsigned int ind = 0; ind < face.mNumIndices; ind++)
 			{
-				std::string junk;
-				float x, y;
-				currentLineStream >> junk >> x >> y;
-				rawUVData.push_back(glm::vec2(x,-y));//had to edit this as UVs had flipped a V axis
-			}
-			else if( !currentLine.substr(0,2).compare( 0, 2, "vn") )
-			{
-				std::string junk;
-				float x, y, z;
-				currentLineStream >> junk >> x >> y >> z;
-				rawNormalData.push_back(glm::vec3(x,y,z));
-			}
-			else if( !currentLine.substr(0,2).compare( 0, 1, "v") )
-			{
-				std::string junk;
-				float x, y, z;
-				currentLineStream >> junk >> x >> y >> z;
-				rawPositionData.push_back(glm::vec3(x*_importScale,y*_importScale,z*_importScale));
-			}
-			else if( !currentLine.substr(0,2).compare( 0, 1,"f") )
-			{
-				std::string junk;
-				std::string verts[4];
-				currentLineStream >> junk >> verts[0] >> verts[1] >> verts[2] >> verts[3];
-				if( verts[3].empty() )
-				{
-					for( unsigned int i = 0; i < 3; i++ )
-					{
-						std::stringstream currentSection(verts[i]);
-						unsigned int posID = 0;
-						unsigned int uvID = 0;
-						unsigned int normID = 0;
-						if( verts[i].find('/') == std::string::npos )
-						{
-							currentSection >> posID;
-						}
-						else if( verts[i].find("//") != std::string::npos )
-						{
-							char junk;
-							currentSection >> posID >> junk >> junk >> normID;
-						}
-						else
-						{
-							char junk;
-							currentSection >> posID >>junk >> uvID >> junk >> normID;
-						}
-						if( posID > 0 )
-						{
-							orderedPositionData.push_back( rawPositionData[posID-1] );
-						}
-						if( uvID > 0 )
-						{
-							orderedUVData.push_back( rawUVData[uvID-1] );
-						}
-						if( normID > 0 )
-						{
-							orderedNormalData.push_back( rawNormalData[normID-1] );
-						}
-					}
-				}
-				else
-				{
-					std::cerr<<"WARNING: This OBJ loader only works with triangles but a quad has been detected. Please triangulate your mesh."<<std::endl;
-					inputFile.close();
-					return;
-				}
+				indices.push_back(face.mIndices[ind]);
 			}
 		}
-		inputFile.close();
-		m_numOfVertices = orderedPositionData.size();
 
-		if( m_numOfVertices > 0 )
-		{
-			
-			glBindVertexArray( m_VAOIndex );
-			GLuint posBuffer = 0;
-			glGenBuffers(1, &posBuffer);
-			glBindBuffer(GL_ARRAY_BUFFER, posBuffer);
-			glBufferData(GL_ARRAY_BUFFER, sizeof(float) * m_numOfVertices * 3, &orderedPositionData[0], GL_STATIC_DRAW);
-			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0 );
-			glEnableVertexAttribArray(0);
-			if( orderedNormalData.size() > 0 )
-			{
-				GLuint normBuffer = 0;
-				glGenBuffers(1, &normBuffer);
-				glBindBuffer(GL_ARRAY_BUFFER, normBuffer);
-				glBufferData(GL_ARRAY_BUFFER, sizeof(float) * m_numOfVertices * 3, &orderedNormalData[0], GL_STATIC_DRAW);
-				glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0 );
-				glEnableVertexAttribArray(1);
-			}
-			if( orderedUVData.size() > 0 )
-			{
-				GLuint texBuffer = 0;
-				glGenBuffers(1, &texBuffer);
-				glBindBuffer(GL_ARRAY_BUFFER, texBuffer);
-				glBufferData(GL_ARRAY_BUFFER, sizeof(float) * m_numOfVertices * 2, &orderedUVData[0], GL_STATIC_DRAW);
-				glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0 );
-				glEnableVertexAttribArray(2);
+		m_VAOs.push_back(GLuint());
+		glGenVertexArrays(1, &m_VAOs.at(i));
+		glBindVertexArray(m_VAOs.at(i));
 
-				//below here is what I added
-				//tangent space calculations
-				for (unsigned int i=0; i < m_numOfVertices; i+=3)
-				{
-					//find the 2 edges attached to the given vertex
-					glm::vec3 edge1 = orderedPositionData[i+1] - orderedPositionData[i];
-					glm::vec3 edge2 = orderedPositionData[i+2] - orderedPositionData[i];
-					//find differences between Us and Vs on the two edges
-					float deltaU1 = orderedUVData[i+1].x - orderedUVData[i].x;
-					float deltaV1 = orderedUVData[i+1].y - orderedUVData[i].y;
-					float deltaU2 = orderedUVData[i+2].x - orderedUVData[i].x;
-					float deltaV2 = orderedUVData[i+2].y - orderedUVData[i].y;
-					
-					float scalarFraction = 1.0f/ (deltaU1*deltaV2 - deltaU2*deltaV1);
+		GLuint posBuffer = 0;
+		glGenBuffers(1, &posBuffer);
+		glBindBuffer(GL_ARRAY_BUFFER, posBuffer);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * rawPositionData.size(), &rawPositionData[0], GL_STATIC_DRAW);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0 );
+		
+		GLuint normBuffer = 0;
+		glGenBuffers(1, &normBuffer);
+		glBindBuffer(GL_ARRAY_BUFFER, normBuffer);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * rawNormalData.size(), &rawNormalData[0], GL_STATIC_DRAW);
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0 );
+		
+		GLuint texBuffer = 0;
+		glGenBuffers(1, &texBuffer);
+		glBindBuffer(GL_ARRAY_BUFFER, texBuffer);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2) * rawUVData.size(), &rawUVData[0], GL_STATIC_DRAW);
+		glEnableVertexAttribArray(2);
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0 );		
 
-					glm::vec3 tangent;
-					//set up tangent vector
-					tangent.x = scalarFraction * (deltaV2*edge1.x - deltaV1*edge2.x);
-					tangent.y = scalarFraction * (deltaV2*edge1.y - deltaV1*edge2.y);
-					tangent.z = scalarFraction * (deltaV2*edge1.z - deltaV1*edge2.z);
-					//normalize it
-					tangent = glm::normalize(tangent);
-					//add tangent data to all vertices used in the calculations
-					tangentData.push_back(tangent);
-					tangentData.push_back(tangent);
-					tangentData.push_back(tangent);
+		GLuint tangentBuffer = 0;
+		glGenBuffers(1,&tangentBuffer);
+		glBindBuffer(GL_ARRAY_BUFFER, tangentBuffer);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * rawTangentData.size(), &rawTangentData[0], GL_STATIC_DRAW);
+		glEnableVertexAttribArray(3);
+		glVertexAttribPointer(3,3,GL_FLOAT,GL_FALSE,0,0);		
 
-					glm::vec3 bitangent;
+		GLuint bitangentBuffer = 0;
+		glGenBuffers(1, &bitangentBuffer);
+		glBindBuffer(GL_ARRAY_BUFFER, bitangentBuffer);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * rawBitangentData.size(), &rawBitangentData[0], GL_STATIC_DRAW);
+		glEnableVertexAttribArray(4);
+		glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0, 0);		
 
-					bitangent.x = scalarFraction * (-deltaU2*edge1.x + deltaU1*edge2.x);
-					bitangent.y = scalarFraction * (-deltaU2*edge1.y + deltaU1*edge2.y);
-					bitangent.z = scalarFraction * (-deltaU2*edge1.z + deltaU1*edge2.z);
+		m_indexNumbers.push_back(indices.size());
+		GLuint EBO;
+		glGenBuffers(1,&EBO);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
 
-					bitangent = glm::normalize(bitangent);
+		glBindVertexArray( 0 );
+		glDisableVertexAttribArray(0);
+		glDisableVertexAttribArray(1);
+		glDisableVertexAttribArray(2);
+		glDisableVertexAttribArray(3);
+		glDisableVertexAttribArray(4);
 
-					bitangentData.push_back(bitangent);
-					bitangentData.push_back(bitangent);
-					bitangentData.push_back(bitangent);
-				}
+		glDeleteBuffers(1, &posBuffer);
+		glDeleteBuffers(1, &normBuffer);
+		glDeleteBuffers(1, &texBuffer);
+		glDeleteBuffers(1, &tangentBuffer);
+		glDeleteBuffers(1, &bitangentBuffer);
+		glDeleteBuffers(1, &EBO);
 
-				//generate the tangent buffer and push the data to the graphics card
-				GLuint tangentBuffer = 0;
-				glGenBuffers(1,&tangentBuffer);
-				glBindBuffer(GL_ARRAY_BUFFER, tangentBuffer);
-				glBufferData(GL_ARRAY_BUFFER, sizeof(float) * m_numOfVertices * 3, &tangentData[0], GL_STATIC_DRAW);
-				glVertexAttribPointer(3,3,GL_FLOAT,GL_FALSE,0,0);
-				glEnableVertexAttribArray(3);
-
-				GLuint bitangentBuffer = 0;
-				glGenBuffers(1, &bitangentBuffer);
-				glBindBuffer(GL_ARRAY_BUFFER, bitangentBuffer);
-				glBufferData(GL_ARRAY_BUFFER, sizeof(float) * m_numOfVertices * 3, &bitangentData[0], GL_STATIC_DRAW);
-				glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0, 0);
-				glEnableVertexAttribArray(4);
-				//end of what I added
-			}
-		}
 	}
-	else
-	{
-		std::cerr<<"WARNING: File not found: "<< _fileName <<std::endl;
-	}
-	glBindVertexArray( 0 );
-	glDisableVertexAttribArray(0);
-	glDisableVertexAttribArray(1);
-	glDisableVertexAttribArray(2);
-	glDisableVertexAttribArray(3);
-	glDisableVertexAttribArray(4);
 }
-//end of function

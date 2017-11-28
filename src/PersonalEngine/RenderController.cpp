@@ -76,7 +76,7 @@ void RenderController::Generate()
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 
-	m_postProcessShader = std::make_shared<Shader>("PPS","PostProcessVertex.txt","PostProcessFragment.txt");
+	m_postProcessShader = std::make_shared<Shader>("PPS","Shaders/PostProcessVertex.txt","Shaders/PostProcessFragment.txt");
 
 }
 
@@ -104,7 +104,7 @@ void RenderController::Render()
 	Camera::mainCamera.lock()->CalculateViewMatrix();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, m_sceneFrameBufferIndex);
-	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+	glClearColor(0, 0, 0, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
 	Engine::m_currentScene->Render();

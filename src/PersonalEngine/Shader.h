@@ -26,11 +26,11 @@ public:
 	/// \private
 	~Shader();
 
-	bool GetCompiled(){return m_compiled;}
+	GLint GetCompiled(){return m_compiled;}
 	GLint GetProgram(){return m_program;}
 	
 protected:
-	bool m_compiled;
+	GLint m_compiled;
 	GLint m_program;
 	std::map<std::string, UniformInfo> m_uniforms;//dictionary of uniforms and their locations
 	const GLchar* m_vertex;

@@ -12,9 +12,9 @@ std::string Entity::GetName()
 	return m_name;
 }
 
-unsigned char Entity::GetLayer()
+std::weak_ptr<Scene> Entity::GetScene()
 {
-	return m_layer;
+	return m_scene;
 }
 
 std::weak_ptr<Entity> Entity::CreateEntity(std::string _name, glm::vec3 _position, glm::vec3 _rotation, glm::vec3 _scale)

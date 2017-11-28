@@ -25,6 +25,7 @@ private:
 	void AddEntity(std::shared_ptr<Entity> _entity);
 
 	void Awake();
+	void Destroy();
 	void Update();
 	void Render();
 };
