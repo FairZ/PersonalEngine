@@ -10,6 +10,7 @@
 #include "Mesh.h"
 #include "FlyingController.h"
 #include "RigidBody.h"
+#include "Jetpack.h"
 
 Scene::Scene()
 {
@@ -65,10 +66,11 @@ bool Scene::LoadScene()
 	camComp.lock()->SetFarClipPlane(100.0f);
 	cam.lock()->m_transform->Translate(glm::vec3(0,1,3));
 
-	cam.lock()->AddComponent<FlyingController>();
+	//cam.lock()->AddComponent<FlyingController>();
 
 	thing.lock()->m_transform->Translate(glm::vec3(0,0,-2));
 	thing.lock()->AddComponent<RigidBody>();
+	thing.lock()->AddComponent<Jetpack>();
 
 	std::weak_ptr<MeshRenderer> meshrenderer = thing.lock()->AddComponent<MeshRenderer>();
 	meshrenderer.lock()->SetMesh("Suit");
@@ -110,7 +112,7 @@ bool Scene::LoadScene()
 	mat.lock()->SetTexture("normalTexture",m_resourceManager->GetTexture("BodyNormal"));
 	mat.lock()->SetTexture("specularTexture",m_resourceManager->GetTexture("BodySpec"));
 
-	thing.lock()->AddComponent<TurnTable>();
+	thing2.lock()->AddComponent<TurnTable>();
 
 	meshrenderer = thing2.lock()->AddComponent<MeshRenderer>();
 	meshrenderer.lock()->SetMesh("Suit");

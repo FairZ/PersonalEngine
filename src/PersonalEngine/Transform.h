@@ -17,10 +17,10 @@ public:
 	glm::vec3 GetLocalRotation();
 	glm::vec3 GetLocalScale();
 	glm::vec3 GetForward();
-	void SetForward(glm::vec3 _direction);
 	glm::vec3 GetRight();
 	glm::vec3 GetUp();
 	glm::mat4x4 GetTransformationMatrix();
+	glm::mat4x4 GetRotationMatrix();
 	std::weak_ptr<Entity> GetParent();
 
 	void SetLocalPosition(glm::vec3 _position);
@@ -50,7 +50,6 @@ private:
 	glm::vec3 m_position;
 	glm::vec3 m_rotation;
 	glm::vec3 m_scale;
-	glm::vec3 m_forward;
 	glm::mat4x4 m_transformationMatrix;
 
 	void Awake();

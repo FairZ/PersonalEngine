@@ -8,12 +8,14 @@ class Transform;
 class RigidBody : public Component
 {
 public:
-	void SetVelocity(glm::vec3 _velocity);
-	void SetAcceleration(glm::vec3 _acceleration);
+	void SetLinearVelocity(glm::vec3 _velocity);
+	void SetLinearAcceleration(glm::vec3 _acceleration);
+	void SetInertiaTensor(glm::mat3 _inertiaTensor);
 	void SetGravity(glm::vec3 _gravity);
 	void SetDrag(float _drag);
-	void AddImpulse(glm::vec3 _impulse);
 	void AddForce(glm::vec3 _force);
+	void AddForceAtWorldPosition(glm::vec3 _force, glm::vec3 _position);
+	void AddForceAtBodyPosition(glm::vec3 _force, glm::vec3 _position);
 
 private:
 	void Awake();
@@ -21,9 +23,14 @@ private:
 
 	float m_drag;
 	float m_mass;
-	glm::vec3 m_velocity;
-	glm::vec3 m_acceleration;
+	glm::vec3 m_linearVelocity;
+	glm::vec3 m_angularVelocity;
+	glm::vec3 m_linearAcceleration;
+	glm::vec3 m_angularAcceleration;
+	glm::vec3 m_forceAccumulator;
+	glm::vec3 m_torqueAccumulator;
 	glm::vec3 m_gravity;
+	glm::mat3 m_inverseInertiaTensor;
 
 	std::weak_ptr<Transform> m_transform;
 

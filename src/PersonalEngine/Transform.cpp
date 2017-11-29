@@ -44,12 +44,7 @@ glm::vec3 Transform::GetRotation()
 
 glm::vec3 Transform::GetForward()
 {
-	return glm::vec4(m_forward,1) * GetTransformationMatrix();
-}
-
-void Transform::SetForward(glm::vec3 _direction)
-{
-	m_forward = _direction;
+	return glm::vec4(0,0,1,1) * GetTransformationMatrix();
 }
 
 glm::vec3 Transform::GetRight()
@@ -72,6 +67,20 @@ glm::mat4x4 Transform::GetTransformationMatrix()
 	m_transformationMatrix = glm::rotate(m_transformationMatrix, m_rotation.x, glm::vec3(1.0f, 0, 0));
 	m_transformationMatrix = glm::scale(m_transformationMatrix, m_scale);
 	return m_transformationMatrix;
+}
+
+glm::mat4x4 Transform::GetRotationMatrix()
+{
+	glm::mat4x4 retVal(1);
+	if (!m_parent.expired())
+	{
+		retVal = m_parent.lock()->m_transform->GetRotationMatrix();
+	}
+	retVal = glm::rotate(retVal, m_rotation.z, glm::vec3(0, 0, 1.0f));
+	retVal = glm::rotate(retVal, m_rotation.y, glm::vec3(0, 1.0f, 0));
+	retVal = glm::rotate(retVal, m_rotation.x, glm::vec3(1.0f, 0, 0));
+
+	return retVal;
 }
 
 std::weak_ptr<Entity> Transform::GetParent()
@@ -110,11 +119,11 @@ void Transform::SetRotation(glm::vec3 _rotationInRadians)
 {
 	if(!GetParent().expired())
 	{
-		m_position = glm::vec4(_rotationInRadians,1) * glm::inverse(GetParent().lock()->m_transform->GetTransformationMatrix());
+		m_rotation = _rotationInRadians - GetParent().lock()->m_transform->GetRotation();
 	}
 	else
 	{
-		m_position = _rotationInRadians;
+		m_rotation = _rotationInRadians;
 	}
 }
 
@@ -122,11 +131,11 @@ void Transform::SetScale(glm::vec3 _scale)
 {
 	if(!GetParent().expired())
 	{
-		m_position = glm::vec4(_scale,1) * glm::inverse(GetParent().lock()->m_transform->GetTransformationMatrix());
+		m_scale = _scale - GetParent().lock()->m_transform->GetScale();
 	}
 	else
 	{
-		m_position = _scale;
+		m_scale = _scale;
 	}
 }
 
@@ -153,25 +162,19 @@ void Transform::DetachChildren()
 
 void Transform::Translate(glm::vec3 _translation)
 {
-	m_position += _translation;
+	if (!GetParent().expired())
+	{
+		m_position = (glm::vec4(_translation,1) * glm::inverse(GetParent().lock()->m_transform->GetTransformationMatrix())) + glm::vec4(m_position,0);
+	}
+	else
+	{
+		m_position += _translation;
+	}
 }
 
 void Transform::Rotate(glm::vec3 _rotationInRadians)
 {
-	//reset the value to 0 after reaching 2pi radians either way to eliminate overflow errors
 	m_rotation += _rotationInRadians;
-	if(m_rotation.x >= 6.2831f)
-		m_rotation.x -= 6.2831f;
-	else if (m_rotation.x <= -6.2831f)
-		m_rotation.x += 6.2831f;
-	if(m_rotation.y >= 6.2831f)
-		m_rotation.y -= 6.2831f;
-	else if (m_rotation.y <= -6.2831f)
-		m_rotation.y += 6.2831f;
-	if(m_rotation.z >= 6.2831f)
-		m_rotation.z -= 6.2831f;
-	else if (m_rotation.z <= -6.2831f)
-		m_rotation.z += 6.2831f;
 }
 
 void Transform::Scale(glm::vec3 _scale)
@@ -181,7 +184,6 @@ void Transform::Scale(glm::vec3 _scale)
 
 void Transform::Awake()
 {
-	m_forward = glm::vec3(0,0,1);
 }
 
 void Transform::Destroy()

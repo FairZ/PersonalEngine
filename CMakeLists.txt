@@ -64,6 +64,8 @@ add_executable(PersonalEngine
   src/PersonalEngine/FlyingController.h
   src/PersonalEngine/Collider.cpp
   src/PersonalEngine/Collider.h
+  src/PersonalEngine/Jetpack.cpp
+  src/PersonalEngine/JetPack.h
   
   #remove for final build:
   src/PersonalEngine/plank.cpp

@@ -14,7 +14,6 @@ void FlyingController::Awake()
 void FlyingController::Update()
 {
 	m_moveVector = glm::vec3(0);
-	m_transform.lock()->SetForward(glm::vec3(0,0,-1));
 
 	if(Input::GetKey('w'))
 	{
