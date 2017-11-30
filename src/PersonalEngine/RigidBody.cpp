@@ -59,7 +59,7 @@ void RigidBody::Awake()
 	m_angularVelocity = glm::vec3(0);
 	m_linearAcceleration = glm::vec3(0);
 	m_angularAcceleration = glm::vec3(0);
-	m_gravity = glm::vec3(0,-9.81f,0);
+	m_gravity = glm::vec3(0,0,0);
 	m_transform = m_entity->m_transform;
 
 	//MUST ADD CREATION OF INERTIATENSOR BASED ON COLLIDER
@@ -71,20 +71,20 @@ void RigidBody::Awake()
 	SetInertiaTensor(inertiaTensor);
 }
 
-void RigidBody::Update()
+void RigidBody::FixedUpdate()
 {
 	m_linearAcceleration = m_gravity;
 	m_linearAcceleration += m_forceAccumulator / m_mass;
-	m_linearVelocity += m_linearAcceleration * Time::GetDeltaTimeSec();
+	m_linearVelocity += m_linearAcceleration * Time::GetFixedDeltaTimeSec();
 
 	glm::mat3 rotationMatrix = m_transform.lock()->GetRotationMatrix();
-	m_angularVelocity += (m_inverseInertiaTensor * rotationMatrix) * m_torqueAccumulator * Time::GetDeltaTimeSec();
+	m_angularVelocity += (m_inverseInertiaTensor * rotationMatrix) * m_torqueAccumulator * Time::GetFixedDeltaTimeSec();
 
-	m_linearVelocity *= std::pow(m_drag, Time::GetDeltaTimeSec());
-	m_angularVelocity *= std::pow(m_drag, Time::GetDeltaTimeSec());
+	m_linearVelocity *= std::pow(m_drag, Time::GetFixedDeltaTimeSec());
+	m_angularVelocity *= std::pow(m_drag, Time::GetFixedDeltaTimeSec());
 
-	m_transform.lock()->Translate(m_linearVelocity * Time::GetDeltaTimeSec());
-	m_transform.lock()->Rotate(m_angularVelocity * Time::GetDeltaTimeSec());
+	m_transform.lock()->Translate(m_linearVelocity * Time::GetFixedDeltaTimeSec());
+	m_transform.lock()->Rotate(m_angularVelocity * Time::GetFixedDeltaTimeSec());
 
 	m_forceAccumulator = glm::vec3();
 	m_torqueAccumulator = glm::vec3();

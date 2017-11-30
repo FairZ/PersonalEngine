@@ -88,6 +88,7 @@ private:
 	bool m_destroyed;
 
 	void Update();
+	void FixedUpdate();
 	void Render(); 
 	void Awake();
 

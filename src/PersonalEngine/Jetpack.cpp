@@ -8,7 +8,7 @@ void Jetpack::Awake()
 	m_rb = m_entity->GetComponent<RigidBody>();
 }
 
-void Jetpack::Update()
+void Jetpack::FixedUpdate()
 {
 	if (Input::GetKey(' '))
 	{

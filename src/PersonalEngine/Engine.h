@@ -17,13 +17,13 @@ public:
 	/// \brief Must be called at end of main to shut down the engine safely
 	static void Close();
 
-	/// \return false or true depending on failure or success respectively
-	static bool LoadScene(std::string _filePath);
-
 private:
 	static std::shared_ptr<Scene> m_currentScene;
 
 	static std::shared_ptr<RenderController> m_renderController;
+
+	static float fixedTime;
+	static float updateTime;
 
 	static void Display();
 	static void Update();

@@ -24,6 +24,7 @@ protected:
 	std::weak_ptr<ResourceManager> m_resourceManager;
 
 	virtual void Update(){}
+	virtual void FixedUpdate(){}
 	virtual void Awake(){}
 	virtual void Render(){}
 	virtual void Destroy(){}

@@ -16,10 +16,12 @@ public:
 	void AddForce(glm::vec3 _force);
 	void AddForceAtWorldPosition(glm::vec3 _force, glm::vec3 _position);
 	void AddForceAtBodyPosition(glm::vec3 _force, glm::vec3 _position);
+	glm::vec3 GetLinearVelocity() { return m_linearAcceleration; }
+	float GetMass() { return m_mass; }
 
 private:
 	void Awake();
-	void Update();
+	void FixedUpdate();
 
 	float m_drag;
 	float m_mass;

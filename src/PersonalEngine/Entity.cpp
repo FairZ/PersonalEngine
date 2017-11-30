@@ -138,7 +138,15 @@ void Entity::Update()
 	{
 		i->Update();
 	}
-	//run recursive Update function for children of current entity
+}
+
+void Entity::FixedUpdate()
+{
+	//go through every component and update it
+	for (auto i : m_components)
+	{
+		i->FixedUpdate();
+	}
 }
 
 void Entity::Render()
@@ -148,7 +156,6 @@ void Entity::Render()
 	{
 		i->Render();
 	}
-	//run recursive Awake function for children of current entity
 }
 
 void Entity::Awake()
@@ -158,7 +165,6 @@ void Entity::Awake()
 	{
 		i->Awake();
 	}
-	//run recursive Awake function for children of current entity
 	m_transform->Awake();
 }
 

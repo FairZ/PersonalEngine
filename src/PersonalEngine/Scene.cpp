@@ -11,16 +11,24 @@
 #include "FlyingController.h"
 #include "RigidBody.h"
 #include "Jetpack.h"
+#include "CollisionResolver.h"
+#include "SphereCollider.h"
 
 Scene::Scene()
 {
 	m_resourceManager = std::make_shared<ResourceManager>();
+	m_collisionResolver = std::make_shared<CollisionResolver>();
 }
 
 std::weak_ptr<ResourceManager> Scene::GetResourceManager()
 {
 	std::weak_ptr<ResourceManager> retVal = m_resourceManager;
 	return retVal;
+}
+
+std::weak_ptr<CollisionResolver> Scene::GetCollisionResolver()
+{
+	return m_collisionResolver;
 }
 
 bool Scene::LoadScene()
@@ -30,7 +38,7 @@ bool Scene::LoadScene()
 	std::weak_ptr<Entity> cam = Entity::CreateEntity("Camera");
 	std::weak_ptr<Entity> thing3 = Entity::CreateEntity("LightMesh",glm::vec3(0,2,0), glm::vec3(0), glm::vec3(0.1f,0.1f,0.1f));
 	std::weak_ptr<Entity> thing = Entity::CreateEntity("Thing");
-	std::weak_ptr<Entity> thing2 = Entity::CreateEntity("Thing2","Thing",glm::vec3(0.0f,1.0f,2.0f),glm::vec3(0.0f,0.0f,0.0f),glm::vec3(1,1,1));
+	std::weak_ptr<Entity> thing2 = Entity::CreateEntity("Thing2");
 
 	m_resourceManager->AddShader("Shaders/ModelVertexNormal.txt","Shaders/ModelFragmentNormal.txt","Normal");
 	m_resourceManager->AddShader("Shaders/ModelVertexNormal.txt","Shaders/ModelFragmentNormalSpecular.txt","NormalSpec");
@@ -69,8 +77,13 @@ bool Scene::LoadScene()
 	//cam.lock()->AddComponent<FlyingController>();
 
 	thing.lock()->m_transform->Translate(glm::vec3(0,0,-2));
-	thing.lock()->AddComponent<RigidBody>();
+	thing.lock()->AddComponent<RigidBody>().lock()->SetGravity(glm::vec3(0));
+	thing.lock()->AddComponent<SphereCollider>();
 	thing.lock()->AddComponent<Jetpack>();
+
+	thing2.lock()->m_transform->Translate(glm::vec3(0, 2, -2));
+	thing2.lock()->AddComponent<RigidBody>().lock()->SetGravity(glm::vec3(0));
+	thing2.lock()->AddComponent<SphereCollider>();
 
 	std::weak_ptr<MeshRenderer> meshrenderer = thing.lock()->AddComponent<MeshRenderer>();
 	meshrenderer.lock()->SetMesh("Suit");
@@ -178,6 +191,16 @@ void Scene::Update()
 	{
 		i->Update();
 	}
+}
+
+void Scene::FixedUpdate()
+{
+	//run fixedUpdate function for all entities
+	for (auto i : m_entities)
+	{
+		i->FixedUpdate();
+	}
+	m_collisionResolver->ResolveCollisions();
 }
 
 void Scene::Render()

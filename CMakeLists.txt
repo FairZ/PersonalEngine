@@ -66,6 +66,12 @@ add_executable(PersonalEngine
   src/PersonalEngine/Collider.h
   src/PersonalEngine/Jetpack.cpp
   src/PersonalEngine/JetPack.h
+  src/PersonalEngine/SphereCollider.cpp
+  src/PersonalEngine/SphereCollider.h
+  src/PersonalEngine/CollisionResolver.cpp
+  src/PersonalEngine/CollisionResolver.h
+  src/PersonalEngine/Contact.cpp
+  src/PersonalEngine/Contact.h
   
   #remove for final build:
   src/PersonalEngine/plank.cpp

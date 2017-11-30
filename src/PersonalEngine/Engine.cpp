@@ -15,6 +15,8 @@
 //initialisation of static variables
 std::shared_ptr<Scene> Engine::m_currentScene;
 std::shared_ptr<RenderController> Engine::m_renderController;
+float Engine::fixedTime = 0.008f;
+float Engine::updateTime = 0.016f;
 
 void Engine::Initialise(int argc, char* argv[])
 {	
@@ -79,20 +81,32 @@ void Engine::Display()
 void Engine::Update()
 {
 	int currentTime = glutGet(GLUT_ELAPSED_TIME);
-	Time::m_deltaTime = currentTime - Time::m_lastTime;
+	Time::m_deltaTime += (currentTime - Time::m_lastTime) / 1000.0f;
+	Time::m_fixedDeltaTime += (currentTime - Time::m_lastTime) / 1000.0f;
 	Time::m_lastTime = currentTime;
 
-	//Update all elements in scene
-	m_currentScene->Update();
+	if (Time::m_fixedDeltaTime >= fixedTime)
+	{
+		m_currentScene->FixedUpdate();
+		Time::m_fixedDeltaTime = 0.0f;
+	}
 
-	//clear up and down keys once all input dependant code has been run
-	Input::m_upKeys.clear();
-	Input::m_upMouseButtons.clear();
-	Input::m_downKeys.clear();
-	Input::m_downMouseButtons.clear();
+	if (Time::m_deltaTime >= updateTime)
+	{
+		//Update all elements in scene
+		m_currentScene->Update();
 
-	//tell glut to run display function
-	glutPostRedisplay();
+		//clear up and down keys once all input dependant code has been run
+		Input::m_upKeys.clear();
+		Input::m_upMouseButtons.clear();
+		Input::m_downKeys.clear();
+		Input::m_downMouseButtons.clear();
+
+		Time::m_deltaTime = 0;
+
+		//tell glut to run display function
+		glutPostRedisplay();
+	}
 }
 
 void Engine::Resize(int _width, int _height)

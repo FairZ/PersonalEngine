@@ -12,7 +12,7 @@ private:
 	std::weak_ptr<RigidBody> m_rb;
 
 	void Awake();
-	void Update();
+	void FixedUpdate();
 };
 
 
