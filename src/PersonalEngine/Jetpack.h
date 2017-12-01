@@ -11,7 +11,7 @@ public:
 private:
 	std::weak_ptr<RigidBody> m_rb;
 
-	void Awake();
+	void Start();
 	void FixedUpdate();
 };
 

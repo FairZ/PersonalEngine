@@ -27,7 +27,7 @@ private:
 	bool LoadScene();
 	void AddEntity(std::shared_ptr<Entity> _entity);
 
-	void Awake();
+	void Start();
 	void Destroy();
 	void Update();
 	void FixedUpdate();

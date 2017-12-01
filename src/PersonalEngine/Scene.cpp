@@ -77,12 +77,14 @@ bool Scene::LoadScene()
 	//cam.lock()->AddComponent<FlyingController>();
 
 	thing.lock()->m_transform->Translate(glm::vec3(0,0,-2));
-	//thing.lock()->AddComponent<RigidBody>().lock()->SetGravity(glm::vec3(0,-9.81,0));
+	thing.lock()->AddComponent<RigidBody>();
+	thing.lock()->GetComponent<RigidBody>().lock()->SetMass(1.0f);
 	thing.lock()->AddComponent<SphereCollider>();
 	thing.lock()->AddComponent<Jetpack>();
 
 	thing2.lock()->m_transform->Translate(glm::vec3(0, 2, -2));
-	thing2.lock()->AddComponent<RigidBody>().lock()->SetGravity(glm::vec3(0,-9.81,0));
+	thing2.lock()->AddComponent<RigidBody>();
+	thing2.lock()->GetComponent<RigidBody>().lock()->SetMass(0.5f);
 	thing2.lock()->AddComponent<SphereCollider>();
 
 	std::weak_ptr<MeshRenderer> meshrenderer = thing.lock()->AddComponent<MeshRenderer>();
@@ -147,7 +149,7 @@ bool Scene::LoadScene()
 	meshrenderer.lock()->SetMaterial(5,"Helmet");	
 	meshrenderer.lock()->SetMaterial(6,"Body");
 
-	Awake();
+	Start();
 	return true;
 }
 
@@ -166,12 +168,12 @@ void Scene::Destroy()
 	m_entities.clear();
 }
 
-void Scene::Awake()
+void Scene::Start()
 {
 	//call the awake function in all entities
 	for(auto i : m_entities)
 	{
-		i->Awake();
+		i->Start();
 	}
 }
 

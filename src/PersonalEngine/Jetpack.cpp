@@ -3,7 +3,7 @@
 #include "RigidBody.h"
 #include "Input.h"
 
-void Jetpack::Awake()
+void Jetpack::Start()
 {
 	m_rb = m_entity->GetComponent<RigidBody>();
 }

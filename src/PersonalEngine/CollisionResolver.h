@@ -28,7 +28,7 @@ public:
 	void ResolveCollisions();
 private:
 	void RegisterCollider(std::weak_ptr<Collider> _collider);
-	void RemoveCollider(std::weak_ptr<Collider> _collider);
+	void RemoveCollider(Collider* _collider);
 	void BroadPhase();
 	void NarrowPhase();
 	void ResolveContacts();

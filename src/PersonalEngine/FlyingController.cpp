@@ -6,9 +6,13 @@
 
 void FlyingController::Awake()
 {
-	m_transform = m_entity->m_transform;
 	m_moveVector = glm::vec3(0);
 	m_speed = 5.0f;
+}
+
+void FlyingController::Start()
+{
+	m_transform = m_entity->m_transform;
 }
 
 void FlyingController::Update()

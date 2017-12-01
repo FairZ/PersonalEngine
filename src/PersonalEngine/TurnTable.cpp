@@ -2,7 +2,7 @@
 #include "Transform.h"
 #include "Entity.h"
 
-void TurnTable::Awake()
+void TurnTable::Start()
 {
 	m_transform = m_entity->m_transform;
 }

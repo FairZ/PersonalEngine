@@ -182,10 +182,6 @@ void Transform::Scale(glm::vec3 _scale)
 	m_scale *= _scale;
 }
 
-void Transform::Awake()
-{
-}
-
 void Transform::Destroy()
 {
 	DetachChildren();

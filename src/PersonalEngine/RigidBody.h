@@ -13,6 +13,7 @@ public:
 	void SetInertiaTensor(glm::mat3 _inertiaTensor);
 	void SetGravity(glm::vec3 _gravity);
 	void SetDrag(float _drag);
+	void SetMass(float _mass);
 	void AddForce(glm::vec3 _force);
 	void AddForceAtWorldPosition(glm::vec3 _force, glm::vec3 _position);
 	void AddForceAtBodyPosition(glm::vec3 _force, glm::vec3 _position);
@@ -23,6 +24,7 @@ public:
 
 private:
 	void Awake();
+	void Start();
 	void FixedUpdate();
 
 	float m_drag;

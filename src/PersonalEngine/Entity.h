@@ -43,9 +43,13 @@ public:
 		//set the new component's entity and resource manager pointers
 		newComponent->m_entity = this;
 		newComponent->m_resourceManager = m_scene.lock()->GetResourceManager();
+		//set to new so it's start function will be run next update
+		newComponent->m_new = true;
 		//create a weak pointer to the new component and return it
-		std::weak_ptr<T> retval = newComponent;
-		return retval;
+		std::weak_ptr<T> retVal = newComponent;
+		//run the component's wake function
+		WakeComponent(retVal);
+		return retVal;
 	}
 	
 	template<typename T>
@@ -87,10 +91,12 @@ private:
 	static std::weak_ptr<Scene> m_scene;
 	bool m_destroyed;
 
+	void WakeComponent(std::weak_ptr<Component> _component);
+
 	void Update();
 	void FixedUpdate();
 	void Render(); 
-	void Awake();
+	void Start();
 
 	//further functions can be added here
 	//bool Load(params); for level loading

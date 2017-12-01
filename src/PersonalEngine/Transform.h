@@ -52,7 +52,6 @@ private:
 	glm::vec3 m_scale;
 	glm::mat4x4 m_transformationMatrix;
 
-	void Awake();
 	void Destroy();
 
 };

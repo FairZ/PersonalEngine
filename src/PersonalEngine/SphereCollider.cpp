@@ -13,10 +13,14 @@ void SphereCollider::SetRadius(float _radius)
 
 void SphereCollider::Awake()
 {
+	SetRadius(0.5f);
+}
+
+void SphereCollider::Start()
+{
 	m_transform = m_entity->m_transform;
 	m_rigidBody = m_entity->GetComponent<RigidBody>();
 	m_type = 's';
 	//ADD REGISTER OF COLLIDER
 	m_entity->GetScene().lock()->GetCollisionResolver().lock()->RegisterCollider(m_entity->GetComponent<SphereCollider>());
-	SetRadius(0.5f);
 }

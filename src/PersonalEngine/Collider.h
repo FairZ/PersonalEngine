@@ -26,7 +26,7 @@ protected:
 	std::weak_ptr<Transform> m_transform;
 	std::weak_ptr<RigidBody> m_rigidBody;
 
-	virtual void Awake();
+	virtual void Start();
 	void Destroy();
 
 };

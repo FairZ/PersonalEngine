@@ -19,8 +19,6 @@ void Contact::Resolve()
 	glm::vec3 v2;
 	float invM1 = 0.0f;
 	float invM2 = 0.0f;
-	float posCorrect1 = 0.0f;
-	float posCorrect2 = 0.0f;
 	glm::vec3 scaledNormal = m_normal * Time::GetFixedDeltaTimeSec();
 	float velocityFromAcceleration = 0;
 
@@ -29,28 +27,34 @@ void Contact::Resolve()
 		v1 = m_body1.lock()->GetLinearVelocity();
 		invM1 = 1 / m_body1.lock()->GetMass();
 		velocityFromAcceleration += glm::dot(m_body1.lock()->GetLinearAcceleration(), scaledNormal);
-		posCorrect1 = m_penetration*invM1;
-		m_body1.lock()->GetTransform().lock()->Translate(m_normal*posCorrect1);
 	}
 
 	if (!m_body2.expired())
 	{
 		v2 = m_body2.lock()->GetLinearVelocity();
 		invM2 = 1 / m_body2.lock()->GetMass();
-		velocityFromAcceleration -= glm::dot(m_body2.lock()->GetLinearAcceleration(), scaledNormal);
-		posCorrect2 = -m_penetration*invM2;
-		m_body2.lock()->GetTransform().lock()->Translate(m_normal*posCorrect2);
+		velocityFromAcceleration -= glm::dot(m_body2.lock()->GetLinearAcceleration(), scaledNormal);		
 	}
+	float totalMass = invM1 + invM2;
+
+	//mult by 1.001f to ensure that they are pushed apart by slightly larger than the penetration depth
+	float posCorrect = (1.001f*m_penetration) / totalMass;
 
 	float restitution = -0.9f;
 	float contactVelocity = glm::dot(v1 - v2, m_normal) - velocityFromAcceleration;
-	if (contactVelocity > -0.2f)
+	if (fabs(contactVelocity) < 0.2f)
 		restitution = 0.0f;
 
-	impulse = (restitution * contactVelocity) / (invM1 + invM2);
+	impulse = (restitution * contactVelocity) / (totalMass);
 
 	if (!m_body1.expired())
+	{
 		m_body1.lock()->SetLinearVelocity((impulse*m_normal)*invM1);
+		m_body1.lock()->GetTransform().lock()->Translate(m_normal*posCorrect*invM1);
+	}
 	if (!m_body2.expired())
+	{
 		m_body2.lock()->SetLinearVelocity((-impulse*m_normal)*invM2);
+		m_body2.lock()->GetTransform().lock()->Translate(m_normal*-posCorrect*invM2);
+	}
 }

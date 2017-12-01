@@ -5,7 +5,7 @@
 #include "Scene.h"
 #include "CollisionResolver.h"
 
-void Collider::Awake()
+void Collider::Start()
 {
 	m_transform = m_entity->m_transform;
 	m_rigidBody = m_entity->GetComponent<RigidBody>();
@@ -13,13 +13,12 @@ void Collider::Awake()
 	m_entity->GetScene().lock()->GetCollisionResolver().lock()->RegisterCollider(m_entity->GetComponent<Collider>());
 }
 
-
 void Collider::Destroy()
 {
 	m_transform.reset();
 	m_rigidBody.reset();
 
-	m_entity->GetScene().lock()->GetCollisionResolver().lock()->RemoveCollider(m_entity->GetComponent<Collider>());
+	m_entity->GetScene().lock()->GetCollisionResolver().lock()->RemoveCollider(this);
 }
 
 glm::vec3 Collider::GetMax()

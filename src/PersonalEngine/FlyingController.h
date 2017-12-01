@@ -12,6 +12,7 @@ public:
 
 private:
 	void Awake();
+	void Start();
 	void Update();
 
 	std::weak_ptr<Transform> m_transform;

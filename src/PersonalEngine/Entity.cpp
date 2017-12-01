@@ -131,11 +131,27 @@ Entity::Entity(std::string _name)
 	m_destroyed = false;
 }
 
+void Entity::WakeComponent(std::weak_ptr<Component> _component)
+{
+	for (auto i : m_components)
+	{
+		if (i.get() == _component.lock().get())
+		{
+			i->Awake();
+		}
+	}
+}
+
 void Entity::Update()
 {
 	//go through every component and update it
 	for (auto i : m_components)
 	{
+		if (i->m_new)
+		{
+			i->Start();
+			i->m_new = false;
+		}
 		i->Update();
 	}
 }
@@ -145,6 +161,11 @@ void Entity::FixedUpdate()
 	//go through every component and update it
 	for (auto i : m_components)
 	{
+		if (i->m_new)
+		{
+			i->Start();
+			i->m_new = false;
+		}
 		i->FixedUpdate();
 	}
 }
@@ -158,14 +179,16 @@ void Entity::Render()
 	}
 }
 
-void Entity::Awake()
+void Entity::Start()
 {
 	//go through every component and Awake it
 	for (auto i : m_components)
 	{
-		i->Awake();
+		i->Start();
+		i->m_new = false;
 	}
-	m_transform->Awake();
+	m_transform->Start();
+	m_transform->m_new = false;
 }
 
 void Entity::Destroy()

@@ -10,6 +10,7 @@ public:
 private:
 	float m_radius;
 
+	void Start();
 	void Awake();
 };
 

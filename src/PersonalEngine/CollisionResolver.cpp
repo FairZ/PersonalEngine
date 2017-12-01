@@ -20,11 +20,11 @@ void CollisionResolver::RegisterCollider(std::weak_ptr<Collider> _collider)
 	m_colliders.push_back(_collider);
 }
 
-void CollisionResolver::RemoveCollider(std::weak_ptr<Collider> _collider)
+void CollisionResolver::RemoveCollider(Collider* _collider)
 {
 	for (auto i = m_colliders.begin(); i != m_colliders.end(); i++)
 	{
-		if ((*i).lock().get() == _collider.lock().get())
+		if ((*i).lock().get() == _collider)
 		{
 			m_colliders.erase(i);
 			break;

@@ -2,6 +2,7 @@
 #include "Transform.h"
 #include "Entity.h"
 #include "Time.h"
+#include "Input.h"
 
 void RigidBody::SetLinearVelocity(glm::vec3 _velocity)
 {
@@ -26,6 +27,11 @@ void RigidBody::SetGravity(glm::vec3 _gravity)
 void RigidBody::SetDrag(float _drag)
 {
 	m_drag = _drag;
+}
+
+void RigidBody::SetMass(float _mass)
+{
+	m_mass = _mass;
 }
 
 void RigidBody::AddForce(glm::vec3 _force)
@@ -55,10 +61,13 @@ void RigidBody::Awake()
 {
 	m_drag = 0.99f;
 	m_mass = 1.0f;
+	m_gravity = glm::vec3(0, -9.81, 0); 
+}
+
+void RigidBody::Start()
+{
 	m_transform = m_entity->m_transform;
 
-	//MUST ADD CREATION OF INERTIATENSOR BASED ON COLLIDER
-	//(first check if it exists otherwise make a default as below)
 	glm::mat3 inertiaTensor(0);
 	inertiaTensor[0][0] = (m_mass*0.4f);
 	inertiaTensor[1][1] = (m_mass*0.4f);
@@ -68,12 +77,13 @@ void RigidBody::Awake()
 
 void RigidBody::FixedUpdate()
 {
+	
 	m_linearAcceleration = m_gravity;
 	m_linearAcceleration += m_forceAccumulator / m_mass;
 	m_linearVelocity += m_linearAcceleration * Time::GetFixedDeltaTimeSec();
 
 	glm::mat3 rotationMatrix = m_transform.lock()->GetRotationMatrix();
-	m_angularVelocity += (m_inverseInertiaTensor * rotationMatrix) * m_torqueAccumulator * Time::GetFixedDeltaTimeSec();
+    m_angularVelocity += (m_inverseInertiaTensor * rotationMatrix) * m_torqueAccumulator * Time::GetFixedDeltaTimeSec();
 
 	m_linearVelocity *= std::pow(m_drag, Time::GetFixedDeltaTimeSec());
 	m_angularVelocity *= std::pow(m_drag, Time::GetFixedDeltaTimeSec());
