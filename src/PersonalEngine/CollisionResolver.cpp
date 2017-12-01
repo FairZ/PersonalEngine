@@ -64,7 +64,7 @@ void CollisionResolver::NarrowPhase()
 		if (i.m_collider1.lock()->GetType() == 's' && i.m_collider2.lock()->GetType() == 's')
 		{
 			glm::vec3 midline = i.m_collider1.lock()->GetWorldSpaceCenter() - i.m_collider2.lock()->GetWorldSpaceCenter();
-			float distance = midline.length();
+			float distance = glm::length(midline);
 			if (distance >= 0.0f && distance <= i.m_collider1.lock()->GetExtents().x + i.m_collider2.lock()->GetExtents().x)
 			{
 				glm::vec3 normal = glm::normalize(midline);

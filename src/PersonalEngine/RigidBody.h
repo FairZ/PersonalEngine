@@ -16,8 +16,10 @@ public:
 	void AddForce(glm::vec3 _force);
 	void AddForceAtWorldPosition(glm::vec3 _force, glm::vec3 _position);
 	void AddForceAtBodyPosition(glm::vec3 _force, glm::vec3 _position);
-	glm::vec3 GetLinearVelocity() { return m_linearAcceleration; }
+	glm::vec3 GetLinearVelocity() { return m_linearVelocity; }
+	glm::vec3 GetLinearAcceleration() { return m_linearAcceleration; }
 	float GetMass() { return m_mass; }
+	std::weak_ptr<Transform> GetTransform() { return m_transform; }
 
 private:
 	void Awake();

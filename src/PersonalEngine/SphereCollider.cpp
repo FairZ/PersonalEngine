@@ -18,5 +18,5 @@ void SphereCollider::Awake()
 	m_type = 's';
 	//ADD REGISTER OF COLLIDER
 	m_entity->GetScene().lock()->GetCollisionResolver().lock()->RegisterCollider(m_entity->GetComponent<SphereCollider>());
-	SetRadius(1.0f);
+	SetRadius(0.5f);
 }

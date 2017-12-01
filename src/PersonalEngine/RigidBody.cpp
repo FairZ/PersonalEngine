@@ -55,11 +55,6 @@ void RigidBody::Awake()
 {
 	m_drag = 0.99f;
 	m_mass = 1.0f;
-	m_linearVelocity = glm::vec3(0);
-	m_angularVelocity = glm::vec3(0);
-	m_linearAcceleration = glm::vec3(0);
-	m_angularAcceleration = glm::vec3(0);
-	m_gravity = glm::vec3(0,0,0);
 	m_transform = m_entity->m_transform;
 
 	//MUST ADD CREATION OF INERTIATENSOR BASED ON COLLIDER

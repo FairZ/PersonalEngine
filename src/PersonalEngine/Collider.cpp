@@ -24,7 +24,7 @@ void Collider::Destroy()
 
 glm::vec3 Collider::GetMax()
 {
-	glm::vec3 transformedCenter = glm::vec4(m_center,1) * m_transform.lock()->GetTransformationMatrix();
+	glm::vec3 transformedCenter = m_transform.lock()->GetTransformationMatrix() * glm::vec4(m_center,1);
 	return transformedCenter + (m_extents * m_transform.lock()->GetScale());
 }
 
@@ -40,7 +40,7 @@ void Collider::SetCenter(glm::vec3 _center)
 
 glm::vec3 Collider::GetMin()
 {
-	glm::vec3 transformedCenter = glm::vec4(m_center,1) * m_transform.lock()->GetTransformationMatrix();
+	glm::vec3 transformedCenter = m_transform.lock()->GetTransformationMatrix() * glm::vec4(m_center, 1);
 	return transformedCenter - (m_extents * m_transform.lock()->GetScale());
 }
 
@@ -51,7 +51,7 @@ char Collider::GetType()
 
 glm::vec3 Collider::GetWorldSpaceCenter()
 {
-	return glm::vec4(m_center, 1) * m_transform.lock()->GetTransformationMatrix();
+	return m_transform.lock()->GetTransformationMatrix() * glm::vec4(m_center, 1);
 }
 
 std::weak_ptr<RigidBody> Collider::GetRigidBody()

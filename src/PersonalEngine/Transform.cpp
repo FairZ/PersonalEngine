@@ -19,7 +19,7 @@ glm::vec3 Transform::GetLocalScale()
 
 glm::vec3 Transform::GetPosition()
 {
-	return GetTransformationMatrix()*glm::vec4();
+	return GetTransformationMatrix()*glm::vec4(0,0,0,1);
 }
 
 glm::vec3 Transform::GetScale()
@@ -44,17 +44,17 @@ glm::vec3 Transform::GetRotation()
 
 glm::vec3 Transform::GetForward()
 {
-	return glm::vec4(0,0,1,1) * GetTransformationMatrix();
+	return glm::vec4(0,0,1,1) * GetRotationMatrix();
 }
 
 glm::vec3 Transform::GetRight()
 {
-	return glm::vec4(1,0,0,1) * GetTransformationMatrix();
+	return glm::vec4(1,0,0,1) * GetRotationMatrix();
 }
 
 glm::vec3 Transform::GetUp()
 {
-	return glm::vec4(0,1,0,1) * GetTransformationMatrix();
+	return glm::vec4(0,1,0,1) * GetRotationMatrix();
 }
 
 glm::mat4x4 Transform::GetTransformationMatrix()

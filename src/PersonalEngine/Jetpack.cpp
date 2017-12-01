@@ -12,6 +12,9 @@ void Jetpack::FixedUpdate()
 {
 	if (Input::GetKey(' '))
 	{
-		m_rb.lock()->AddForce(glm::vec3(0, 20.0f, 0));
+		if (!m_rb.expired())
+		{
+			m_rb.lock()->AddForce(glm::vec3(0, 20.0f, 0));
+		}
 	}
 }
