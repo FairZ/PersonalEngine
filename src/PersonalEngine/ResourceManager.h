@@ -14,6 +14,8 @@ class Mesh;
 class ResourceManager
 {
 	friend class Scene;
+	friend class RenderController;
+
 public:
 	std::weak_ptr<Shader> GetShader(std::string _shaderName);
 	std::weak_ptr<Material> GetMaterial(std::string _materialName);

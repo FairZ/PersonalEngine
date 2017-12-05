@@ -1,6 +1,7 @@
 #include "Scene.h"
 #include "Entity.h"
 #include "ResourceManager.h"
+#include "RenderController.h"
 #include "Camera.h"
 #include "Material.h"
 #include "Engine.h"
@@ -13,11 +14,14 @@
 #include "Jetpack.h"
 #include "CollisionResolver.h"
 #include "SphereCollider.h"
+#include "Light.h"
+#include "Flashlight.h"
 
 Scene::Scene()
 {
 	m_resourceManager = std::make_shared<ResourceManager>();
 	m_collisionResolver = std::make_shared<CollisionResolver>();
+	m_renderController = std::make_shared<RenderController>();
 }
 
 std::weak_ptr<ResourceManager> Scene::GetResourceManager()
@@ -31,19 +35,30 @@ std::weak_ptr<CollisionResolver> Scene::GetCollisionResolver()
 	return m_collisionResolver;
 }
 
+std::weak_ptr<RenderController> Scene::GetRenderController()
+{
+	return m_renderController;
+}
+
 bool Scene::LoadScene()
 {
 	//temporary scene setup (would normally handle loading)
 
-	std::weak_ptr<Entity> cam = Entity::CreateEntity("Camera");
+	
 	std::weak_ptr<Entity> thing3 = Entity::CreateEntity("LightMesh",glm::vec3(0,2,0), glm::vec3(0), glm::vec3(0.1f,0.1f,0.1f));
 	std::weak_ptr<Entity> thing = Entity::CreateEntity("Thing");
 	std::weak_ptr<Entity> thing2 = Entity::CreateEntity("Thing2");
+	std::weak_ptr<Entity> thing4 = Entity::CreateEntity("DirLight",glm::vec3(0,0,0), glm::vec3(0), glm::vec3());
+	std::weak_ptr<Entity> Grass = Entity::CreateEntity("Grass");
+	std::weak_ptr<Entity> cam = Entity::CreateEntity("Camera","Thing");
+	std::weak_ptr<Entity> flashLight = Entity::CreateEntity("flashLight","Camera");
 
 	m_resourceManager->AddShader("Shaders/ModelVertexNormal.txt","Shaders/ModelFragmentNormal.txt","Normal");
 	m_resourceManager->AddShader("Shaders/ModelVertexNormal.txt","Shaders/ModelFragmentNormalSpecular.txt","NormalSpec");
 	m_resourceManager->AddMesh("Models/nanosuit.obj","Suit", 0.06f);
+	m_resourceManager->AddMesh("Models/Grass.obj","GrassMesh", 0.5f);
 	m_resourceManager->AddMaterial(m_resourceManager->GetShader("Normal"),"Glass");
+	m_resourceManager->AddMaterial(m_resourceManager->GetShader("Normal"),"Grass");
 	m_resourceManager->AddMaterial(m_resourceManager->GetShader("NormalSpec"),"Leg");
 	m_resourceManager->AddMaterial(m_resourceManager->GetShader("NormalSpec"),"Hand");
 	m_resourceManager->AddMaterial(m_resourceManager->GetShader("NormalSpec"),"Arm");
@@ -66,21 +81,23 @@ bool Scene::LoadScene()
 	m_resourceManager->AddTexture("Textures/body_dif.png","BodyDiffuse");
 	m_resourceManager->AddTexture("Textures/body_ddn.png","BodyNormal");
 	m_resourceManager->AddTexture("Textures/body_spec.png","BodySpec");
+	m_resourceManager->AddTexture("Textures/Grass.png","GrassDiffuse");
+	m_resourceManager->AddTexture("Textures/Grass_normal.png","GrassNormal");
 
 	std::weak_ptr<Camera> camComp = cam.lock()->AddComponent<Camera>();
 	camComp.lock()->SetAsMainCamera();
 	camComp.lock()->SetFOV(75.0f);
 	camComp.lock()->SetNearClipPlane(0.1f);
 	camComp.lock()->SetFarClipPlane(100.0f);
-	cam.lock()->m_transform->Translate(glm::vec3(0,1,3));
+	cam.lock()->m_transform->Translate(glm::vec3(0,1,1));
 
-	//cam.lock()->AddComponent<FlyingController>();
+	cam.lock()->AddComponent<FlyingController>();
 
 	thing.lock()->m_transform->Translate(glm::vec3(0,0,-2));
-	thing.lock()->AddComponent<RigidBody>();
-	thing.lock()->GetComponent<RigidBody>().lock()->SetMass(1.0f);
+	//thing.lock()->AddComponent<RigidBody>();
+	//thing.lock()->GetComponent<RigidBody>().lock()->SetMass(1.0f);
 	thing.lock()->AddComponent<SphereCollider>();
-	thing.lock()->AddComponent<Jetpack>();
+	//thing.lock()->AddComponent<Jetpack>();
 
 	thing2.lock()->m_transform->Translate(glm::vec3(0, 2, -2));
 	thing2.lock()->AddComponent<RigidBody>();
@@ -139,6 +156,8 @@ bool Scene::LoadScene()
 	meshrenderer.lock()->SetMaterial(5,"Helmet");	
 	meshrenderer.lock()->SetMaterial(6,"Body");
 
+	//thing3.lock()->AddComponent<Light>();
+
 	meshrenderer = thing3.lock()->AddComponent<MeshRenderer>();
 	meshrenderer.lock()->SetMesh("Suit");
 	meshrenderer.lock()->SetMaterial(0,"Glass");
@@ -148,6 +167,22 @@ bool Scene::LoadScene()
 	meshrenderer.lock()->SetMaterial(4,"Arm");	
 	meshrenderer.lock()->SetMaterial(5,"Helmet");	
 	meshrenderer.lock()->SetMaterial(6,"Body");
+
+	std::weak_ptr<Light> light = thing4.lock()->AddComponent<Light>();
+	light.lock()->SetDirection(glm::vec3(0,-1.0f,0.3f));
+	light.lock()->SetType(2);
+	light.lock()->SetColour(glm::vec3(0.5f,0.5f,0.5f));
+
+	flashLight.lock()->AddComponent<Flashlight>();
+
+	meshrenderer = Grass.lock()->AddComponent<MeshRenderer>();
+	meshrenderer.lock()->SetMesh("GrassMesh");
+	meshrenderer.lock()->SetMaterial(0,"Grass");
+	mat = meshrenderer.lock()->GetMaterial(0);
+	mat.lock()->SetTexture("colourTexture",m_resourceManager->GetTexture("GrassDiffuse"));
+	mat.lock()->SetTexture("normalTexture",m_resourceManager->GetTexture("GrassNormal"));
+
+	m_renderController->Generate();
 
 	Start();
 	return true;
@@ -207,15 +242,19 @@ void Scene::FixedUpdate()
 
 void Scene::Render()
 {
-	for (auto i : m_resourceManager->m_materials)
-	{
-		i->SetMat4("viewMat",Camera::mainCamera.lock()->GetViewMatrix());
-		i->SetMat4("projMat",Camera::mainCamera.lock()->GetProjectionMatrix());
-	}
+	m_renderController->Render();
+}
 
+void Scene::Draw()
+{
 	//run render function for all entities
 	for(auto i : m_entities)
 	{
 		i->Render();
 	}
+}
+
+void Scene::Resize()
+{
+	m_renderController->ResizeBuffer();
 }

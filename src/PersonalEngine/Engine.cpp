@@ -8,20 +8,16 @@
 #include "Shader.h"
 #include "Camera.h"
 #include "MeshRenderer.h"
-#include "ResourceManager.h"
-#include "RenderController.h"
 #include "Time.h"
 
 //initialisation of static variables
 std::shared_ptr<Scene> Engine::m_currentScene;
-std::shared_ptr<RenderController> Engine::m_renderController;
 float Engine::fixedTime = 0.008f;
 float Engine::updateTime = 0.016f;
 
 void Engine::Initialise(int argc, char* argv[])
 {	
 	m_currentScene = std::make_shared<Scene>();
-	m_renderController = std::make_shared<RenderController>();
 
 	//initialise glut 
 	glutInit(&argc, argv);
@@ -53,9 +49,6 @@ void Engine::Initialise(int argc, char* argv[])
 	//Load the specified scene
 	m_currentScene->LoadScene();
 
-	//set up the rendercontroller
-	m_renderController->Generate();
-
 	Time::m_lastTime = glutGet(GLUT_ELAPSED_TIME);
 
 	//Begin GLUT main loop
@@ -72,7 +65,7 @@ void Engine::Close()
 void Engine::Display()
 {
 	//run rendercontroller to render scene and apply postprocessing
-	m_renderController->Render();
+	m_currentScene->Render();
 
 	//show the rendered frame
 	glutSwapBuffers();
@@ -112,7 +105,7 @@ void Engine::Update()
 void Engine::Resize(int _width, int _height)
 {
 	Window::Resize(_width, _height);
-	m_renderController->ResizeBuffer();
+	m_currentScene->Resize();
 }
 
 #pragma region Input Handling

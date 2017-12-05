@@ -8,10 +8,8 @@ layout(location = 4) in vec3 bitangent;
 uniform mat4 modelMat;
 uniform mat4 viewMat;
 uniform mat4 projMat;
-uniform vec4 worldSpaceLightPosition = {0,2,0,1};
 
 out vec4 vertexEyePosition_vertex;
-out vec4 lightEyePosition_vertex;
 out vec2 texCoord_vertex;
 out mat3 TBNMatrix;
 
@@ -19,7 +17,6 @@ void main()
 {
 	gl_Position = projMat * viewMat * modelMat * position;
 	vertexEyePosition_vertex = viewMat * modelMat * position;
-	lightEyePosition_vertex = viewMat * worldSpaceLightPosition;
 	
 	vec3 tangent_vertex = normalize(vec3(viewMat * modelMat * vec4(tangent,0)));
 	vec3 bitangent_vertex = normalize(vec3(viewMat * modelMat * vec4(bitangent,0)));

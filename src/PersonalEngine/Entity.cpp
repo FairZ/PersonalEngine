@@ -182,10 +182,10 @@ void Entity::Render()
 void Entity::Start()
 {
 	//go through every component and Awake it
-	for (auto i : m_components)
+	for (int i = 0; i < m_components.size(); i++)
 	{
-		i->Start();
-		i->m_new = false;
+		m_components[i]->Start();
+		m_components[i]->m_new = false;
 	}
 	m_transform->Start();
 	m_transform->m_new = false;

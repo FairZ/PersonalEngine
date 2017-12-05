@@ -72,6 +72,10 @@ add_executable(PersonalEngine
   src/PersonalEngine/CollisionResolver.h
   src/PersonalEngine/Contact.cpp
   src/PersonalEngine/Contact.h
+  src/PersonalEngine/Light.cpp
+  src/PersonalEngine/Light.h
+  src/PersonalEngine/FlashLight.cpp
+  src/PersonalEngine/FlashLight.h
   
   #remove for final build:
   #src/PersonalEngine/plank.cpp

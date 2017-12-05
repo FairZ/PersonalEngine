@@ -4,38 +4,119 @@ in vec4 lightEyePosition_vertex;
 in vec2 texCoord_vertex;
 in mat3 TBNMatrix;
 
+struct Light{
+	vec3 position;
+	vec3 colour;
+	float linear;
+	float quadratic;
+};
+#define NR_LIGHTS 5
 
-uniform vec3 lightColour = {1.0f,1.0f,1.0f};
-uniform vec3 ambientColour  = {0.01f,0.01f,0.01f};
-uniform float shininess     = 1.0f;
+uniform Light Lights[NR_LIGHTS]; 
+
+struct Dir_Light{
+	vec3 direction;
+	vec3 colour;
+};
+
+uniform Dir_Light DirectionalLight;
+
+struct Spot_Light{
+	vec3 position;
+	vec3 colour;
+	vec3 direction;
+	float linear;
+	float quadratic;
+	float inner;
+	float outer;
+};
+
+uniform Spot_Light SpotLight;
+
+uniform vec3 ambientColour  = {0.1f,0.1f,0.1f};
+uniform float shininess     = 32.0f;
 uniform float alpha         = 1.0f;
-
 
 uniform sampler2D colourTexture;
 uniform sampler2D normalTexture;
 
 out vec4 fragColour;
 
+vec3 PointLightCalc(vec3 _normal, vec3 _eyeDir, vec3 _texColour, Light _light)
+{
+	vec3 toLight = _light.position.xyz - vertexEyePosition_vertex.xyz;
+	vec3 lightDir = normalize(toLight);
+
+	float distance = length(toLight);
+	
+	float attenuation = 1.0 / (1.0f + _light.linear * distance + _light.quadratic * (distance * distance));
+	
+	vec3 diffuse = _texColour * _light.colour * max( dot(_normal, lightDir), 0) * attenuation;
+	
+	vec3 halfVec = normalize( _eyeDir + lightDir );
+	
+	float specularPower = pow(max( dot( _normal, halfVec ), 0), shininess);
+	vec3 specular = specularPower * _light.colour * attenuation;
+	
+	return specular + diffuse;
+}
+
+vec3 DirectionalLightCalc(vec3 _normal, vec3 _eyeDir, vec3 _texColour, Dir_Light _light)
+{
+	vec3 lightDir = normalize(-_light.direction);
+	
+	vec3 diffuse = _texColour * _light.colour * max( dot(_normal, lightDir), 0);
+	
+	vec3 halfVec = normalize( _eyeDir + lightDir );
+	
+	float specularPower = pow(max( dot( _normal, halfVec ), 0), shininess);
+	vec3 specular = specularPower * _light.colour;
+	
+	return specular + diffuse;
+}
+
+vec3 SpotLightCalc(vec3 _normal, vec3 _eyeDir, vec3 _texColour, Spot_Light _light)
+{
+	vec3 toLight = _light.position.xyz - vertexEyePosition_vertex.xyz;
+	vec3 lightDir = normalize(toLight);
+
+	float distance = length(toLight);
+	
+	float attenuation = 1.0 / (1.0f + _light.linear * distance + _light.quadratic * (distance * distance));
+	
+	vec3 diffuse = _texColour * _light.colour * max( dot(_normal, lightDir), 0) * attenuation;
+	
+	vec3 halfVec = normalize( _eyeDir + lightDir );
+	
+	float specularPower = pow(max( dot( _normal, halfVec ), 0), shininess);
+	vec3 specular = specularPower * _light.colour * attenuation;
+	
+	float theta = dot(lightDir, normalize(-_light.direction)); 
+    float epsilon = (_light.inner - _light.outer);
+    float intensity = clamp((theta - _light.outer) / epsilon, 0.0, 1.0);
+	
+	return (specular + diffuse) * intensity;
+}
+
 void main()
 {	
-	vec3 toLight = lightEyePosition_vertex.xyz - vertexEyePosition_vertex.xyz;
-	vec3 lightDir = normalize(toLight);
+	vec3 colour;
 	vec3 normal = texture(normalTexture, texCoord_vertex).rgb;
 	normal = normalize(normal * 2.0f - 1.0f);
 	normal = normalize(TBNMatrix * normal);
-
-	float lightDistanceSquared = pow(toLight.x,2) + pow(toLight.y,2) + pow(toLight.z,2);
-	float lightPower = 2;
-
+	
+	vec3 eyeDir = normalize(-vertexEyePosition_vertex.xyz);
 	vec3 texColour = vec3(texture(colourTexture,texCoord_vertex));
-	vec3 diffuse = texColour * lightColour * max( dot(normal, lightDir), 0)  / (lightDistanceSquared/lightPower);
-
-	vec3 eyeDir = normalize( -vertexEyePosition_vertex.xyz);
-	vec3 halfVec = normalize( eyeDir + lightDir );
 	
-	float specularPower = pow(max( dot( normal, halfVec ), 0), shininess)  / (lightDistanceSquared/lightPower);
-	vec3 specular = specularPower * lightColour;
+	colour += DirectionalLightCalc(normal, eyeDir, texColour, DirectionalLight);
 	
-	fragColour = vec4((ambientColour + diffuse + specular), alpha);
+	for (int i = 0; i < NR_LIGHTS; i++)
+	{
+		colour += PointLightCalc(normal, eyeDir, texColour, Lights[i]);
+	}
+	
+	colour += SpotLightCalc(normal, eyeDir, texColour, SpotLight);
+	
+	fragColour = vec4((ambientColour*texColour + colour), alpha);	
 }
 

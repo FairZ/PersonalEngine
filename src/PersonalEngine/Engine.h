@@ -20,8 +20,6 @@ public:
 private:
 	static std::shared_ptr<Scene> m_currentScene;
 
-	static std::shared_ptr<RenderController> m_renderController;
-
 	static float fixedTime;
 	static float updateTime;
 

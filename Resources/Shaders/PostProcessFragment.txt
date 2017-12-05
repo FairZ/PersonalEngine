@@ -8,9 +8,11 @@ uniform sampler2D screenTexture;
 
 void main()
 { 
-    fragColour = texture(screenTexture, texCoords_vert);
+    vec3 hdrColour = texture(screenTexture, texCoords_vert).rgb;
 	//HDR mapping
-	fragColour.rgb = fragColour.rgb / (fragColour.rgb+vec3(1.0f));
+	vec3 mapped = hdrColour / (hdrColour + vec3(1.0f));
 	//Gamma correction
-	fragColour.rgb = pow(fragColour.rgb,vec3(1/2.2f));
+	mapped = pow(mapped,vec3(1/2.2f));
+	
+	fragColour = vec4(mapped,1.0f);
 }

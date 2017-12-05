@@ -16,6 +16,7 @@ class Scene
 public:
 	std::weak_ptr<ResourceManager> GetResourceManager();
 	std::weak_ptr<CollisionResolver> GetCollisionResolver();
+	std::weak_ptr<RenderController> GetRenderController();
 	Scene();
 
 private:
@@ -23,6 +24,7 @@ private:
 
 	std::shared_ptr<ResourceManager> m_resourceManager;
 	std::shared_ptr<CollisionResolver> m_collisionResolver;
+	std::shared_ptr<RenderController> m_renderController;
 
 	bool LoadScene();
 	void AddEntity(std::shared_ptr<Entity> _entity);
@@ -32,6 +34,8 @@ private:
 	void Update();
 	void FixedUpdate();
 	void Render();
+	void Draw();
+	void Resize();
 };
 
 #endif

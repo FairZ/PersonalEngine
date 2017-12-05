@@ -26,14 +26,12 @@ void Contact::Resolve()
 	{
 		v1 = m_body1.lock()->GetLinearVelocity();
 		invM1 = 1 / m_body1.lock()->GetMass();
-		velocityFromAcceleration += glm::dot(m_body1.lock()->GetLinearAcceleration(), scaledNormal);
 	}
 
 	if (!m_body2.expired())
 	{
 		v2 = m_body2.lock()->GetLinearVelocity();
 		invM2 = 1 / m_body2.lock()->GetMass();
-		velocityFromAcceleration -= glm::dot(m_body2.lock()->GetLinearAcceleration(), scaledNormal);		
 	}
 	float totalMass = invM1 + invM2;
 
@@ -41,9 +39,7 @@ void Contact::Resolve()
 	float posCorrect = (1.001f*m_penetration) / totalMass;
 
 	float restitution = -0.9f;
-	float contactVelocity = glm::dot(v1 - v2, m_normal) - velocityFromAcceleration;
-	if (fabs(contactVelocity) < 0.2f)
-		restitution = 0.0f;
+	float contactVelocity = glm::dot(v1 - v2, m_normal);
 
 	impulse = (restitution * contactVelocity) / (totalMass);
 

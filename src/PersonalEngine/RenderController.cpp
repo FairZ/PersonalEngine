@@ -3,9 +3,12 @@
 #include "Shader.h"
 #include "Engine.h"
 #include "ResourceManager.h"
+#include "Material.h"
 #include "Shader.h"
 #include "Camera.h"
+#include "Light.h"
 #include <string>
+
 
 RenderController::~RenderController()
 {
@@ -15,14 +18,27 @@ RenderController::~RenderController()
 	glDeleteFramebuffers(1, &m_sceneFrameBufferIndex);
 }
 
+void RenderController::RegisterLight(std::weak_ptr<Light> _light)
+{
+	if(m_lightnum == 5)
+	{
+		m_lightnum = 0;
+	}
+
+	m_lights[m_lightnum] = _light;
+
+	m_lightnum++;
+}
+
 void RenderController::Generate()
 {
+	m_resourceManager = Engine::m_currentScene->GetResourceManager();
 	glGenFramebuffers(1, &m_sceneFrameBufferIndex);
 	glBindFramebuffer(GL_FRAMEBUFFER, m_sceneFrameBufferIndex);
 
 	glGenTextures(1, &m_sceneTextureBufferIndex);
 	glBindTexture(GL_TEXTURE_2D, m_sceneTextureBufferIndex);
-	glTexImage2D(GL_TEXTURE_2D,0,GL_RGB,Window::GetWidth(),Window::GetHeight(),0,GL_RGB,GL_UNSIGNED_BYTE,nullptr);
+	glTexImage2D(GL_TEXTURE_2D,0,GL_RGB16F,Window::GetWidth(),Window::GetHeight(),0,GL_RGB,GL_UNSIGNED_BYTE,nullptr);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glBindTexture(GL_TEXTURE_2D,0);
@@ -103,11 +119,67 @@ void RenderController::Render()
 	Camera::mainCamera.lock()->CalculateProjectionMatrix();
 	Camera::mainCamera.lock()->CalculateViewMatrix();
 
+	for (auto i : m_resourceManager.lock()->m_materials)
+	{
+		i->SetMat4("viewMat",Camera::mainCamera.lock()->GetViewMatrix());
+		i->SetMat4("projMat",Camera::mainCamera.lock()->GetProjectionMatrix());
+		int pointnum = 0;
+		std::string light;
+		for (int j = 0; j < 5; j++)
+		{
+			if(m_lights[j].expired())
+			{
+				light = "Lights["+std::to_string(pointnum)+"]";
+				i->SetVec3(light+".position", glm::vec3());
+				i->SetVec3(light+".colour", glm::vec3());
+				i->SetFloat(light+".linear", 0.0f);
+				i->SetFloat(light+".quadratic", 0.0f);
+				pointnum++;
+			}
+			else
+			{
+				switch(m_lights[j].lock()->m_type)
+				{
+				case 1:
+					light = "Lights["+std::to_string(pointnum)+"]";
+					i->SetVec3(light+".position", m_lights[j].lock()->GetPos());
+					i->SetVec3(light+".colour", m_lights[j].lock()->m_colour);
+					i->SetFloat(light+".linear", m_lights[j].lock()->m_linearAtten);
+					i->SetFloat(light+".quadratic", m_lights[j].lock()->m_quadraticAtten);
+					pointnum++;
+					break;
+				case 2:
+					i->SetVec3("DirectionalLight.direction", m_lights[j].lock()->GetDir());
+					i->SetVec3("DirectionalLight.colour", m_lights[j].lock()->m_colour);
+					break;
+				case 3:
+					i->SetVec3("SpotLight.colour", m_lights[j].lock()->m_colour);
+					i->SetVec3("SpotLight.position", m_lights[j].lock()->GetPos());
+					i->SetVec3("SpotLight.direction", m_lights[j].lock()->GetDir());
+					i->SetFloat("SpotLight.linear", m_lights[j].lock()->m_linearAtten);
+					i->SetFloat("SpotLight.quadratic", m_lights[j].lock()->m_quadraticAtten);
+					i->SetFloat("SpotLight.inner", m_lights[j].lock()->m_innerCutoff);
+					i->SetFloat("SpotLight.outer", m_lights[j].lock()->m_outerCutoff);		
+					break;
+				}
+			}
+		}
+		while(pointnum < 5)
+		{
+			light = "Lights["+std::to_string(pointnum)+"]";
+			i->SetVec3(light+".position", glm::vec3());
+			i->SetVec3(light+".colour", glm::vec3());
+			i->SetFloat(light+".linear", 0.0f);
+			i->SetFloat(light+".quadratic", 0.0f);
+			pointnum++;
+		}
+	}
+
 	glBindFramebuffer(GL_FRAMEBUFFER, m_sceneFrameBufferIndex);
-	glClearColor(0, 0, 0, 1.0f);
+	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
-	Engine::m_currentScene->Render();
+	Engine::m_currentScene->Draw();
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f); 
