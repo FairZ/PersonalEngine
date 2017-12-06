@@ -29,10 +29,10 @@ private:
 	std::weak_ptr<Light> m_lights[5];
 	unsigned int m_lightnum;
 
-	GLuint m_screenQuadIndex;
-	GLuint m_sceneFrameBufferIndex;
-	GLuint m_sceneTextureBufferIndex;
-	GLuint m_sceneRenderBufferIndex;
+	GLuint m_ppQuadIndex;
+	GLuint m_ppFrameBufferIndex;
+	GLuint m_ppTextureBufferIndex;
+	GLuint m_ppRenderBufferIndex;
 };
 
 #endif

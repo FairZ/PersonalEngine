@@ -12,10 +12,10 @@
 
 RenderController::~RenderController()
 {
-	glDeleteVertexArrays(1, &m_screenQuadIndex);
-	glDeleteRenderbuffers(1, &m_sceneRenderBufferIndex);
-	glDeleteTextures(1, &m_sceneTextureBufferIndex);
-	glDeleteFramebuffers(1, &m_sceneFrameBufferIndex);
+	glDeleteVertexArrays(1, &m_ppQuadIndex);
+	glDeleteRenderbuffers(1, &m_ppRenderBufferIndex);
+	glDeleteTextures(1, &m_ppTextureBufferIndex);
+	glDeleteFramebuffers(1, &m_ppFrameBufferIndex);
 }
 
 void RenderController::RegisterLight(std::weak_ptr<Light> _light)
@@ -33,24 +33,24 @@ void RenderController::RegisterLight(std::weak_ptr<Light> _light)
 void RenderController::Generate()
 {
 	m_resourceManager = Engine::m_currentScene->GetResourceManager();
-	glGenFramebuffers(1, &m_sceneFrameBufferIndex);
-	glBindFramebuffer(GL_FRAMEBUFFER, m_sceneFrameBufferIndex);
+	glGenFramebuffers(1, &m_ppFrameBufferIndex);
+	glBindFramebuffer(GL_FRAMEBUFFER, m_ppFrameBufferIndex);
 
-	glGenTextures(1, &m_sceneTextureBufferIndex);
-	glBindTexture(GL_TEXTURE_2D, m_sceneTextureBufferIndex);
+	glGenTextures(1, &m_ppTextureBufferIndex);
+	glBindTexture(GL_TEXTURE_2D, m_ppTextureBufferIndex);
 	glTexImage2D(GL_TEXTURE_2D,0,GL_RGB16F,Window::GetWidth(),Window::GetHeight(),0,GL_RGB,GL_UNSIGNED_BYTE,nullptr);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glBindTexture(GL_TEXTURE_2D,0);
 
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_sceneTextureBufferIndex, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_ppTextureBufferIndex, 0);
 
-	glGenRenderbuffers(1, &m_sceneRenderBufferIndex);
-	glBindRenderbuffer(GL_RENDERBUFFER,m_sceneRenderBufferIndex);
+	glGenRenderbuffers(1, &m_ppRenderBufferIndex);
+	glBindRenderbuffer(GL_RENDERBUFFER,m_ppRenderBufferIndex);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8,Window::GetWidth(),Window::GetHeight());
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_sceneRenderBufferIndex);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_ppRenderBufferIndex);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -65,7 +65,7 @@ void RenderController::Generate()
 	};
 
 	float quadVertexTexcoords[] = {
-		0.0f, 1.0f,
+	0.0f, 1.0f,
     0.0f, 0.0f,
     1.0f, 0.0f,
 
@@ -74,8 +74,8 @@ void RenderController::Generate()
     1.0f, 1.0f
 	};
 
-	glGenVertexArrays(1, &m_screenQuadIndex);
-	glBindVertexArray(m_screenQuadIndex);
+	glGenVertexArrays(1, &m_ppQuadIndex);
+	glBindVertexArray(m_ppQuadIndex);
 
 	GLuint positions;
 	glGenBuffers(1, &positions);
@@ -98,15 +98,15 @@ void RenderController::Generate()
 
 void RenderController::ResizeBuffer()
 {
-	glBindFramebuffer(GL_FRAMEBUFFER, m_sceneFrameBufferIndex);
+	glBindFramebuffer(GL_FRAMEBUFFER, m_ppFrameBufferIndex);
 
-	glBindTexture(GL_TEXTURE_2D, m_sceneTextureBufferIndex);
+	glBindTexture(GL_TEXTURE_2D, m_ppTextureBufferIndex);
 	glTexImage2D(GL_TEXTURE_2D,0,GL_RGB,Window::GetWidth(),Window::GetHeight(),0,GL_RGB,GL_UNSIGNED_BYTE,0);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glBindTexture(GL_TEXTURE_2D,0);
 
-	glBindRenderbuffer(GL_RENDERBUFFER,m_sceneRenderBufferIndex);
+	glBindRenderbuffer(GL_RENDERBUFFER,m_ppRenderBufferIndex);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8,Window::GetWidth(),Window::GetHeight());
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
@@ -175,7 +175,7 @@ void RenderController::Render()
 		}
 	}
 
-	glBindFramebuffer(GL_FRAMEBUFFER, m_sceneFrameBufferIndex);
+	glBindFramebuffer(GL_FRAMEBUFFER, m_ppFrameBufferIndex);
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
@@ -188,9 +188,9 @@ void RenderController::Render()
 	glUseProgram(m_postProcessShader->GetProgram());
 
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, m_sceneTextureBufferIndex);
+	glBindTexture(GL_TEXTURE_2D, m_ppTextureBufferIndex);
 
-	glBindVertexArray(m_screenQuadIndex);
+	glBindVertexArray(m_ppQuadIndex);
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
 
