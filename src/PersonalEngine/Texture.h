@@ -10,6 +10,7 @@ class Texture : public Resource
 public:
 	/// \private
 	Texture(std::string _filePath, std::string _textureName);
+	Texture(GLuint _index, std::string _textureName);
 	/// \private
 	~Texture();
 

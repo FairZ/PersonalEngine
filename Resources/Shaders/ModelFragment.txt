@@ -1,8 +1,8 @@
 #version 430 core
 in vec3 normal_vertex;
-in vec3 eyeSpaceVertexPosition_vertex;
+in vec3 eyeSpaceFragmentPosition_vertex;
 in vec2 texCoord_vertex;
-in vec3 tangent_vertex;
+in vec4 lightSpaceFragmentPosition_vertex;
 
 struct Light{
 	vec3 position;
@@ -34,16 +34,27 @@ struct Spot_Light{
 uniform Spot_Light SpotLight;
 
 uniform vec3 ambientColour  = {0.1f,0.1f,0.1f};
-uniform float shininess     = 16.0f;
+uniform float shininess     = 2.0f;
 uniform float alpha         = 1.0f;
 
 uniform sampler2D colourTexture;
+uniform sampler2D ShadowMap;
 
 out vec4 fragColour;
 
+float ShadowCalc()
+{
+	vec3 correctedPos = lightSpaceFragmentPosition_vertex.xyz / lightSpaceFragmentPosition_vertex.w;
+	correctedPos = correctedPos * 0.5f + 0.5f;
+	float closestDepth = texture(ShadowMap, correctedPos.xy).r;
+	float currentDepth = correctedPos.z;
+	float shadow = currentDepth > closestDepth ? 0.0f : 1.0ff;
+	return shadow;
+}
+
 vec3 PointLightCalc(vec3 _normal, vec3 _eyeDir, vec3 _texColour, Light _light)
 {
-	vec3 toLight = _light.position.xyz - vertexEyePosition_vertex.xyz;
+	vec3 toLight = _light.position.xyz - fragmentEyePosition_vertex.xyz;
 	vec3 lightDir = normalize(toLight);
 
 	float distance = length(toLight);
@@ -71,12 +82,12 @@ vec3 DirectionalLightCalc(vec3 _normal, vec3 _eyeDir, vec3 _texColour, Dir_Light
 	float specularPower = pow(max( dot( _normal, halfVec ), 0), shininess);
 	vec3 specular = specularPower * _light.colour;
 	
-	return specular + diffuse;
+	return (specular + diffuse) * ShadowCalc();
 }
 
 vec3 SpotLightCalc(vec3 _normal, vec3 _eyeDir, vec3 _texColour, Spot_Light _light)
 {
-	vec3 toLight = _light.position.xyz - vertexEyePosition_vertex.xyz;
+	vec3 toLight = _light.position.xyz - fragmentEyePosition_vertex.xyz;
 	vec3 lightDir = normalize(toLight);
 
 	float distance = length(toLight);
@@ -101,7 +112,7 @@ void main()
 {
 	vec3 colour;
 	vec3 normal = normalize(normal_vertex);
-	vec3 eyeDir = normalize(-vertexEyePosition_vertex.xyz);
+	vec3 eyeDir = normalize(-eyeSpaceFragmentPosition_vertex.xyz);
 	vec3 texColour = vec3(texture(colourTexture,texCoord_vertex));
 	
 	colour += DirectionalLightCalc(normal, eyeDir, texColour, DirectionalLight);

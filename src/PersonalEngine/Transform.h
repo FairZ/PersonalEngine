@@ -17,7 +17,7 @@ public:
 	glm::vec3 GetLocalRotation();
 	glm::vec3 GetLocalScale();
 	glm::vec3 GetForward();
-	glm::vec3 GetRight();
+	glm::vec3 GetLeft();
 	glm::vec3 GetUp();
 	glm::mat4x4 GetTransformationMatrix();
 	glm::mat4x4 GetRotationMatrix();

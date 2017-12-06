@@ -17,7 +17,7 @@
 #include "Light.h"
 #include "Flashlight.h"
 
-Scene::Scene()
+void Scene::Init()
 {
 	m_resourceManager = std::make_shared<ResourceManager>();
 	m_collisionResolver = std::make_shared<CollisionResolver>();
@@ -48,9 +48,9 @@ bool Scene::LoadScene()
 	std::weak_ptr<Entity> thing3 = Entity::CreateEntity("LightMesh",glm::vec3(0,2,0), glm::vec3(0), glm::vec3(0.1f,0.1f,0.1f));
 	std::weak_ptr<Entity> thing = Entity::CreateEntity("Thing");
 	std::weak_ptr<Entity> thing2 = Entity::CreateEntity("Thing2");
-	std::weak_ptr<Entity> thing4 = Entity::CreateEntity("DirLight",glm::vec3(0,0,0), glm::vec3(0), glm::vec3());
+	std::weak_ptr<Entity> thing4 = Entity::CreateEntity("DirLight",glm::vec3(0,4,-0.5f), glm::vec3(0), glm::vec3());
 	std::weak_ptr<Entity> Grass = Entity::CreateEntity("Grass");
-	std::weak_ptr<Entity> cam = Entity::CreateEntity("Camera","Thing");
+	std::weak_ptr<Entity> cam = Entity::CreateEntity("Camera");
 	std::weak_ptr<Entity> flashLight = Entity::CreateEntity("flashLight","Camera");
 
 	m_resourceManager->AddShader("Shaders/ModelVertexNormal.txt","Shaders/ModelFragmentNormal.txt","Normal");
@@ -90,6 +90,7 @@ bool Scene::LoadScene()
 	camComp.lock()->SetNearClipPlane(0.1f);
 	camComp.lock()->SetFarClipPlane(100.0f);
 	cam.lock()->m_transform->Translate(glm::vec3(0,1,1));
+	cam.lock()->m_transform->Rotate(glm::vec3(0,glm::radians(180.0f),0));
 
 	cam.lock()->AddComponent<FlyingController>();
 
@@ -169,7 +170,7 @@ bool Scene::LoadScene()
 	meshrenderer.lock()->SetMaterial(6,"Body");
 
 	std::weak_ptr<Light> light = thing4.lock()->AddComponent<Light>();
-	light.lock()->SetDirection(glm::vec3(0,-1.0f,0.3f));
+	light.lock()->SetDirection(glm::vec3(0,-1.0f,1.0f));
 	light.lock()->SetType(2);
 	light.lock()->SetColour(glm::vec3(0.5f,0.5f,0.5f));
 
@@ -243,6 +244,14 @@ void Scene::FixedUpdate()
 void Scene::Render()
 {
 	m_renderController->Render();
+}
+
+void Scene::ShadowPass()
+{
+	for(auto i : m_entities)
+	{
+		i->ShadowRender();
+	}
 }
 
 void Scene::Draw()

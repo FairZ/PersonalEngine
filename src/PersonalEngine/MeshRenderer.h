@@ -18,11 +18,13 @@ public:
 private:
 	std::weak_ptr<Mesh> m_model;
 	std::vector<std::weak_ptr<Material>> m_materials;
+	std::weak_ptr<Material> m_shadowMat;
 	
 	std::string modelMat;
 
 	void Awake();
 	void Render();
+	void ShadowRender();
 };
 
 #endif

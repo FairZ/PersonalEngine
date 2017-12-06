@@ -29,11 +29,11 @@ void FlyingController::Update()
 	}
 	if(Input::GetKey('a'))
 	{
-		m_moveVector -= m_transform.lock()->GetRight();
+		m_moveVector += m_transform.lock()->GetLeft();
 	}
 	if(Input::GetKey('d'))
 	{
-		m_moveVector += m_transform.lock()->GetRight();
+		m_moveVector -= m_transform.lock()->GetLeft();
 	}
 	if(Input::GetKey(' '))
 	{

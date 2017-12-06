@@ -179,6 +179,15 @@ void Entity::Render()
 	}
 }
 
+void Entity::ShadowRender()
+{
+	//go through every component and Awake it
+	for (auto i : m_components)
+	{
+		i->ShadowRender();
+	}
+}
+
 void Entity::Start()
 {
 	//go through every component and Awake it

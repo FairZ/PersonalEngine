@@ -17,7 +17,7 @@ void Flashlight::Start()
 	{
 		m_spotlight = m_entity->AddComponent<Light>();
 	}
-	m_spotlight.lock()->SetDirection(glm::vec3(0,0,-1));
+	m_spotlight.lock()->SetDirection(glm::vec3(0,0,1));
 	m_spotlight.lock()->SetType(3);
 	m_spotlight.lock()->SetColour(glm::vec3(1.0f,1.0f,1.0f));
 	m_spotlight.lock()->SetInnerCutoff(glm::cos(glm::radians(12.5f)));

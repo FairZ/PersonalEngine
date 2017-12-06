@@ -96,6 +96,7 @@ private:
 	void Update();
 	void FixedUpdate();
 	void Render(); 
+	void ShadowRender();
 	void Start();
 
 	//further functions can be added here

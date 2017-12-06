@@ -11,6 +11,12 @@ Texture::Texture(std::string _filePath, std::string _textureName)
 																		SOIL_FLAG_MIPMAPS | SOIL_FLAG_TEXTURE_REPEATS);
 }
 
+Texture::Texture(GLuint _index, std::string _textureName)
+{
+	m_texIndex = _index;
+	m_name = _textureName;
+}
+
 Texture::~Texture()
 {
 	glDeleteTextures(1, &m_texIndex);

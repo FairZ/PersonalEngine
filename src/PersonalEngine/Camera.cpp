@@ -38,5 +38,5 @@ void Camera::CalculateProjectionMatrix()
 
 void Camera::CalculateViewMatrix()
 {
-	m_viewMatrix = glm::inverse(m_entity->m_transform->GetTransformationMatrix());
+	m_viewMatrix = glm::lookAt(m_entity->m_transform->GetPosition(),m_entity->m_transform->GetPosition()+m_entity->m_transform->GetForward(),m_entity->m_transform->GetUp());
 }

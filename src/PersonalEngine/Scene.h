@@ -17,7 +17,6 @@ public:
 	std::weak_ptr<ResourceManager> GetResourceManager();
 	std::weak_ptr<CollisionResolver> GetCollisionResolver();
 	std::weak_ptr<RenderController> GetRenderController();
-	Scene();
 
 private:
 	std::vector<std::shared_ptr<Entity>> m_entities;
@@ -34,8 +33,11 @@ private:
 	void Update();
 	void FixedUpdate();
 	void Render();
+	void ShadowPass();
 	void Draw();
 	void Resize();
+
+	void Init();
 };
 
 #endif

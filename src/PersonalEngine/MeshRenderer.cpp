@@ -25,6 +25,28 @@ void MeshRenderer::Awake()
 {
 	//initialise the string to avoid a string being generated every frame when passing in the model matrix
 	modelMat = "modelMat";
+	m_shadowMat = m_resourceManager.lock()->GetMaterial("ShadowMat");
+}
+
+void MeshRenderer::ShadowRender()
+{
+	m_shadowMat.lock()->SetMat4(modelMat,m_entity->m_transform->GetTransformationMatrix());
+	//for every mesh in the model
+	for(int i = 0; i < m_model.lock()->GetNumOfVAOs(); i++)
+	{
+		m_shadowMat.lock()->ReadyForDraw();
+
+		//bind VAO and enable attributes
+		glBindVertexArray(m_model.lock()->GetVAOIndex(i));
+		glEnableVertexAttribArray(0);
+	
+		//draw the mesh
+		glDrawElements(GL_TRIANGLES, m_model.lock()->GetNumOfIndices(i), GL_UNSIGNED_INT, 0);
+
+		//unbind VAO and disable attributes
+		glDisableVertexAttribArray(0);
+		glBindVertexArray(0);
+	}
 }
 
 void MeshRenderer::Render()

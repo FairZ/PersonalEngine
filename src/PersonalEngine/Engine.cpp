@@ -46,6 +46,8 @@ void Engine::Initialise(int argc, char* argv[])
 	glCullFace(GL_BACK);
 	glViewport(0, 0, 800, 600);
 
+	//initialise scene
+	m_currentScene->Init();
 	//Load the specified scene
 	m_currentScene->LoadScene();
 

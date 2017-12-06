@@ -1,5 +1,6 @@
 #include "Shader.h"
 #include <fstream>
+#include <iostream>
 #include <vector>
 
 Shader::Shader(std::string _name, const char* _vertTXT, const char* _fragTXT)
@@ -90,13 +91,12 @@ std::string Shader::LoadShader(const char* _fileName)
 	//open a filestream to the specified location
 	std::ifstream fileStream(_fileName, std::ios::in);
 
-	/*error checking - TODO CHANGE TO DEBUG LOG
+	//error checking
 	if(!fileStream.is_open())
 	{
 		std::cout << "could not open: " << _fileName << std::endl;
 		return "";
 	}
-	*/
 
 	//while there is still data to read, add a line to the return string with appropriate line ending
 	while(!fileStream.eof())

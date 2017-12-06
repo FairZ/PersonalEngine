@@ -44,17 +44,17 @@ glm::vec3 Transform::GetRotation()
 
 glm::vec3 Transform::GetForward()
 {
-	return glm::vec4(0,0,1,1) * GetRotationMatrix();
+	return  GetRotationMatrix() * glm::vec4(0,0,1,1);
 }
 
-glm::vec3 Transform::GetRight()
+glm::vec3 Transform::GetLeft()
 {
-	return glm::vec4(1,0,0,1) * GetRotationMatrix();
+	return GetRotationMatrix() * glm::vec4(1,0,0,1);
 }
 
 glm::vec3 Transform::GetUp()
 {
-	return glm::vec4(0,1,0,1) * GetRotationMatrix();
+	return GetRotationMatrix() * glm::vec4(0,1,0,1);
 }
 
 glm::mat4x4 Transform::GetTransformationMatrix()

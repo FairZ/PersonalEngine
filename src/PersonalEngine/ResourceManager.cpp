@@ -64,6 +64,12 @@ std::weak_ptr<Mesh> ResourceManager::GetMesh(std::string _meshName)
 	return retVal;
 }
 
+ResourceManager::ResourceManager()
+{
+	AddShader("Shaders/ShadowVertex.txt","Shaders/ShadowFragment.txt","ShadowShader");
+	AddMaterial(GetShader("ShadowShader"),"ShadowMat");
+}
+
 //creates and adds a shader to the shader list
 void ResourceManager::AddShader(std::string _vertTXT, std::string _fragTXT, std::string _shaderName)
 {
@@ -82,6 +88,13 @@ void ResourceManager::AddMaterial(std::weak_ptr<Shader> _baseShader, std::string
 void ResourceManager::AddTexture(std::string _filePath, std::string _textureName)
 {
 	std::shared_ptr<Texture> texture = std::make_shared<Texture>(_filePath, _textureName);
+	m_textures.push_back(texture);
+}
+
+//creates and adds a texture to the texture list
+void ResourceManager::AddTexture(unsigned int _index, std::string _textureName)
+{
+	std::shared_ptr<Texture> texture = std::make_shared<Texture>(_index, _textureName);
 	m_textures.push_back(texture);
 }
 

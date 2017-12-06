@@ -29,6 +29,7 @@ protected:
 	virtual void Awake(){}
 	virtual void Start(){}
 	virtual void Render(){}
+	virtual void ShadowRender(){}
 	virtual void Destroy(){}
 };
 
