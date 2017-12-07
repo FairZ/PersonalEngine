@@ -49,6 +49,21 @@ std::weak_ptr<Texture> ResourceManager::GetTexture(std::string _textureName)
 	return retVal;
 }
 
+std::weak_ptr<CubeMap> ResourceManager::GetCubeMap(std::string _cubeMapName)
+{
+	//Contains string comparisons, should only be done on initialisations
+	std::weak_ptr<CubeMap> retVal;
+	for (auto i : m_cubeMaps)
+	{
+		if (i->GetName() == _cubeMapName)
+		{
+			retVal = i;
+			break;
+		}
+	}
+	return retVal;
+}
+
 std::weak_ptr<Mesh> ResourceManager::GetMesh(std::string _meshName)
 {
 	//Contains string comparisons, should only be done on initialisations
@@ -96,6 +111,13 @@ void ResourceManager::AddTexture(unsigned int _index, std::string _textureName)
 {
 	std::shared_ptr<Texture> texture = std::make_shared<Texture>(_index, _textureName);
 	m_textures.push_back(texture);
+}
+
+//creates and adds a cubeMap to the cubeMap list
+void ResourceManager::AddCubeMap(std::string _filePathXPos, std::string _filePathXNeg, std::string _filePathYPos, std::string _filePathYNeg, std::string _filePathZPos, std::string _filePathZNeg, std::string _cubeMapName)
+{
+	std::shared_ptr<CubeMap> cubeMap = std::make_shared<CubeMap>(_filePathXPos, _filePathXNeg, _filePathYPos, _filePathYNeg, _filePathZPos, _filePathZNeg, _cubeMapName);
+	m_cubeMaps.push_back(cubeMap);
 }
 
 //creates and adds a mesh to the mesh list

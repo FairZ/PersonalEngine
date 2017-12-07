@@ -18,6 +18,7 @@ private:
 	std::weak_ptr<Transform> m_transform;
 
 	float m_speed;
+	float m_rotSpeed;
 	glm::vec3 m_moveVector;
 };
 

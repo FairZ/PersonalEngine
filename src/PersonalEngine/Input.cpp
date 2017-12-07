@@ -7,6 +7,20 @@ std::vector<unsigned char> Input::m_upKeys;
 std::vector<int> Input::m_mouseButtons;
 std::vector<int> Input::m_downMouseButtons;
 std::vector<int> Input::m_upMouseButtons;
+float Input::m_xDiff = 0;
+float Input::m_yDiff = 0;
+float Input::m_xLast;
+float Input::m_yLast;
+
+float Input::GetMouseXDiff()
+{
+	return m_xDiff;
+}
+
+float Input::GetMouseYDiff()
+{
+	return m_yDiff;
+}
 
 bool Input::GetKey(unsigned char _key)
 {

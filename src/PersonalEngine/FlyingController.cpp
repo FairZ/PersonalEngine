@@ -8,6 +8,7 @@ void FlyingController::Awake()
 {
 	m_moveVector = glm::vec3(0);
 	m_speed = 5.0f;
+	m_rotSpeed = 0.1f;
 }
 
 void FlyingController::Start()
@@ -44,6 +45,11 @@ void FlyingController::Update()
 		m_moveVector -= m_transform.lock()->GetUp();
 	}
 
+	m_transform.lock()->Rotate(glm::vec3(0, Input::GetMouseXDiff()*Time::GetDeltaTimeSec()*m_rotSpeed, 0));
+
+
+	m_transform.lock()->Rotate(glm::vec3(Input::GetMouseYDiff()*Time::GetDeltaTimeSec()*m_rotSpeed, 0, 0));
+	
 	if(m_moveVector != glm::vec3(0))
 	{
 		m_moveVector = glm::normalize(m_moveVector);

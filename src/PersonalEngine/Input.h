@@ -13,12 +13,18 @@ public:
 	static bool GetMouseButton(int _buttoncode);
 	static bool GetMouseButtonDown(int _buttoncode);
 	static bool GetMouseButtonUp(int _buttoncode);
+	static float GetMouseXDiff();
+	static float GetMouseYDiff();
 
 private:
 	static std::vector<unsigned char> m_keys;
 	static std::vector<unsigned char> m_downKeys;
 	static std::vector<unsigned char> m_upKeys;
 	static std::vector<int> m_mouseButtons;
+	static float m_xDiff;
+	static float m_yDiff;
+	static float m_xLast;
+	static float m_yLast;
 	static std::vector<int> m_downMouseButtons;
 	static std::vector<int> m_upMouseButtons;
 

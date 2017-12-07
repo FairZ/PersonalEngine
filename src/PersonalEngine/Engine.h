@@ -29,6 +29,7 @@ private:
 	static void KeyDown(unsigned char _key, int _mouseX, int _mouseY);
 	static void KeyUp(unsigned char _key, int _mouseX, int _mouseY);
 	static void MouseClick(int _button, int _state, int _x, int _y);
+	static void MouseMove(int _xMove, int _yMove);
 };
 
 #endif

@@ -19,4 +19,15 @@ private:
 	GLuint m_texIndex;
 };
 
+class CubeMap : public Resource
+{
+public:
+	CubeMap(std::string _filePathXPos, std::string _filePathXNeg, std::string _filePathYPos, std::string _filePathYNeg, std::string _filePathZPos, std::string _filePathZNeg, std::string _cubeMapName);
+	~CubeMap();
+
+	GLuint GetTexIndex() { return m_texIndex; }
+private:
+	GLuint m_texIndex;
+};
+
 #endif

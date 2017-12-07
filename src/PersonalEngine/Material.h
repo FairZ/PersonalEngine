@@ -8,6 +8,7 @@
 
 class Shader;
 class Texture;
+class CubeMap;
 
 /// \brief Resource to handle the input and storage of uniforms into a Shader
 ///
@@ -21,6 +22,7 @@ public:
 	std::vector<std::string> GetListOfUniforms();
 	
 	void SetTexture(std::string _uniformName, std::weak_ptr<Texture> _texture);
+	void SetCubeMap(std::string _uniformName, std::weak_ptr<CubeMap> _cubeMap);
 	void SetMat4(std::string _uniformName, glm::mat4 _matrix);
 	void SetVec3(std::string _uniformName, glm::vec3 _vector);
 	void SetVec4(std::string _uniformName, glm::vec4 _vector);
@@ -35,6 +37,7 @@ private:
 	std::weak_ptr<Shader> m_shader;
 
 	std::map<std::string, GLint> m_textures;
+	std::map<std::string, GLint> m_cubeMaps;
 	std::map<std::string, glm::mat4> m_matrix4s;
 	std::map<std::string, glm::vec3> m_vector3s;
 	std::map<std::string, glm::vec4> m_vector4s;

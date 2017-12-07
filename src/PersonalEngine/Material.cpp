@@ -43,6 +43,22 @@ void Material::SetTexture(std::string _uniformName, std::weak_ptr<Texture> _text
 
 }
 
+void Material::SetCubeMap(std::string _uniformName, std::weak_ptr<CubeMap> _cubeMap)
+{
+	if (m_cubeMaps.count(_uniformName))
+	{
+		m_cubeMaps.at(_uniformName) = _cubeMap.lock()->GetTexIndex();
+	}
+	else if (m_shader.lock()->m_uniforms.count(_uniformName))
+	{
+		if (m_shader.lock()->m_uniforms.at(_uniformName).type == GL_SAMPLER_CUBE)
+		{
+			m_cubeMaps.emplace(_uniformName, _cubeMap.lock()->GetTexIndex());
+		}
+	}
+
+}
+
 void Material::SetMat4(std::string _uniformName, glm::mat4 _matrix)
 {
 	if(m_matrix4s.count(_uniformName))
@@ -75,13 +91,13 @@ void Material::SetVec3(std::string _uniformName, glm::vec3 _vector)
 
 void Material::SetVec4(std::string _uniformName, glm::vec4 _vector)
 {
-	if(m_vector4s.count(_uniformName))
+	if (m_vector4s.count(_uniformName))
 	{
 		m_vector4s.at(_uniformName) = _vector;
 	}
-	else if(m_shader.lock()->m_uniforms.count(_uniformName))
+	else if (m_shader.lock()->m_uniforms.count(_uniformName))
 	{
-		if(m_shader.lock()->m_uniforms.at(_uniformName).type == GL_FLOAT_VEC4)
+		if (m_shader.lock()->m_uniforms.at(_uniformName).type == GL_FLOAT_VEC4)
 		{
 			m_vector4s.emplace(_uniformName, _vector);
 		}
@@ -90,13 +106,13 @@ void Material::SetVec4(std::string _uniformName, glm::vec4 _vector)
 
 void Material::SetFloat(std::string _uniformName, float _float)
 {
-	if(m_floats.count(_uniformName))
+	if (m_floats.count(_uniformName))
 	{
 		m_floats.at(_uniformName) = _float;
 	}
-	else if(m_shader.lock()->m_uniforms.count(_uniformName))
+	else if (m_shader.lock()->m_uniforms.count(_uniformName))
 	{
-		if(m_shader.lock()->m_uniforms.at(_uniformName).type == GL_FLOAT)
+		if (m_shader.lock()->m_uniforms.at(_uniformName).type == GL_FLOAT)
 		{
 			m_floats.emplace(_uniformName, _float);
 		}
@@ -105,13 +121,13 @@ void Material::SetFloat(std::string _uniformName, float _float)
 
 void Material::SetInt(std::string _uniformName, int _int)
 {
-	if(m_ints.count(_uniformName))
+	if (m_ints.count(_uniformName))
 	{
 		m_ints.at(_uniformName) = _int;
 	}
-	else if(m_shader.lock()->m_uniforms.count(_uniformName))
+	else if (m_shader.lock()->m_uniforms.count(_uniformName))
 	{
-		if(m_shader.lock()->m_uniforms.at(_uniformName).type == GL_INT)
+		if (m_shader.lock()->m_uniforms.at(_uniformName).type == GL_INT)
 		{
 			m_ints.emplace(_uniformName, _int);
 		}
@@ -120,13 +136,13 @@ void Material::SetInt(std::string _uniformName, int _int)
 
 void Material::SetBool(std::string _uniformName, bool _bool)
 {
-	if(m_bools.count(_uniformName))
+	if (m_bools.count(_uniformName))
 	{
 		m_bools.at(_uniformName) = _bool;
 	}
-	else if(m_shader.lock()->m_uniforms.count(_uniformName))
+	else if (m_shader.lock()->m_uniforms.count(_uniformName))
 	{
-		if(m_shader.lock()->m_uniforms.at(_uniformName).type == GL_BOOL)
+		if (m_shader.lock()->m_uniforms.at(_uniformName).type == GL_BOOL)
 		{
 			m_bools.emplace(_uniformName, _bool);
 		}
@@ -139,37 +155,44 @@ void Material::ReadyForDraw()
 	glUseProgram(m_shader.lock()->GetProgram());
 
 	//go through every type of uniform stored and send them to the shader
-	for( auto i = m_matrix4s.begin(); i != m_matrix4s.end(); i++)
+	for (auto i = m_matrix4s.begin(); i != m_matrix4s.end(); i++)
 	{
-		glUniformMatrix4fv(m_shader.lock()->m_uniforms.at(i->first).location,1,GL_FALSE,glm::value_ptr(i->second));
+		glUniformMatrix4fv(m_shader.lock()->m_uniforms.at(i->first).location, 1, GL_FALSE, glm::value_ptr(i->second));
 	}
-	for( auto i = m_vector3s.begin(); i != m_vector3s.end(); i++)
+	for (auto i = m_vector3s.begin(); i != m_vector3s.end(); i++)
 	{
-		glUniform3fv(m_shader.lock()->m_uniforms.at(i->first).location,1,glm::value_ptr(i->second));
+		glUniform3fv(m_shader.lock()->m_uniforms.at(i->first).location, 1, glm::value_ptr(i->second));
 	}
-	for( auto i = m_vector4s.begin(); i != m_vector4s.end(); i++)
+	for (auto i = m_vector4s.begin(); i != m_vector4s.end(); i++)
 	{
-		glUniform4fv(m_shader.lock()->m_uniforms.at(i->first).location,1,glm::value_ptr(i->second));
+		glUniform4fv(m_shader.lock()->m_uniforms.at(i->first).location, 1, glm::value_ptr(i->second));
 	}
-	for( auto i = m_floats.begin(); i != m_floats.end(); i++)
+	for (auto i = m_floats.begin(); i != m_floats.end(); i++)
 	{
-		glUniform1f(m_shader.lock()->m_uniforms.at(i->first).location,i->second);
+		glUniform1f(m_shader.lock()->m_uniforms.at(i->first).location, i->second);
 	}
-	for( auto i = m_ints.begin(); i != m_ints.end(); i++)
+	for (auto i = m_ints.begin(); i != m_ints.end(); i++)
 	{
-		glUniform1i(m_shader.lock()->m_uniforms.at(i->first).location,i->second);
+		glUniform1i(m_shader.lock()->m_uniforms.at(i->first).location, i->second);
 	}
-	for( auto i = m_bools.begin(); i != m_bools.end(); i++)
+	for (auto i = m_bools.begin(); i != m_bools.end(); i++)
 	{
-		glUniform1i(m_shader.lock()->m_uniforms.at(i->first).location,i->second);
+		glUniform1i(m_shader.lock()->m_uniforms.at(i->first).location, i->second);
 	}
 	int texCount = 0;
 	//if sending multiple textures to a shader then assign them to different texture units
-	for( auto i = m_textures.begin(); i != m_textures.end(); i++)
+	for (auto i = m_textures.begin(); i != m_textures.end(); i++)
 	{
 		glUniform1i(m_shader.lock()->m_uniforms.at(i->first).location, texCount);
-		glActiveTexture(GL_TEXTURE0+texCount);
-		glBindTexture(GL_TEXTURE_2D,i->second);
+		glActiveTexture(GL_TEXTURE0 + texCount);
+		glBindTexture(GL_TEXTURE_2D, i->second);
+		texCount++;
+	}
+	for (auto i = m_cubeMaps.begin(); i != m_cubeMaps.end(); i++)
+	{
+		glUniform1i(m_shader.lock()->m_uniforms.at(i->first).location, texCount);
+		glActiveTexture(GL_TEXTURE0 + texCount);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, i->second);
 		texCount++;
 	}
 }

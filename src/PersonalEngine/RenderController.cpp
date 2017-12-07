@@ -35,6 +35,69 @@ void RenderController::RegisterLight(std::weak_ptr<Light> _light)
 void RenderController::Generate()
 {
 	m_resourceManager = Engine::m_currentScene->GetResourceManager();
+
+	m_resourceManager.lock()->AddCubeMap("Textures/mp_drakeq/drakeq_rt.tga", "Textures/mp_drakeq/drakeq_lf.tga", "Textures/mp_drakeq/drakeq_up.tga", "Textures/mp_drakeq/drakeq_dn.tga", "Textures/mp_drakeq/drakeq_bk.tga", "Textures/mp_drakeq/drakeq_ft.tga", "Skybox");
+	m_skybox = m_resourceManager.lock()->GetCubeMap("Skybox");
+	m_resourceManager.lock()->AddShader("Shaders/SkyboxVertex.txt", "Shaders/SkyboxFragment.txt", "Skybox");
+	m_resourceManager.lock()->AddMaterial(m_resourceManager.lock()->GetShader("Skybox"), "SkyboxMat");
+	m_skyboxMat = m_resourceManager.lock()->GetMaterial("SkyboxMat");
+	m_skyboxMat.lock()->SetCubeMap("skybox", m_skybox);
+
+	float boxVertexPositions[] = {
+
+		-1.0f,  1.0f, -1.0f,
+		-1.0f, -1.0f, -1.0f,
+		1.0f, -1.0f, -1.0f,
+		1.0f, -1.0f, -1.0f,
+		1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+
+		-1.0f, -1.0f,  1.0f,
+		-1.0f, -1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f, -1.0f,
+		-1.0f,  1.0f,  1.0f,
+		-1.0f, -1.0f,  1.0f,
+
+		1.0f, -1.0f, -1.0f,
+		1.0f, -1.0f,  1.0f,
+		1.0f,  1.0f,  1.0f,
+		1.0f,  1.0f,  1.0f,
+		1.0f,  1.0f, -1.0f,
+		1.0f, -1.0f, -1.0f,
+
+		-1.0f, -1.0f,  1.0f,
+		-1.0f,  1.0f,  1.0f,
+		1.0f,  1.0f,  1.0f,
+		1.0f,  1.0f,  1.0f,
+		1.0f, -1.0f,  1.0f,
+		-1.0f, -1.0f,  1.0f,
+
+		-1.0f,  1.0f, -1.0f,
+		1.0f,  1.0f, -1.0f,
+		1.0f,  1.0f,  1.0f,
+		1.0f,  1.0f,  1.0f,
+		-1.0f,  1.0f,  1.0f,
+		-1.0f,  1.0f, -1.0f,
+
+		-1.0f, -1.0f, -1.0f,
+		-1.0f, -1.0f,  1.0f,
+		1.0f, -1.0f, -1.0f,
+		1.0f, -1.0f, -1.0f,
+		-1.0f, -1.0f,  1.0f,
+		1.0f, -1.0f,  1.0f
+	};
+
+	glGenVertexArrays(1, &m_boxIndex);
+	glBindVertexArray(m_boxIndex);
+
+	GLuint pos;
+	glGenBuffers(1, &pos);
+	glBindBuffer(GL_ARRAY_BUFFER,pos);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 108, &boxVertexPositions[0], GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glBindVertexArray(0);
+
 	m_shadowMat = m_resourceManager.lock()->GetMaterial("ShadowMat");
 	m_shadowRes = 2048;
 
@@ -147,7 +210,7 @@ void RenderController::ShadowPass()
 		{
 			if (m_lights[l].lock()->m_type == 2)
 			{
-				glm::mat4 lightProjection = glm::ortho(-5.0f,5.0f,-5.0f,5.0f,1.0f,10.0f);
+				glm::mat4 lightProjection = glm::ortho(-3.0f,3.0f,-3.0f,3.0f,1.0f,10.0f);
 				glm::mat4 lightView = glm::lookAt(m_lights[l].lock()->GetPos(), m_lights[l].lock()->GetPos() + m_lights[l].lock()->GetDir(), m_lights[l].lock()->GetUp());
 				lightMat = lightProjection * lightView;
 			}
@@ -160,9 +223,9 @@ void RenderController::ShadowPass()
 	glViewport(0,0,m_shadowRes,m_shadowRes);
 	glBindFramebuffer(GL_FRAMEBUFFER, m_shadowBufferIndex);
 	glClear(GL_DEPTH_BUFFER_BIT);
-	glCullFace(GL_FRONT);
+	glDisable(GL_CULL_FACE);
 	Engine::m_currentScene->ShadowPass();
-	glCullFace(GL_BACK);
+	glEnable(GL_CULL_FACE);
 }
 
 void RenderController::GeomPass()
@@ -237,6 +300,14 @@ void RenderController::GeomPass()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glViewport(0,0,Window::GetWidth(),Window::GetHeight());
 	Engine::m_currentScene->Draw();
+	glDepthFunc(GL_LEQUAL);
+	glBindVertexArray(m_boxIndex);
+	glEnableVertexAttribArray(0);
+	m_skyboxMat.lock()->ReadyForDraw();
+	glDrawArrays(GL_TRIANGLES, 0, 36);
+	glDisableVertexAttribArray(0);
+	glBindVertexArray(0);
+	glDepthFunc(GL_LESS);
 }
 
 void RenderController::FinalPass()

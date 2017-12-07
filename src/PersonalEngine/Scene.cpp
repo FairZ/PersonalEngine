@@ -50,7 +50,7 @@ bool Scene::LoadScene()
 	std::weak_ptr<Entity> thing2 = Entity::CreateEntity("Thing2");
 	std::weak_ptr<Entity> thing4 = Entity::CreateEntity("DirLight",glm::vec3(0,4,-0.5f), glm::vec3(0), glm::vec3());
 	std::weak_ptr<Entity> Grass = Entity::CreateEntity("Grass");
-	std::weak_ptr<Entity> cam = Entity::CreateEntity("Camera", "Thing2");
+	std::weak_ptr<Entity> cam = Entity::CreateEntity("Camera");
 	std::weak_ptr<Entity> flashLight = Entity::CreateEntity("flashLight","Camera");
 
 	m_resourceManager->AddShader("Shaders/ModelVertexNormal.txt","Shaders/ModelFragmentNormal.txt","Normal");
@@ -89,7 +89,7 @@ bool Scene::LoadScene()
 	camComp.lock()->SetFOV(75.0f);
 	camComp.lock()->SetNearClipPlane(0.1f);
 	camComp.lock()->SetFarClipPlane(100.0f);
-	cam.lock()->m_transform->Translate(glm::vec3(0,0,-1));
+	cam.lock()->m_transform->Translate(glm::vec3(0,1,-2));
 
 	cam.lock()->AddComponent<FlyingController>();
 

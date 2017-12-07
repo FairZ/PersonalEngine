@@ -53,7 +53,19 @@ float ShadowCalc()
 	correctedPos = correctedPos * 0.5f + 0.5f;
 	float closestDepth = texture(ShadowMap, correctedPos.xy).r;
 	float currentDepth = correctedPos.z;
-	float shadow = currentDepth > closestDepth ? 0.0f : 1.0f;
+	float bias = 0.005f;
+	float shadow = 0.0f;
+	vec2 texelSize = 1.0 / textureSize(ShadowMap, 0);
+	for(int x = -1; x <= 1; ++x)
+	{
+	    for(int y = -1; y <= 1; ++y)
+	    {
+	        float pcfDepth = texture(ShadowMap, correctedPos.xy + vec2(x, y) * texelSize).r; 
+	        shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;        
+	    }    
+	}
+	shadow /= 9.0;
+	shadow = currentDepth > 1.0f ? 1.0f : 1-shadow;
 	return shadow;
 }
 

@@ -7,6 +7,7 @@
 class Shader;
 class Material;
 class Texture;
+class CubeMap;
 class Light;
 class ResourceManager;
 
@@ -31,8 +32,10 @@ private:
 
 	std::weak_ptr<ResourceManager> m_resourceManager;
 	std::shared_ptr<Shader> m_postProcessShader;
+	std::weak_ptr<Material> m_skyboxMat;
 	std::weak_ptr<Material> m_shadowMat;
 	std::weak_ptr<Texture> m_shadowTex;
+	std::weak_ptr<CubeMap> m_skybox;
 	std::weak_ptr<Light> m_lights[5];
 	unsigned int m_lightnum;
 
@@ -42,6 +45,7 @@ private:
 	GLuint m_shadowTextureIndex;
 
 	GLuint m_QuadIndex;
+	GLuint m_boxIndex;
 	GLuint m_geomFrameBufferIndex;
 	GLuint m_geomTextureBufferIndex;
 	GLuint m_geomRenderBufferIndex;

@@ -26,6 +26,9 @@ void Engine::Initialise(int argc, char* argv[])
 	glutCreateWindow("Personal Engine");
 	glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_GLUTMAINLOOP_RETURNS);
 	glutIgnoreKeyRepeat(1);
+	glutSetCursor(GLUT_CURSOR_NONE);
+	glutFullScreenToggle();
+	glutWarpPointer(Window::GetWidth() / 2, Window::GetHeight() / 2);
 
 	//glut callback setting
 	glutDisplayFunc(Display);
@@ -34,6 +37,8 @@ void Engine::Initialise(int argc, char* argv[])
 	glutKeyboardFunc(KeyDown);
 	glutKeyboardUpFunc(KeyUp);
 	glutMouseFunc(MouseClick);
+	glutMotionFunc(MouseMove);
+	glutPassiveMotionFunc(MouseMove);
 
 	//initialise glew
 	glewInit();
@@ -66,6 +71,7 @@ void Engine::Close()
 
 void Engine::Display()
 {
+	glutWarpPointer(Window::GetWidth() / 2, Window::GetHeight() / 2);
 	//run rendercontroller to render scene and apply postprocessing
 	m_currentScene->Render();
 
@@ -96,6 +102,11 @@ void Engine::Update()
 		Input::m_upMouseButtons.clear();
 		Input::m_downKeys.clear();
 		Input::m_downMouseButtons.clear();
+		Input::m_xDiff = 0;
+		Input::m_yDiff = 0;
+		Input::m_xLast = Window::GetWidth() / 2;
+		Input::m_yLast = Window::GetHeight() / 2;
+		
 
 		Time::m_deltaTime = 0;
 
@@ -117,6 +128,11 @@ void Engine::KeyDown(unsigned char _key, int _mouseX, int _mouseY)
 	//add activated key to the down vector and the active keys vector
 	Input::m_downKeys.push_back(_key);
 	Input::m_keys.push_back(_key);
+	if (_key == 27)
+	{
+		glutFullScreenToggle();
+		glutLeaveMainLoop();
+	}
 }
 
 void Engine::KeyUp(unsigned char _key, int _mouseX, int _mouseY)
@@ -158,6 +174,14 @@ void Engine::MouseClick(int _button, int _state, int _x, int _y)
 
 		Input::m_upMouseButtons.push_back(_button);
 	}
+}
+
+void Engine::MouseMove(int _xMove, int _yMove)
+{
+	Input::m_xDiff = Input::m_xLast - _xMove;
+	Input::m_yDiff = _yMove - Input::m_yLast;
+	Input::m_xLast = _xMove;
+	Input::m_yLast = _yMove;
 }
 
 #pragma endregion
