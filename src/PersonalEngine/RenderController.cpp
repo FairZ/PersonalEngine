@@ -147,7 +147,7 @@ void RenderController::ShadowPass()
 		{
 			if (m_lights[l].lock()->m_type == 2)
 			{
-				glm::mat4 lightProjection = glm::ortho(-5.0f,5.0f,-5.0f,5.0f,1.0f,5.0f);
+				glm::mat4 lightProjection = glm::ortho(-5.0f,5.0f,-5.0f,5.0f,1.0f,10.0f);
 				glm::mat4 lightView = glm::lookAt(m_lights[l].lock()->GetPos(), m_lights[l].lock()->GetPos() + m_lights[l].lock()->GetDir(), m_lights[l].lock()->GetUp());
 				lightMat = lightProjection * lightView;
 			}
@@ -175,6 +175,7 @@ void RenderController::GeomPass()
 	{
 		i->SetMat4("viewMat",Camera::mainCamera.lock()->GetViewMatrix());
 		i->SetMat4("projMat",Camera::mainCamera.lock()->GetProjectionMatrix());
+		i->SetVec3("cameraPos", Camera::mainCamera.lock()->GetPos());
 		i->SetTexture("ShadowMap",m_shadowTex);
 		//for every light set the correct uniforms in all shaders
 		int pointnum = 0;
@@ -196,20 +197,20 @@ void RenderController::GeomPass()
 				{
 				case 1:
 					light = "Lights["+std::to_string(pointnum)+"]";
-					i->SetVec3(light+".position", m_lights[j].lock()->GetViewSpacePos());
+					i->SetVec3(light+".position", m_lights[j].lock()->GetPos());
 					i->SetVec3(light+".colour", m_lights[j].lock()->m_colour);
 					i->SetFloat(light+".linear", m_lights[j].lock()->m_linearAtten);
 					i->SetFloat(light+".quadratic", m_lights[j].lock()->m_quadraticAtten);
 					pointnum++;
 					break;
 				case 2:
-					i->SetVec3("DirectionalLight.direction", m_lights[j].lock()->GetViewSpaceDir());
+					i->SetVec3("DirectionalLight.direction", m_lights[j].lock()->GetDir());
 					i->SetVec3("DirectionalLight.colour", m_lights[j].lock()->m_colour);
 					break;
 				case 3:
 					i->SetVec3("SpotLight.colour", m_lights[j].lock()->m_colour);
-					i->SetVec3("SpotLight.position", m_lights[j].lock()->GetViewSpacePos());
-					i->SetVec3("SpotLight.direction", m_lights[j].lock()->GetViewSpaceDir());
+					i->SetVec3("SpotLight.position", m_lights[j].lock()->GetPos());
+					i->SetVec3("SpotLight.direction", m_lights[j].lock()->GetDir());
 					i->SetFloat("SpotLight.linear", m_lights[j].lock()->m_linearAtten);
 					i->SetFloat("SpotLight.quadratic", m_lights[j].lock()->m_quadraticAtten);
 					i->SetFloat("SpotLight.inner", m_lights[j].lock()->m_innerCutoff);

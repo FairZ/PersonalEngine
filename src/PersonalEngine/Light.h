@@ -20,9 +20,7 @@ public:
 private:
 	void Start();
 	void Awake();
-	glm::vec3 GetViewSpacePos();
 	glm::vec3 GetPos();
-	glm::vec3 GetViewSpaceDir();
 	glm::vec3 GetDir();
 	glm::vec3 GetUp();
 

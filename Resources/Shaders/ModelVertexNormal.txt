@@ -10,7 +10,7 @@ uniform mat4 viewMat;
 uniform mat4 projMat;
 uniform mat4 lightMat;
 
-out vec4 fragmentEyePosition_vertex;
+out vec4 fragmentWorldPosition_vertex;
 out vec2 texCoord_vertex;
 out mat3 TBNMatrix;
 out vec4 fragmentLightPosition_vertex;
@@ -18,15 +18,15 @@ out vec4 fragmentLightPosition_vertex;
 void main()
 {
 	gl_Position = projMat * viewMat * modelMat * vec4(position,1.0f);
-	fragmentEyePosition_vertex = viewMat * modelMat * vec4(position,1.0f);
+	fragmentWorldPosition_vertex = modelMat * vec4(position,1.0f);
 	
-	vec3 tangent_vertex = normalize(vec3(viewMat * modelMat * vec4(tangent,1.0f)));
-	vec3 bitangent_vertex = normalize(vec3(viewMat * modelMat * vec4(bitangent,1.0f)));
-	vec3 normal_vertex =  normalize(vec3(viewMat * modelMat * vec4(normal,1.0f)));
+	vec3 tangent_vertex = normalize(mat3( modelMat) * tangent);
+	vec3 bitangent_vertex = normalize(mat3( modelMat) * bitangent);
+	vec3 normal_vertex =  normalize(mat3( modelMat) * normal);
 	
 	// TBN must form a right handed coord system.
-    // Some models have symetric UVs. Check and fix.
-    if (dot(cross(normal_vertex, tangent_vertex), bitangent_vertex) < 0.0)
+    	// Some models have symetric UVs. Check and fix.
+    	if (dot(cross(normal_vertex, tangent_vertex), bitangent_vertex) < 0.0)
 	{
 		tangent_vertex = tangent_vertex * -1.0;
 	}

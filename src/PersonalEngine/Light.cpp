@@ -19,19 +19,9 @@ void Light::Awake()
 	m_colour = glm::vec3(1,1,1);
 }
 
-glm::vec3 Light::GetViewSpacePos()
-{
-	return Camera::mainCamera.lock()->GetViewMatrix() * m_transform.lock()->GetTransformationMatrix() * glm::vec4(0,0,0,1);
-}
-
 glm::vec3 Light::GetPos()
 {
 	return m_transform.lock()->GetTransformationMatrix() * glm::vec4(0,0,0,1);
-}
-
-glm::vec3 Light::GetViewSpaceDir()
-{
-	return glm::mat3(Camera::mainCamera.lock()->GetViewMatrix() * m_transform.lock()->GetRotationMatrix()) * m_direction;
 }
 
 glm::vec3 Light::GetDir()

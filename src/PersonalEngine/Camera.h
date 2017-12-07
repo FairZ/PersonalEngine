@@ -24,6 +24,7 @@ public:
 	void CalculateViewMatrix();
 	glm::mat4 GetProjectionMatrix(){return m_projectionMatrix;}
 	glm::mat4 GetViewMatrix(){return m_viewMatrix;}
+	glm::vec3 GetPos();
 
 private:
 	float m_fieldOfView;

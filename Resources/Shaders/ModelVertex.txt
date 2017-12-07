@@ -9,15 +9,15 @@ uniform mat4 projMat;
 uniform mat4 lightMat;
 
 out vec3 normal_vertex;
-out vec3 eyeSpaceFragmentPosition_vertex;
+out vec3 worldSpaceFragmentPosition_vertex;
 out vec2 texCoord_vertex;
 out vec4 lightSpaceFragmentPosition_vertex;
 
 void main()
 {
 	gl_Position = projMat * viewMat * modelMat * vec4(position,1.0f);
-	eyeSpaceFragmentPosition_vertex = vec3(viewMat * modelMat * position);
-	normal_vertex =  mat3(viewMat * modelMat) * normal;
+	worldSpaceFragmentPosition_vertex = vec3(modelMat * position);
+	normal_vertex =  mat3(modelMat) * normal;
 	texCoord_vertex = texCoord;
 	lightSpaceFragmentPosition_vertex = lightMat * modelMat * vec4(position,1.0f);
 }

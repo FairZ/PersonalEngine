@@ -40,3 +40,8 @@ void Camera::CalculateViewMatrix()
 {
 	m_viewMatrix = glm::lookAt(m_entity->m_transform->GetPosition(),m_entity->m_transform->GetPosition()+m_entity->m_transform->GetForward(),m_entity->m_transform->GetUp());
 }
+
+glm::vec3 Camera::GetPos()
+{
+	return m_entity->m_transform->GetPosition();
+}

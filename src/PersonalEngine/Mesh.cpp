@@ -46,7 +46,7 @@ unsigned int Mesh::GetNumOfIndices(unsigned int _index)
 void Mesh::LoadMesh(std::string _fileName, float _importScale)
 {
 	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile(_fileName, aiProcess_CalcTangentSpace | aiProcess_Triangulate  | aiProcess_FlipUVs);
+	const aiScene* scene = importer.ReadFile(_fileName, aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace | aiProcess_Triangulate  | aiProcess_FlipUVs);
 
 	for (unsigned int i = 0; i < scene->mNumMeshes; i++)
 	{
