@@ -22,7 +22,9 @@ private:
 	void Awake();
 	glm::vec3 GetViewSpacePos();
 	glm::vec3 GetPos();
+	glm::vec3 GetViewSpaceDir();
 	glm::vec3 GetDir();
+	glm::vec3 GetUp();
 
 	std::weak_ptr<Transform> m_transform;
 

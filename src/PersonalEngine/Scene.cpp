@@ -170,7 +170,7 @@ bool Scene::LoadScene()
 	meshrenderer.lock()->SetMaterial(6,"Body");
 
 	std::weak_ptr<Light> light = thing4.lock()->AddComponent<Light>();
-	light.lock()->SetDirection(glm::vec3(0,-1.0f,1.0f));
+	light.lock()->SetDirection(glm::vec3(0,-1.0f,-1.0f));
 	light.lock()->SetType(2);
 	light.lock()->SetColour(glm::vec3(0.5f,0.5f,0.5f));
 

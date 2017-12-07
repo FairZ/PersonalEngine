@@ -29,7 +29,17 @@ glm::vec3 Light::GetPos()
 	return m_transform.lock()->GetTransformationMatrix() * glm::vec4(0,0,0,1);
 }
 
-glm::vec3 Light::GetDir()
+glm::vec3 Light::GetViewSpaceDir()
 {
 	return glm::mat3(Camera::mainCamera.lock()->GetViewMatrix() * m_transform.lock()->GetRotationMatrix()) * m_direction;
+}
+
+glm::vec3 Light::GetDir()
+{
+	return glm::mat3(m_transform.lock()->GetRotationMatrix()) * m_direction;
+}
+
+glm::vec3 Light::GetUp()
+{
+	return m_transform.lock()->GetUp();
 }
