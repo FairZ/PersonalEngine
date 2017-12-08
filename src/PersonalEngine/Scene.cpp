@@ -16,6 +16,7 @@
 #include "SphereCollider.h"
 #include "Light.h"
 #include "Flashlight.h"
+#include "Gun.h"
 
 void Scene::Init()
 {
@@ -45,42 +46,21 @@ bool Scene::LoadScene()
 	//temporary scene setup (would normally handle loading)
 
 	
-	std::weak_ptr<Entity> thing3 = Entity::CreateEntity("LightMesh",glm::vec3(0,2,0), glm::vec3(0), glm::vec3(0.1f,0.1f,0.1f));
-	std::weak_ptr<Entity> thing = Entity::CreateEntity("Thing");
-	std::weak_ptr<Entity> thing2 = Entity::CreateEntity("Thing2");
-	std::weak_ptr<Entity> thing4 = Entity::CreateEntity("DirLight",glm::vec3(0,4,-0.5f), glm::vec3(0), glm::vec3());
+	std::weak_ptr<Entity> ship1 = Entity::CreateEntity("Ship1");
+	std::weak_ptr<Entity> dirLight = Entity::CreateEntity("DirLight", "Ship1",glm::vec3(-2,0,0), glm::vec3(0), glm::vec3());
 	std::weak_ptr<Entity> Grass = Entity::CreateEntity("Grass");
-	std::weak_ptr<Entity> cam = Entity::CreateEntity("Camera");
-	std::weak_ptr<Entity> flashLight = Entity::CreateEntity("flashLight","Camera");
+	std::weak_ptr<Entity> cam = Entity::CreateEntity("Camera","Ship1");
+	std::weak_ptr<Entity> flashLight = Entity::CreateEntity("flashLight","Ship1",glm::vec3(0,0,1),glm::vec3(),glm::vec3(1.0f));
 
 	m_resourceManager->AddShader("Shaders/ModelVertexNormal.txt","Shaders/ModelFragmentNormal.txt","Normal");
 	m_resourceManager->AddShader("Shaders/ModelVertexNormal.txt","Shaders/ModelFragmentNormalSpecular.txt","NormalSpec");
-	m_resourceManager->AddMesh("Models/nanosuit.obj","Suit", 0.06f);
+	m_resourceManager->AddMesh("Models/Luminaris OBJ.obj","Ship", 0.05f);
 	m_resourceManager->AddMesh("Models/Grass.obj","GrassMesh", 0.5f);
-	m_resourceManager->AddMaterial(m_resourceManager->GetShader("Normal"),"Glass");
+	m_resourceManager->AddMaterial(m_resourceManager->GetShader("NormalSpec"),"SpaceShip");
 	m_resourceManager->AddMaterial(m_resourceManager->GetShader("Normal"),"Grass");
-	m_resourceManager->AddMaterial(m_resourceManager->GetShader("NormalSpec"),"Leg");
-	m_resourceManager->AddMaterial(m_resourceManager->GetShader("NormalSpec"),"Hand");
-	m_resourceManager->AddMaterial(m_resourceManager->GetShader("NormalSpec"),"Arm");
-	m_resourceManager->AddMaterial(m_resourceManager->GetShader("NormalSpec"),"Helmet");
-	m_resourceManager->AddMaterial(m_resourceManager->GetShader("NormalSpec"),"Body");
-	m_resourceManager->AddTexture("Textures/glass_dif.png","GlassDiffuse");
-	m_resourceManager->AddTexture("Textures/glass_ddn.png","GlassNormal");
-	m_resourceManager->AddTexture("Textures/leg_dif.png","LegDiffuse");
-	m_resourceManager->AddTexture("Textures/leg_ddn.png","LegNormal");
-	m_resourceManager->AddTexture("Textures/leg_spec.png","LegSpec");
-	m_resourceManager->AddTexture("Textures/hand_dif.png","HandDiffuse");
-	m_resourceManager->AddTexture("Textures/hand_ddn.png","HandNormal");
-	m_resourceManager->AddTexture("Textures/hand_spec.png","HandSpec");
-	m_resourceManager->AddTexture("Textures/arm_dif.png","ArmDiffuse");
-	m_resourceManager->AddTexture("Textures/arm_ddn.png","ArmNormal");
-	m_resourceManager->AddTexture("Textures/arm_spec.png","ArmSpec");
-	m_resourceManager->AddTexture("Textures/helmet_dif.png","HelmetDiffuse");
-	m_resourceManager->AddTexture("Textures/helmet_ddn.png","HelmetNormal");
-	m_resourceManager->AddTexture("Textures/helmet_spec.png","HelmetSpec");
-	m_resourceManager->AddTexture("Textures/body_dif.png","BodyDiffuse");
-	m_resourceManager->AddTexture("Textures/body_ddn.png","BodyNormal");
-	m_resourceManager->AddTexture("Textures/body_spec.png","BodySpec");
+	m_resourceManager->AddTexture("Textures/Luminaris Diffuse.tga", "ShipDiffuse");
+	m_resourceManager->AddTexture("Textures/Luminaris Normal.tga", "ShipNormal");
+	m_resourceManager->AddTexture("Textures/Luminaris Specular.tga", "ShipSpec");
 	m_resourceManager->AddTexture("Textures/Grass.png","GrassDiffuse");
 	m_resourceManager->AddTexture("Textures/Grass_normal.png","GrassNormal");
 
@@ -89,87 +69,23 @@ bool Scene::LoadScene()
 	camComp.lock()->SetFOV(75.0f);
 	camComp.lock()->SetNearClipPlane(0.1f);
 	camComp.lock()->SetFarClipPlane(100.0f);
-	cam.lock()->m_transform->Translate(glm::vec3(0,1,-2));
+	cam.lock()->m_transform->Translate(glm::vec3(0,1,-4));
 
-	cam.lock()->AddComponent<FlyingController>();
+	ship1.lock()->AddComponent<FlyingController>();
 
-	thing.lock()->m_transform->Translate(glm::vec3(0,0,-2));
-	//thing.lock()->AddComponent<RigidBody>();
-	//thing.lock()->GetComponent<RigidBody>().lock()->SetMass(1.0f);
-	thing.lock()->AddComponent<SphereCollider>();
-	//thing.lock()->AddComponent<Jetpack>();
+	ship1.lock()->m_transform->Translate(glm::vec3(0,0,-2));
 
-	thing2.lock()->m_transform->Translate(glm::vec3(0, 2, -2));
-	thing2.lock()->AddComponent<RigidBody>();
-	thing2.lock()->GetComponent<RigidBody>().lock()->SetMass(0.5f);
-	thing2.lock()->AddComponent<SphereCollider>();
+	std::weak_ptr<MeshRenderer> meshrenderer = ship1.lock()->AddComponent<MeshRenderer>();
+	meshrenderer.lock()->SetMesh("Ship");
 
-	std::weak_ptr<MeshRenderer> meshrenderer = thing.lock()->AddComponent<MeshRenderer>();
-	meshrenderer.lock()->SetMesh("Suit");
-
-	meshrenderer.lock()->SetMaterial(0,"Glass");	
+	meshrenderer.lock()->SetMaterial(0,"SpaceShip");	
 	std::weak_ptr<Material> mat = meshrenderer.lock()->GetMaterial(0);
-	mat.lock()->SetTexture("colourTexture",m_resourceManager->GetTexture("GlassDiffuse"));
-	mat.lock()->SetTexture("normalTexture",m_resourceManager->GetTexture("GlassNormal"));
+	mat.lock()->SetTexture("colourTexture",m_resourceManager->GetTexture("ShipDiffuse"));
+	mat.lock()->SetTexture("normalTexture",m_resourceManager->GetTexture("ShipNormal"));
+	mat.lock()->SetTexture("specularTexture",m_resourceManager->GetTexture("ShipSpec"));
 
-	meshrenderer.lock()->SetMaterial(1,"Leg");	
-	mat = meshrenderer.lock()->GetMaterial(1);
-	mat.lock()->SetTexture("colourTexture",m_resourceManager->GetTexture("LegDiffuse"));
-	mat.lock()->SetTexture("normalTexture",m_resourceManager->GetTexture("LegNormal"));
-	mat.lock()->SetTexture("specularTexture",m_resourceManager->GetTexture("LegSpec"));
-
-	meshrenderer.lock()->SetMaterial(2,"Hand");	
-	mat = meshrenderer.lock()->GetMaterial(2);
-	mat.lock()->SetTexture("colourTexture",m_resourceManager->GetTexture("HandDiffuse"));
-	mat.lock()->SetTexture("normalTexture",m_resourceManager->GetTexture("HandNormal"));
-	mat.lock()->SetTexture("specularTexture",m_resourceManager->GetTexture("HandSpec"));
-
-	meshrenderer.lock()->SetMaterial(3,"Glass");	
-	
-	meshrenderer.lock()->SetMaterial(4,"Arm");	
-	mat = meshrenderer.lock()->GetMaterial(4);
-	mat.lock()->SetTexture("colourTexture",m_resourceManager->GetTexture("ArmDiffuse"));
-	mat.lock()->SetTexture("normalTexture",m_resourceManager->GetTexture("ArmNormal"));
-	mat.lock()->SetTexture("specularTexture",m_resourceManager->GetTexture("ArmSpec"));
-
-	meshrenderer.lock()->SetMaterial(5,"Helmet");	
-	mat = meshrenderer.lock()->GetMaterial(5);
-	mat.lock()->SetTexture("colourTexture",m_resourceManager->GetTexture("HelmetDiffuse"));
-	mat.lock()->SetTexture("normalTexture",m_resourceManager->GetTexture("HelmetNormal"));
-	mat.lock()->SetTexture("specularTexture",m_resourceManager->GetTexture("HelmetSpec"));
-
-	meshrenderer.lock()->SetMaterial(6,"Body");	
-	mat = meshrenderer.lock()->GetMaterial(6);
-	mat.lock()->SetTexture("colourTexture",m_resourceManager->GetTexture("BodyDiffuse"));
-	mat.lock()->SetTexture("normalTexture",m_resourceManager->GetTexture("BodyNormal"));
-	mat.lock()->SetTexture("specularTexture",m_resourceManager->GetTexture("BodySpec"));
-
-	thing2.lock()->AddComponent<TurnTable>();
-
-	meshrenderer = thing2.lock()->AddComponent<MeshRenderer>();
-	meshrenderer.lock()->SetMesh("Suit");
-	meshrenderer.lock()->SetMaterial(0,"Glass");
-	meshrenderer.lock()->SetMaterial(1,"Leg");	
-	meshrenderer.lock()->SetMaterial(2,"Hand");	
-	meshrenderer.lock()->SetMaterial(3,"Glass");
-	meshrenderer.lock()->SetMaterial(4,"Arm");	
-	meshrenderer.lock()->SetMaterial(5,"Helmet");	
-	meshrenderer.lock()->SetMaterial(6,"Body");
-
-	//thing3.lock()->AddComponent<Light>();
-
-	meshrenderer = thing3.lock()->AddComponent<MeshRenderer>();
-	meshrenderer.lock()->SetMesh("Suit");
-	meshrenderer.lock()->SetMaterial(0,"Glass");
-	meshrenderer.lock()->SetMaterial(1,"Leg");	
-	meshrenderer.lock()->SetMaterial(2,"Hand");	
-	meshrenderer.lock()->SetMaterial(3,"Glass");
-	meshrenderer.lock()->SetMaterial(4,"Arm");	
-	meshrenderer.lock()->SetMaterial(5,"Helmet");	
-	meshrenderer.lock()->SetMaterial(6,"Body");
-
-	std::weak_ptr<Light> light = thing4.lock()->AddComponent<Light>();
-	light.lock()->SetDirection(glm::vec3(0,-1.0f,-1.0f));
+	std::weak_ptr<Light> light = dirLight.lock()->AddComponent<Light>();
+	light.lock()->SetDirection(glm::vec3(1.0f,0,0));
 	light.lock()->SetType(2);
 	light.lock()->SetColour(glm::vec3(0.5f,0.5f,0.5f));
 
@@ -182,6 +98,11 @@ bool Scene::LoadScene()
 	mat.lock()->SetTexture("colourTexture",m_resourceManager->GetTexture("GrassDiffuse"));
 	mat.lock()->SetTexture("normalTexture",m_resourceManager->GetTexture("GrassNormal"));
 
+	Entity::SetAsPrefab(Grass);
+
+	std::weak_ptr<Gun> gun = ship1.lock()->AddComponent<Gun>();
+	gun.lock()->SetBullet(m_resourceManager->GetPrefab("Grass"));
+
 	m_renderController->Generate();
 
 	Start();
@@ -190,6 +111,16 @@ bool Scene::LoadScene()
 
 void Scene::AddEntity(std::shared_ptr<Entity> _entity)
 {
+	int sameNameCount = 0;
+	for(auto i : m_entities)
+	{
+		if (i->GetName() == _entity->GetName())
+		{
+			sameNameCount++;
+		}
+	}
+	if (sameNameCount > 0)
+		_entity->m_name = _entity->m_name + std::to_string(sameNameCount);
 	m_entities.push_back(_entity);
 }
 
@@ -206,9 +137,9 @@ void Scene::Destroy()
 void Scene::Start()
 {
 	//call the awake function in all entities
-	for(auto i : m_entities)
+	for(unsigned int i = 0; i < m_entities.size(); i++)
 	{
-		i->Start();
+		m_entities[i]->Start();
 	}
 }
 
@@ -226,7 +157,10 @@ void Scene::Update()
 	//run update function for all entities
 	for(auto i : m_entities)
 	{
-		i->Update();
+		if(i->m_active)
+		{
+			i->Update();
+		}
 	}
 }
 
@@ -235,7 +169,10 @@ void Scene::FixedUpdate()
 	//run fixedUpdate function for all entities
 	for (auto i : m_entities)
 	{
-		i->FixedUpdate();
+		if(i->m_active)
+		{
+			i->FixedUpdate();
+		}
 	}
 	m_collisionResolver->ResolveCollisions();
 }
@@ -249,7 +186,10 @@ void Scene::ShadowPass()
 {
 	for(auto i : m_entities)
 	{
-		i->ShadowRender();
+		if(i->m_active)
+		{
+			i->ShadowRender();
+		}
 	}
 }
 
@@ -258,7 +198,10 @@ void Scene::Draw()
 	//run render function for all entities
 	for(auto i : m_entities)
 	{
-		i->Render();
+		if(i->m_active)
+		{
+			i->Render();
+		}
 	}
 }
 

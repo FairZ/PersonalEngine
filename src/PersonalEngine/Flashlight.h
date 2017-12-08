@@ -13,6 +13,7 @@ private:
 	void Awake();
 	void Start();
 	void Update();
+	void SetReferences();
 
 	bool m_active;
 	std::weak_ptr<Light> m_spotlight;

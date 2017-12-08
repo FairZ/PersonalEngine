@@ -23,8 +23,6 @@ private:
 	static std::vector<int> m_mouseButtons;
 	static float m_xDiff;
 	static float m_yDiff;
-	static float m_xLast;
-	static float m_yLast;
 	static std::vector<int> m_downMouseButtons;
 	static std::vector<int> m_upMouseButtons;
 

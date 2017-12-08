@@ -9,8 +9,6 @@ std::vector<int> Input::m_downMouseButtons;
 std::vector<int> Input::m_upMouseButtons;
 float Input::m_xDiff = 0;
 float Input::m_yDiff = 0;
-float Input::m_xLast;
-float Input::m_yLast;
 
 float Input::GetMouseXDiff()
 {

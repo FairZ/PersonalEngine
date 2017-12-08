@@ -10,12 +10,15 @@ class Shader;
 class Texture;
 class Mesh;
 class CubeMap;
+class Prefab;
+class Entity;
 
 /// \brief Handler for loading and getting resources within a scene
 class ResourceManager
 {
 	friend class Scene;
 	friend class RenderController;
+	friend class Entity;
 
 public:
 	std::weak_ptr<Shader> GetShader(std::string _shaderName);
@@ -23,6 +26,7 @@ public:
 	std::weak_ptr<Texture> GetTexture(std::string _textureName);
 	std::weak_ptr<CubeMap> GetCubeMap(std::string _cubeMapName);
 	std::weak_ptr<Mesh> GetMesh(std::string _meshName);
+	std::weak_ptr<Prefab> GetPrefab(std::string _prefabName);
 
 	ResourceManager();
 
@@ -32,6 +36,7 @@ private:
 	std::vector<std::shared_ptr<Texture>> m_textures;
 	std::vector<std::shared_ptr<CubeMap>> m_cubeMaps;
 	std::vector<std::shared_ptr<Mesh>> m_meshes;
+	std::vector<std::shared_ptr<Prefab>> m_prefabs;
 
 	//void LoadResources(std::string _fileName){} add soon
 	
@@ -39,8 +44,9 @@ private:
 	void AddMaterial(std::weak_ptr<Shader> _baseShader, std::string _materialName);
 	void AddTexture(std::string _filePath, std::string _textureName);
 	void AddTexture(unsigned int _index, std::string _textureName);
-	void AddCubeMap(std::string _filePathXPos, std::string _filePathXNeg, std::string _filePathYPos, std::string _filePathYNeg, std::string _filePathZPos, std::string _filePathZNeg, std::string _cubeMapName);
+	void AddCubeMap(std::string _filePaths[6], std::string _cubeMapName);
 	void AddMesh(std::string _filePath, std::string _meshName, float _importScale);
+	void AddPrefab(std::weak_ptr<Entity> _entity, std::string _prefabName);
 };
 
 

@@ -20,6 +20,7 @@ public:
 	glm::vec3 GetLeft();
 	glm::vec3 GetUp();
 	glm::mat4x4 GetTransformationMatrix();
+	glm::mat4x4 GetTranslationMatrix();
 	glm::mat4x4 GetRotationMatrix();
 	std::weak_ptr<Entity> GetParent();
 
@@ -35,6 +36,8 @@ public:
 	void AddChild(std::weak_ptr<Entity> _childEntity);
 
 	void DetachChildren();
+
+	void DetachFromParent();
 
 	/// \brief Translate the entity by the given vector
 	void Translate(glm::vec3 _translation);

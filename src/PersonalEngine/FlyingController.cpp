@@ -13,6 +13,11 @@ void FlyingController::Awake()
 
 void FlyingController::Start()
 {
+	SetReferences();
+}
+
+void FlyingController::SetReferences()
+{
 	m_transform = m_entity->m_transform;
 }
 

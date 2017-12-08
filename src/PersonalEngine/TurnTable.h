@@ -12,6 +12,7 @@ public:
 private:
 	void Start();
 	void Update();
+	void SetReferences();
 	std::weak_ptr<Transform> m_transform;
 };
 

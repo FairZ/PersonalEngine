@@ -13,6 +13,7 @@ private:
 
 	void Start();
 	void FixedUpdate();
+	void SetReferences();
 };
 
 

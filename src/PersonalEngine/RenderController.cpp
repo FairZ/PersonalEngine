@@ -36,7 +36,9 @@ void RenderController::Generate()
 {
 	m_resourceManager = Engine::m_currentScene->GetResourceManager();
 
-	m_resourceManager.lock()->AddCubeMap("Textures/mp_drakeq/drakeq_rt.tga", "Textures/mp_drakeq/drakeq_lf.tga", "Textures/mp_drakeq/drakeq_up.tga", "Textures/mp_drakeq/drakeq_dn.tga", "Textures/mp_drakeq/drakeq_bk.tga", "Textures/mp_drakeq/drakeq_ft.tga", "Skybox");
+	std::string paths[] = {"Textures/SpaceMap/leftImage.png", "Textures/SpaceMap/rightImage.png", "Textures/SpaceMap/upImage.png", "Textures/SpaceMap/downImage.png", "Textures/SpaceMap/frontImage.png", "Textures/SpaceMap/backImage.png"};
+
+	m_resourceManager.lock()->AddCubeMap(paths, "Skybox");
 	m_skybox = m_resourceManager.lock()->GetCubeMap("Skybox");
 	m_resourceManager.lock()->AddShader("Shaders/SkyboxVertex.txt", "Shaders/SkyboxFragment.txt", "Skybox");
 	m_resourceManager.lock()->AddMaterial(m_resourceManager.lock()->GetShader("Skybox"), "SkyboxMat");
@@ -210,8 +212,8 @@ void RenderController::ShadowPass()
 		{
 			if (m_lights[l].lock()->m_type == 2)
 			{
-				glm::mat4 lightProjection = glm::ortho(-3.0f,3.0f,-3.0f,3.0f,1.0f,10.0f);
-				glm::mat4 lightView = glm::lookAt(m_lights[l].lock()->GetPos(), m_lights[l].lock()->GetPos() + m_lights[l].lock()->GetDir(), m_lights[l].lock()->GetUp());
+				glm::mat4 lightProjection = glm::ortho(-3.0f,3.0f,-3.0f,3.0f,1.0f,50.0f);
+				glm::mat4 lightView = glm::lookAt(m_lights[l].lock()->GetTranslatedPos(), m_lights[l].lock()->GetTranslatedPos() + m_lights[l].lock()->GetLocalDir(), m_lights[l].lock()->GetUp());
 				lightMat = lightProjection * lightView;
 			}
 		}
@@ -267,7 +269,7 @@ void RenderController::GeomPass()
 					pointnum++;
 					break;
 				case 2:
-					i->SetVec3("DirectionalLight.direction", m_lights[j].lock()->GetDir());
+					i->SetVec3("DirectionalLight.direction", m_lights[j].lock()->GetLocalDir());
 					i->SetVec3("DirectionalLight.colour", m_lights[j].lock()->m_colour);
 					break;
 				case 3:

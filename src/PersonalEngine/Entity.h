@@ -1,14 +1,13 @@
 #ifndef _ENTITY_H_
 #define _ENTITY_H_
 
-#include <memory>
-#include <vector>
+#include "Scene.h"
 #include <string>
 #include <glm/glm.hpp>
 #include "Component.h"
 
 class Transform;
-class Scene;
+class Prefab;
 
 /// \brief An entity is an object within the game's scene
 ///
@@ -22,6 +21,9 @@ class Entity
 public:
 	/// \private
 	Entity(std::string _name);
+	Entity(){};
+
+	void RealignComponents();
 
 	/// \brief Every entity has a readily accessible transform component
 	std::shared_ptr<Transform> m_transform;
@@ -83,13 +85,25 @@ public:
 	/// \brief Find an entity of the given name from the scene graph
 	static std::weak_ptr<Entity> FindEntity(std::string _name);
 
+	static std::weak_ptr<Entity> InstantiatePrefab(std::weak_ptr<Prefab> _prefab);
 
+	static std::weak_ptr<Entity> InstantiatePrefab(std::weak_ptr<Prefab> _prefab, std::string __parentName);
+
+	static std::shared_ptr<Entity> CreateEmptyPrefab(std::string _name);
+
+	static void SetAsPrefab(std::weak_ptr<Entity> _entity);
+
+	void ResetToPrefab();
+
+	void SetActive(bool _active);
 
 private:
 	std::string m_name;
 	std::vector<std::shared_ptr<Component>> m_components;
+	std::weak_ptr<Prefab> m_prefab;
 	static std::weak_ptr<Scene> m_scene;
 	bool m_destroyed;
+	bool m_active;
 
 	void WakeComponent(std::weak_ptr<Component> _component);
 

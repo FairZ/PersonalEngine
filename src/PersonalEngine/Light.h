@@ -20,8 +20,11 @@ public:
 private:
 	void Start();
 	void Awake();
+	void SetReferences();
 	glm::vec3 GetPos();
+	glm::vec3 GetTranslatedPos();
 	glm::vec3 GetDir();
+	glm::vec3 GetLocalDir();
 	glm::vec3 GetUp();
 
 	std::weak_ptr<Transform> m_transform;

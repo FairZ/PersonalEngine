@@ -25,6 +25,7 @@ public:
 private:
 	void Awake();
 	void Start();
+	void SetReferences();
 	void FixedUpdate();
 
 	float m_drag;

@@ -71,6 +71,7 @@ void Engine::Close()
 
 void Engine::Display()
 {
+	//resetting the mouse to the center during display prevents glutWarpPointer from calling MouseMotion
 	glutWarpPointer(Window::GetWidth() / 2, Window::GetHeight() / 2);
 	//run rendercontroller to render scene and apply postprocessing
 	m_currentScene->Render();
@@ -103,10 +104,7 @@ void Engine::Update()
 		Input::m_downKeys.clear();
 		Input::m_downMouseButtons.clear();
 		Input::m_xDiff = 0;
-		Input::m_yDiff = 0;
-		Input::m_xLast = Window::GetWidth() / 2;
-		Input::m_yLast = Window::GetHeight() / 2;
-		
+		Input::m_yDiff = 0;		
 
 		Time::m_deltaTime = 0;
 
@@ -125,6 +123,13 @@ void Engine::Resize(int _width, int _height)
 
 void Engine::KeyDown(unsigned char _key, int _mouseX, int _mouseY)
 {
+	if(glutGetModifiers() == GLUT_ACTIVE_SHIFT)
+	{
+		if(_key > 64 && _key < 91)
+		{
+			_key += 32;
+		}
+	}
 	//add activated key to the down vector and the active keys vector
 	Input::m_downKeys.push_back(_key);
 	Input::m_keys.push_back(_key);
@@ -137,6 +142,13 @@ void Engine::KeyDown(unsigned char _key, int _mouseX, int _mouseY)
 
 void Engine::KeyUp(unsigned char _key, int _mouseX, int _mouseY)
 {
+	if(glutGetModifiers() == GLUT_ACTIVE_SHIFT)
+	{
+		if(_key > 64 && _key < 91)
+		{
+			_key += 32;
+		}
+	}
 	//remove the released key from the active vector and add it to the release vector
 	for (std::vector<unsigned char>::iterator i = Input::m_keys.begin(); i != Input::m_keys.end(); i++)
 	{
@@ -178,10 +190,8 @@ void Engine::MouseClick(int _button, int _state, int _x, int _y)
 
 void Engine::MouseMove(int _xMove, int _yMove)
 {
-	Input::m_xDiff = Input::m_xLast - _xMove;
-	Input::m_yDiff = _yMove - Input::m_yLast;
-	Input::m_xLast = _xMove;
-	Input::m_yLast = _yMove;
+	Input::m_xDiff = (Window::GetWidth() / 2) - _xMove;
+	Input::m_yDiff = _yMove - (Window::GetHeight() / 2);
 }
 
 #pragma endregion

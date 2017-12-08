@@ -4,6 +4,11 @@
 
 void TurnTable::Start()
 {
+	SetReferences();
+}
+
+void TurnTable::SetReferences()
+{
 	m_transform = m_entity->m_transform;
 }
 

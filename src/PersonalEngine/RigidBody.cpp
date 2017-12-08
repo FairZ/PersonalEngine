@@ -66,13 +66,18 @@ void RigidBody::Awake()
 
 void RigidBody::Start()
 {
-	m_transform = m_entity->m_transform;
+	SetReferences();
 
 	glm::mat3 inertiaTensor(0);
 	inertiaTensor[0][0] = (m_mass*0.4f);
 	inertiaTensor[1][1] = (m_mass*0.4f);
 	inertiaTensor[2][2] = (m_mass*0.4f);
 	SetInertiaTensor(inertiaTensor);
+}
+
+void RigidBody::SetReferences()
+{
+	m_transform = m_entity->m_transform;
 }
 
 void RigidBody::FixedUpdate()

@@ -69,6 +69,19 @@ glm::mat4x4 Transform::GetTransformationMatrix()
 	return m_transformationMatrix;
 }
 
+glm::mat4x4 Transform::GetTranslationMatrix()
+{
+	glm::mat4 translation(1);
+	//recursively move up the heirarchy to include the transformation of parents or start from an identity matrix if there is no parent
+	if (!m_parent.expired())
+	{
+		translation = m_parent.lock()->m_transform->GetTranslationMatrix();
+	}
+	translation = glm::translate(translation, m_position);
+
+	return translation;
+}
+
 glm::mat4x4 Transform::GetRotationMatrix()
 {
 	glm::mat4x4 retVal(1);
@@ -158,6 +171,18 @@ void Transform::DetachChildren()
 			child.lock()->Scale(m_scale);
 		}
 	}
+	m_children.clear();
+}
+
+void Transform::DetachFromParent()
+{
+	if(!m_parent.expired())
+	{
+		Translate(m_parent.lock()->m_transform->m_position);
+		Rotate(m_parent.lock()->m_transform->m_rotation);
+		Scale(m_parent.lock()->m_transform->m_scale);
+	}
+	m_parent.reset();
 }
 
 void Transform::Translate(glm::vec3 _translation)

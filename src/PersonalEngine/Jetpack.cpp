@@ -5,6 +5,11 @@
 
 void Jetpack::Start()
 {
+	SetReferences();
+}
+
+void Jetpack::SetReferences()
+{
 	m_rb = m_entity->GetComponent<RigidBody>();
 }
 

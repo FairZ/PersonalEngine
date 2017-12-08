@@ -22,15 +22,15 @@ Texture::~Texture()
 	glDeleteTextures(1, &m_texIndex);
 }
 
-CubeMap::CubeMap(std::string _filePathXPos, std::string _filePathXNeg, std::string _filePathYPos, std::string _filePathYNeg, std::string _filePathZPos, std::string _filePathZNeg, std::string _cubeMapName)
+CubeMap::CubeMap(std::string _filePaths[6], std::string _cubeMapName)
 {
 	m_name = _cubeMapName;
-	m_texIndex = SOIL_load_OGL_cubemap(_filePathXPos.c_str(), 
-										_filePathXNeg.c_str(), 
-										_filePathYPos.c_str(), 
-										_filePathYNeg.c_str(), 
-										_filePathZPos.c_str(), 
-										_filePathZNeg.c_str(), 
+	m_texIndex = SOIL_load_OGL_cubemap(_filePaths[0].c_str(), 
+										_filePaths[1].c_str(), 
+										_filePaths[2].c_str(), 
+										_filePaths[3].c_str(), 
+										_filePaths[4].c_str(), 
+										_filePaths[5].c_str(), 
 										SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_MIPMAPS);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, m_texIndex);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

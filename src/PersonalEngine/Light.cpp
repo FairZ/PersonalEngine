@@ -7,8 +7,13 @@
 
 void Light::Start()
 {
-	m_transform = m_entity->m_transform;
+	SetReferences();
 	m_entity->GetScene().lock()->GetRenderController().lock()->RegisterLight(m_entity->GetComponent<Light>());
+}
+
+void Light::SetReferences()
+{
+	m_transform = m_entity->m_transform;
 }
 
 void Light::Awake()
@@ -24,9 +29,19 @@ glm::vec3 Light::GetPos()
 	return m_transform.lock()->GetTransformationMatrix() * glm::vec4(0,0,0,1);
 }
 
+glm::vec3 Light::GetTranslatedPos()
+{
+	return m_transform.lock()->GetTranslationMatrix() * glm::vec4(0,0,0,1);
+}
+
 glm::vec3 Light::GetDir()
 {
 	return glm::mat3(m_transform.lock()->GetRotationMatrix()) * m_direction;
+}
+
+glm::vec3 Light::GetLocalDir()
+{
+	return m_direction;
 }
 
 glm::vec3 Light::GetUp()

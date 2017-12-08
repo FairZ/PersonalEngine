@@ -31,6 +31,7 @@ protected:
 	virtual void Render(){}
 	virtual void ShadowRender(){}
 	virtual void Destroy(){}
+	virtual void SetReferences(){};
 };
 
 

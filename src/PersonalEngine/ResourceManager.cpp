@@ -3,6 +3,8 @@
 #include "Texture.h"
 #include "Material.h"
 #include "Mesh.h"
+#include "Prefab.h"
+#include "Entity.h"
 
 std::weak_ptr<Shader> ResourceManager::GetShader(std::string _shaderName)
 {
@@ -79,6 +81,20 @@ std::weak_ptr<Mesh> ResourceManager::GetMesh(std::string _meshName)
 	return retVal;
 }
 
+std::weak_ptr<Prefab> ResourceManager::GetPrefab(std::string _prefabName)
+{
+	std::weak_ptr<Prefab> retVal;
+	for(auto i : m_prefabs)
+	{
+		if(i->GetName() == _prefabName)
+		{
+			retVal = i;
+			break;
+		}
+	}
+	return retVal;
+}
+
 ResourceManager::ResourceManager()
 {
 	AddShader("Shaders/ShadowVertex.txt","Shaders/ShadowFragment.txt","ShadowShader");
@@ -114,9 +130,9 @@ void ResourceManager::AddTexture(unsigned int _index, std::string _textureName)
 }
 
 //creates and adds a cubeMap to the cubeMap list
-void ResourceManager::AddCubeMap(std::string _filePathXPos, std::string _filePathXNeg, std::string _filePathYPos, std::string _filePathYNeg, std::string _filePathZPos, std::string _filePathZNeg, std::string _cubeMapName)
+void ResourceManager::AddCubeMap(std::string _filePaths[6], std::string _cubeMapName)
 {
-	std::shared_ptr<CubeMap> cubeMap = std::make_shared<CubeMap>(_filePathXPos, _filePathXNeg, _filePathYPos, _filePathYNeg, _filePathZPos, _filePathZNeg, _cubeMapName);
+	std::shared_ptr<CubeMap> cubeMap = std::make_shared<CubeMap>(_filePaths, _cubeMapName);
 	m_cubeMaps.push_back(cubeMap);
 }
 
@@ -125,4 +141,10 @@ void ResourceManager::AddMesh(std::string _filePath, std::string _meshName, floa
 {
 	std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>(_meshName, _filePath, _importScale);
 	m_meshes.push_back(mesh);
+}
+
+void ResourceManager::AddPrefab(std::weak_ptr<Entity> _entity, std::string _prefabName)
+{
+	std::shared_ptr<Prefab> prefab = std::make_shared<Prefab>(_entity,_prefabName);
+	m_prefabs.push_back(prefab);
 }

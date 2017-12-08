@@ -33,7 +33,7 @@ struct Spot_Light{
 
 uniform Spot_Light SpotLight;
 
-uniform vec3 ambientColour  = {0.0f,0.0f,0.0f};
+uniform vec3 ambientColour  = {0.1f,0.1f,0.1f};
 uniform float shininess     = 32.0f;
 uniform float alpha         = 1.0f;
 uniform vec3 cameraPos;
@@ -141,6 +141,6 @@ void main()
 	
 	colour += SpotLightCalc(normal, eyeDir, texColour, SpotLight);
 	
-	fragColour = vec4((colour), alpha);	
+	fragColour = vec4((ambientColour*texColour)+colour, alpha);	
 }
 
