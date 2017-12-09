@@ -3,7 +3,6 @@
 #include "Texture.h"
 #include "Material.h"
 #include "Mesh.h"
-#include "Prefab.h"
 #include "Entity.h"
 
 std::weak_ptr<Shader> ResourceManager::GetShader(std::string _shaderName)
@@ -81,20 +80,6 @@ std::weak_ptr<Mesh> ResourceManager::GetMesh(std::string _meshName)
 	return retVal;
 }
 
-std::weak_ptr<Prefab> ResourceManager::GetPrefab(std::string _prefabName)
-{
-	std::weak_ptr<Prefab> retVal;
-	for(auto i : m_prefabs)
-	{
-		if(i->GetName() == _prefabName)
-		{
-			retVal = i;
-			break;
-		}
-	}
-	return retVal;
-}
-
 ResourceManager::ResourceManager()
 {
 	AddShader("Shaders/ShadowVertex.txt","Shaders/ShadowFragment.txt","ShadowShader");
@@ -141,10 +126,4 @@ void ResourceManager::AddMesh(std::string _filePath, std::string _meshName, floa
 {
 	std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>(_meshName, _filePath, _importScale);
 	m_meshes.push_back(mesh);
-}
-
-void ResourceManager::AddPrefab(std::weak_ptr<Entity> _entity, std::string _prefabName)
-{
-	std::shared_ptr<Prefab> prefab = std::make_shared<Prefab>(_entity,_prefabName);
-	m_prefabs.push_back(prefab);
 }

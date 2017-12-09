@@ -17,6 +17,8 @@ public:
 	/// \brief Must be called at end of main to shut down the engine safely
 	static void Close();
 
+	static std::weak_ptr<Scene> GetCurrentScene();
+
 private:
 	static std::shared_ptr<Scene> m_currentScene;
 

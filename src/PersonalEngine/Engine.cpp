@@ -22,7 +22,8 @@ void Engine::Initialise(int argc, char* argv[])
 	//initialise glut 
 	glutInit(&argc, argv);
 	glutInitWindowSize(800, 600);
-	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
+	glutSetOption(GLUT_MULTISAMPLE, 4);
+	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
 	glutCreateWindow("Personal Engine");
 	glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_GLUTMAINLOOP_RETURNS);
 	glutIgnoreKeyRepeat(1);
@@ -50,6 +51,7 @@ void Engine::Initialise(int argc, char* argv[])
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 	glViewport(0, 0, 800, 600);
+	glEnable(GL_MULTISAMPLE);
 
 	//initialise scene
 	m_currentScene->Init();
@@ -67,6 +69,11 @@ void Engine::Close()
 {
 	//reset of scene will delete all smart pointers contained within to clear up any allocated memory
 	m_currentScene.reset();
+}
+
+std::weak_ptr<Scene> Engine::GetCurrentScene()
+{
+	return m_currentScene;
 }
 
 void Engine::Display()

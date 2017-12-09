@@ -32,6 +32,8 @@ public:
 	void SetRotation(glm::vec3 _rotationInRadians);
 	void SetScale(glm::vec3 _scale);
 
+	void AddParent(std::weak_ptr<Entity> _childEntity);
+
 	/// \brief Set another entity to be this entity's child
 	void AddChild(std::weak_ptr<Entity> _childEntity);
 

@@ -49,6 +49,9 @@ private:
 	GLuint m_geomFrameBufferIndex;
 	GLuint m_geomTextureBufferIndex;
 	GLuint m_geomRenderBufferIndex;
+
+	GLuint m_finalFrameBufferIndex;
+	GLuint m_finalTextureBufferIndex;
 };
 
 #endif

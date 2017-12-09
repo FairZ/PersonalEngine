@@ -78,8 +78,8 @@ add_executable(PersonalEngine
   src/PersonalEngine/FlashLight.h
   src/PersonalEngine/Gun.cpp
   src/PersonalEngine/Gun.h
-  src/PersonalEngine/Prefab.h
-  src/PersonalEngine/Prefab.cpp
+  src/PersonalEngine/Bullet.h
+  src/PersonalEngine/Bullet.cpp
   
   #remove for final build:
   #src/PersonalEngine/plank.cpp

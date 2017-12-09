@@ -1,6 +1,7 @@
 #include "Transform.h"
 #include "Entity.h"
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/matrix_inverse.hpp>
 
 glm::vec3 Transform::GetLocalPosition()
 {
@@ -120,7 +121,7 @@ void Transform::SetPosition(glm::vec3 _position)
 {
 	if(!GetParent().expired())
 	{
-		m_position = glm::vec4(_position,1) * glm::inverse(GetParent().lock()->m_transform->GetTransformationMatrix());
+		m_position = glm::inverse(GetParent().lock()->m_transform->GetTransformationMatrix()) * glm::vec4(_position, 1);
 	}
 	else
 	{
@@ -152,6 +153,13 @@ void Transform::SetScale(glm::vec3 _scale)
 	}
 }
 
+void Transform::AddParent(std::weak_ptr<Entity> _parentEntity)
+{
+	DetachFromParent();
+	m_parent = _parentEntity;
+	_parentEntity.lock()->m_transform->m_children.push_back(Entity::FindEntity(m_entity->GetName()));
+}
+
 void Transform::AddChild(std::weak_ptr<Entity> _childEntity)
 {
 	m_children.push_back(_childEntity);
@@ -165,10 +173,10 @@ void Transform::DetachChildren()
 		std::weak_ptr<Transform> child = m_children.at(i).lock()->m_transform;
 		if(!child.expired())
 		{
+			child.lock()->SetLocalPosition(child.lock()->GetPosition());
+			child.lock()->SetLocalRotation(child.lock()->GetRotation());
+			child.lock()->SetLocalScale(child.lock()->GetScale());
 			child.lock()->m_parent.reset();
-			child.lock()->Translate(m_position);
-			child.lock()->Rotate(m_rotation);
-			child.lock()->Scale(m_scale);
 		}
 	}
 	m_children.clear();
@@ -178,23 +186,21 @@ void Transform::DetachFromParent()
 {
 	if(!m_parent.expired())
 	{
-		Translate(m_parent.lock()->m_transform->m_position);
-		Rotate(m_parent.lock()->m_transform->m_rotation);
-		Scale(m_parent.lock()->m_transform->m_scale);
+		SetLocalPosition(GetPosition());
+		SetLocalRotation(GetRotation());
+		SetLocalScale(GetScale());
 	}
 	m_parent.reset();
 }
 
 void Transform::Translate(glm::vec3 _translation)
 {
-	if (!GetParent().expired())
+	if (!m_parent.expired())
 	{
-		m_position = (glm::vec4(_translation,1) * glm::inverse(GetParent().lock()->m_transform->GetTransformationMatrix())) + glm::vec4(m_position,0);
+		SetPosition(GetPosition()+_translation);
 	}
 	else
-	{
 		m_position += _translation;
-	}
 }
 
 void Transform::Rotate(glm::vec3 _rotationInRadians)

@@ -3,23 +3,26 @@
 #include "Component.h"
 #include <vector>
 
-class Entity;
-class Prefab;
+class Bullet;
+class Transform;
 
 class Gun : public Component
 {
 public:
-	void SetBullet(std::weak_ptr<Prefab> _prefab);
+
 private:
 	void Update();
 	void Start();
 	void Shoot();
+	void SetReferences();
 
-	std::weak_ptr<Prefab> m_bullet;
+	bool m_resetting;
 
 	unsigned int m_ammoFired;
 
-	std::vector<std::weak_ptr<Entity>> m_ammoPool;
+	std::weak_ptr<Transform> m_transform;
+
+	std::vector<std::weak_ptr<Bullet>> m_ammoPool;
 };
 
 #endif

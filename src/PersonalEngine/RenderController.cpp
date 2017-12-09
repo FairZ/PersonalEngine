@@ -126,20 +126,32 @@ void RenderController::Generate()
 	glBindFramebuffer(GL_FRAMEBUFFER, m_geomFrameBufferIndex);
 
 	glGenTextures(1, &m_geomTextureBufferIndex);
-	glBindTexture(GL_TEXTURE_2D, m_geomTextureBufferIndex);
-	glTexImage2D(GL_TEXTURE_2D,0,GL_RGB16F,Window::GetWidth(),Window::GetHeight(),0,GL_RGB,GL_UNSIGNED_BYTE,nullptr);
+	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, m_geomTextureBufferIndex);
+	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE,4,GL_RGB16F,Window::GetWidth(),Window::GetHeight(),GL_TRUE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glBindTexture(GL_TEXTURE_2D,0);
+	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE,0);
 
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_geomTextureBufferIndex, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, m_geomTextureBufferIndex, 0);
 
 	glGenRenderbuffers(1, &m_geomRenderBufferIndex);
 	glBindRenderbuffer(GL_RENDERBUFFER,m_geomRenderBufferIndex);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8,Window::GetWidth(),Window::GetHeight());
+	glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH24_STENCIL8, Window::GetWidth(), Window::GetHeight());
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_geomRenderBufferIndex);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	glGenFramebuffers(1, &m_finalFrameBufferIndex);
+	glBindFramebuffer(GL_FRAMEBUFFER, m_finalFrameBufferIndex);
+
+	glGenTextures(1, &m_finalTextureBufferIndex);
+	glBindTexture(GL_TEXTURE_2D, m_finalTextureBufferIndex);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, Window::GetWidth(), Window::GetHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_finalTextureBufferIndex, 0);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -189,15 +201,23 @@ void RenderController::ResizeBuffer()
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, m_geomFrameBufferIndex);
 
-	glBindTexture(GL_TEXTURE_2D, m_geomTextureBufferIndex);
-	glTexImage2D(GL_TEXTURE_2D,0,GL_RGB,Window::GetWidth(),Window::GetHeight(),0,GL_RGB,GL_UNSIGNED_BYTE,0);
+	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, m_geomTextureBufferIndex);
+	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGB16F, Window::GetWidth(), Window::GetHeight(), GL_TRUE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glBindTexture(GL_TEXTURE_2D,0);
 
 	glBindRenderbuffer(GL_RENDERBUFFER,m_geomRenderBufferIndex);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8,Window::GetWidth(),Window::GetHeight());
+	glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH24_STENCIL8,Window::GetWidth(),Window::GetHeight());
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, m_finalFrameBufferIndex);
+
+	glBindTexture(GL_TEXTURE_2D, m_finalTextureBufferIndex);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, Window::GetWidth(), Window::GetHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glBindTexture(GL_TEXTURE_2D, 0);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
@@ -314,6 +334,10 @@ void RenderController::GeomPass()
 
 void RenderController::FinalPass()
 {
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_geomFrameBufferIndex);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_finalFrameBufferIndex);
+	glBlitFramebuffer(0, 0, Window::GetWidth(), Window::GetHeight(), 0, 0, Window::GetWidth(), Window::GetHeight(), GL_COLOR_BUFFER_BIT, GL_NEAREST);
+
 	//bind the screen and clear it
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClearColor(1.0f, 1.0f, 1.0f, 1.0f); 
@@ -324,7 +348,7 @@ void RenderController::FinalPass()
 	glUseProgram(m_postProcessShader->GetProgram());
 	//bind the correct geometry texture
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, m_geomTextureBufferIndex);
+	glBindTexture(GL_TEXTURE_2D, m_finalTextureBufferIndex);
 	//bind the screen space quad
 	glBindVertexArray(m_QuadIndex);
 	glEnableVertexAttribArray(0);

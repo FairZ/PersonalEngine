@@ -20,6 +20,7 @@
 
 void Scene::Init()
 {
+	Entity::m_scene = Engine::GetCurrentScene();
 	m_resourceManager = std::make_shared<ResourceManager>();
 	m_collisionResolver = std::make_shared<CollisionResolver>();
 	m_renderController = std::make_shared<RenderController>();
@@ -73,8 +74,6 @@ bool Scene::LoadScene()
 
 	ship1.lock()->AddComponent<FlyingController>();
 
-	ship1.lock()->m_transform->Translate(glm::vec3(0,0,-2));
-
 	std::weak_ptr<MeshRenderer> meshrenderer = ship1.lock()->AddComponent<MeshRenderer>();
 	meshrenderer.lock()->SetMesh("Ship");
 
@@ -98,10 +97,7 @@ bool Scene::LoadScene()
 	mat.lock()->SetTexture("colourTexture",m_resourceManager->GetTexture("GrassDiffuse"));
 	mat.lock()->SetTexture("normalTexture",m_resourceManager->GetTexture("GrassNormal"));
 
-	Entity::SetAsPrefab(Grass);
-
 	std::weak_ptr<Gun> gun = ship1.lock()->AddComponent<Gun>();
-	gun.lock()->SetBullet(m_resourceManager->GetPrefab("Grass"));
 
 	m_renderController->Generate();
 

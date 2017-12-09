@@ -1,14 +1,7 @@
 #include "Gun.h"
-#include "Entity.h"
+#include "Bullet.h"
 #include "Input.h"
-#include "SphereCollider.h"
-#include "RigidBody.h"
-#include "MeshRenderer.h"
-
-void Gun::SetBullet(std::weak_ptr<Prefab> _prefab)
-{
-	m_bullet = _prefab;
-}
+#include <string>
 
 void Gun::Update()
 {
@@ -21,28 +14,36 @@ void Gun::Update()
 void Gun::Start()
 {
 	m_ammoFired = 0;
+	m_resetting = false;
 	for(int i = 0; i < 30; i++)
 	{
-		std::weak_ptr<Entity> bullet = Entity::InstantiatePrefab(m_bullet, m_entity->GetName());
-		bullet.lock()->SetActive(false);
+		std::weak_ptr<Bullet> bullet = Entity::InstantiatePrefab<Bullet>("Bullet",m_entity->GetName(), glm::vec3(0,0,1), glm::vec3(),glm::vec3(1.0f));
+		//bullet.lock()->SetActive(false);
 		m_ammoPool.push_back(bullet);
 	}
+	SetReferences();
 }
 
 void Gun::Shoot()
 {
-	bool resetting = false;
 	if(m_ammoFired >= 30)
 	{
 		m_ammoFired = 0;
-		resetting = true;
+		m_resetting = true;
 	}
 
-	if (resetting)
-		m_ammoPool[m_ammoFired].lock()->ResetToPrefab();
+	if (m_resetting)
+		m_ammoPool[m_ammoFired].lock()->Reset();
 	else
 		m_ammoPool[m_ammoFired].lock()->SetActive(true);
 
+	m_ammoPool[m_ammoFired].lock()->m_transform->DetachFromParent();
+
 	m_ammoFired++;
 
+}
+
+void Gun::SetReferences()
+{
+	m_transform = m_entity->m_transform;
 }
