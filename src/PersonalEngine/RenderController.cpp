@@ -250,9 +250,9 @@ void RenderController::ShadowPass()
 	glViewport(0,0,m_shadowRes,m_shadowRes);
 	glBindFramebuffer(GL_FRAMEBUFFER, m_shadowBufferIndex);
 	glClear(GL_DEPTH_BUFFER_BIT);
-	glCullFace(GL_FRONT);
+	glDisable(GL_CULL_FACE);
 	Engine::m_currentScene->ShadowPass();
-	glCullFace(GL_BACK);
+	glEnable(GL_CULL_FACE);
 }
 
 void RenderController::GeomPass()

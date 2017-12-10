@@ -4,6 +4,7 @@
 #include "Material.h"
 #include "Mesh.h"
 #include "Entity.h"
+#include "Sound.h"
 
 std::weak_ptr<Shader> ResourceManager::GetShader(std::string _shaderName)
 {
@@ -80,6 +81,21 @@ std::weak_ptr<Mesh> ResourceManager::GetMesh(std::string _meshName)
 	return retVal;
 }
 
+std::weak_ptr<Sound> ResourceManager::GetSound(std::string _soundName)
+{
+	//Contains string comparisons, should only be done on initialisations
+	std::weak_ptr<Sound> retVal;
+	for(auto i : m_sounds)
+	{
+		if(i->GetName() == _soundName)
+		{
+			retVal = i;
+			break;
+		}
+	}
+	return retVal;
+}
+
 ResourceManager::ResourceManager()
 {
 	AddShader("Shaders/ShadowVertex.txt","Shaders/ShadowFragment.txt","ShadowShader");
@@ -126,4 +142,11 @@ void ResourceManager::AddMesh(std::string _filePath, std::string _meshName, floa
 {
 	std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>(_meshName, _filePath, _importScale);
 	m_meshes.push_back(mesh);
+}
+
+//creates and adds a sound to the sound list
+void ResourceManager::AddSound(std::string _oggFilePath, std::string _soundName)
+{
+	std::shared_ptr<Sound> sound = std::make_shared<Sound>(_soundName, _oggFilePath);
+	m_sounds.push_back(sound);
 }

@@ -3,6 +3,7 @@
 #include "Input.h"
 #include <string>
 #include "RigidBody.h"
+#include "AudioSource.h"
 
 void Gun::Update()
 {
@@ -41,6 +42,8 @@ void Gun::Shoot()
 
 	m_ammoPool[m_ammoFired].lock()->GetComponent<RigidBody>().lock()->SetLinearVelocity(m_entity->m_transform->GetForward() * 25.0f);
 
+	m_audio.lock()->Play();
+
 	m_ammoFired++;
 
 }
@@ -48,4 +51,5 @@ void Gun::Shoot()
 void Gun::SetReferences()
 {
 	m_transform = m_entity->m_transform;
+	m_audio = m_entity->GetComponent<AudioSource>();
 }

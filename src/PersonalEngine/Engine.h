@@ -3,6 +3,8 @@
 
 #include "Entity.h"
 #include "Scene.h"
+#include "AL/al.h"
+#include "AL/alc.h"
 
 /// \brief Class linking all other engine subsystems and containing the current game scene.
 ///

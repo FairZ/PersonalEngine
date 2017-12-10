@@ -53,6 +53,11 @@ void Engine::Initialise(int argc, char* argv[])
 	glViewport(0, 0, 800, 600);
 	glEnable(GL_MULTISAMPLE);
 
+	//initialise openal
+	ALCdevice* device = alcOpenDevice(NULL);
+	ALCcontext* context = alcCreateContext(device,NULL);
+	alcMakeContextCurrent(context);
+
 	//initialise scene
 	m_currentScene->Init();
 	//Load the specified scene
@@ -69,6 +74,12 @@ void Engine::Close()
 {
 	//reset of scene will delete all smart pointers contained within to clear up any allocated memory
 	m_currentScene.reset();
+
+	ALCcontext* context = alcGetCurrentContext();
+	ALCdevice* device = alcGetContextsDevice(context);
+	alcMakeContextCurrent(NULL);
+	alcDestroyContext(context);
+	alcCloseDevice(device);
 }
 
 std::weak_ptr<Scene> Engine::GetCurrentScene()
@@ -115,6 +126,7 @@ void Engine::Update()
 
 		Time::m_deltaTime = 0;
 
+		Camera::mainCamera.lock()->UpdateListener();
 		//tell glut to run display function
 		glutPostRedisplay();
 	}

@@ -5,6 +5,7 @@
 #include <glm/glm.hpp>
 
 
+
 /// \brief Camera component, contains camera values used in the creation of a projection matrix
 ///
 /// Instantiates a static reference to a Camera component which is used by the engine to render to the screen
@@ -25,6 +26,8 @@ public:
 	glm::mat4 GetProjectionMatrix(){return m_projectionMatrix;}
 	glm::mat4 GetViewMatrix(){return m_viewMatrix;}
 	glm::vec3 GetPos();
+
+	void UpdateListener();
 
 private:
 	float m_fieldOfView;

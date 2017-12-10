@@ -20,7 +20,7 @@ void Bullet::Initialise()
 	AddComponent<SphereCollider>();
 	std::weak_ptr<MeshRenderer> meshRenderer = AddComponent<MeshRenderer>();
 	meshRenderer.lock()->SetMesh("Ship");
-	meshRenderer.lock()->SetMaterial(0, "SpaceShip");
+	meshRenderer.lock()->SetMaterial(0, "Bullet");
 	AddComponent<BulletBehaviour>();
 }
 
@@ -39,6 +39,6 @@ void Bullet::Reset()
 	rb.lock()->SetGravity(glm::vec3());
 	std::weak_ptr<MeshRenderer> meshRenderer = GetComponent<MeshRenderer>();
 	meshRenderer.lock()->SetMesh("Ship");
-	meshRenderer.lock()->SetMaterial(0, "SpaceShip");
+	meshRenderer.lock()->SetMaterial(0, "Bullet");
 	GetComponent<BulletBehaviour>().lock()->ResetTimeAlive();
 }

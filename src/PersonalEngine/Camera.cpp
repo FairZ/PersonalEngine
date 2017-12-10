@@ -3,6 +3,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "Window.h"
 #include "Transform.h"
+#include "AL/al.h"
 
 std::weak_ptr<Camera> Camera::mainCamera;
 
@@ -44,4 +45,16 @@ void Camera::CalculateViewMatrix()
 glm::vec3 Camera::GetPos()
 {
 	return m_entity->m_transform->GetPosition();
+}
+
+void Camera::UpdateListener()
+{
+	glm::vec3 pos = m_entity->m_transform->GetPosition();
+	glm::vec3 at = m_entity->m_transform->GetForward();
+	glm::vec3 up = m_entity->m_transform->GetUp();
+
+	ALfloat orientation[] = {at.x,at.y,at.z,up.x,up.y,up.z};
+
+	alListener3f(AL_POSITION,pos.x,pos.y,pos.z);
+	alListenerfv(AL_ORIENTATION,orientation);
 }

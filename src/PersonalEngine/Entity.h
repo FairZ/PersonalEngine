@@ -141,6 +141,7 @@ std::weak_ptr<T> Entity::InstantiatePrefab(std::string _name)
 	newPrefab->m_transform->m_rotation = glm::vec3();
 	newPrefab->m_transform->m_scale = glm::vec3(1, 1, 1);
 	newPrefab->Initialise();
+	newPrefab->m_destroyed = false;
 	retval = newPrefab;
 
 	return retval;
@@ -165,6 +166,7 @@ std::weak_ptr<T> Entity::InstantiatePrefab(std::string _name, std::string _paren
 	newPrefab->m_transform->m_rotation = glm::vec3();
 	newPrefab->m_transform->m_scale = glm::vec3(1, 1, 1);
 	newPrefab->Initialise();
+	newPrefab->m_destroyed = false;
 	retval = newPrefab;
 
 	return retval;
@@ -188,6 +190,7 @@ std::weak_ptr<T> Entity::InstantiatePrefab(std::string _name, glm::vec3 _positio
 	newPrefab->m_transform->m_rotation = _rotation;
 	newPrefab->m_transform->m_scale = _scale;
 	newPrefab->Initialise();
+	newPrefab->m_destroyed = false;
 	retval = newPrefab;
 
 	return retval;
@@ -212,6 +215,7 @@ std::weak_ptr<T> Entity::InstantiatePrefab(std::string _name, std::string _paren
 	newPrefab->m_transform->m_rotation = _rotation;
 	newPrefab->m_transform->m_scale = _scale;
 	newPrefab->Initialise();
+	newPrefab->m_destroyed = false;
 	retval = newPrefab;
 
 	return retval;

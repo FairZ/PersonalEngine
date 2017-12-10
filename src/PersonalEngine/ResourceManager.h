@@ -11,6 +11,7 @@ class Texture;
 class Mesh;
 class CubeMap;
 class Entity;
+class Sound;
 
 /// \brief Handler for loading and getting resources within a scene
 class ResourceManager
@@ -25,6 +26,7 @@ public:
 	std::weak_ptr<Texture> GetTexture(std::string _textureName);
 	std::weak_ptr<CubeMap> GetCubeMap(std::string _cubeMapName);
 	std::weak_ptr<Mesh> GetMesh(std::string _meshName);
+	std::weak_ptr<Sound> GetSound(std::string _soundName);
 
 	ResourceManager();
 
@@ -34,6 +36,7 @@ private:
 	std::vector<std::shared_ptr<Texture>> m_textures;
 	std::vector<std::shared_ptr<CubeMap>> m_cubeMaps;
 	std::vector<std::shared_ptr<Mesh>> m_meshes;
+	std::vector<std::shared_ptr<Sound>> m_sounds;
 
 	//void LoadResources(std::string _fileName){} add soon
 	
@@ -43,6 +46,7 @@ private:
 	void AddTexture(unsigned int _index, std::string _textureName);
 	void AddCubeMap(std::string _filePaths[6], std::string _cubeMapName);
 	void AddMesh(std::string _filePath, std::string _meshName, float _importScale);
+	void AddSound(std::string _oggFilePath, std::string _soundName);
 };
 
 

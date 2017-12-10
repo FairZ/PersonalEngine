@@ -5,6 +5,7 @@
 
 class Bullet;
 class Transform;
+class AudioSource;
 
 class Gun : public Component
 {
@@ -21,6 +22,8 @@ private:
 	unsigned int m_ammoFired;
 
 	std::weak_ptr<Transform> m_transform;
+
+	std::weak_ptr<AudioSource> m_audio;
 
 	std::vector<std::weak_ptr<Bullet>> m_ammoPool;
 };

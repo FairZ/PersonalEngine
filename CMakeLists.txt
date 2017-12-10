@@ -84,13 +84,13 @@ add_executable(PersonalEngine
   src/PersonalEngine/BulletBehaviour.cpp
   src/PersonalEngine/Asteroid.h
   src/PersonalEngine/Asteroid.cpp
-  
-  #remove for final build:
-  #src/PersonalEngine/plank.cpp
-
+  src/PersonalEngine/Sound.h
+  src/PersonalEngine/Sound.cpp
+  src/PersonalEngine/AudioSource.h
+  src/PersonalEngine/AudioSource.cpp
 )
 
 # LINKING NECESSARY Libraries
 if(WIN32)
-  target_link_libraries(PersonalEngine glew32 freeglut SOIL assimp)
+  target_link_libraries(PersonalEngine glew32 freeglut SOIL assimp openal libogg libvorbis libvorbisfile)
 endif()

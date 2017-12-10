@@ -41,6 +41,7 @@ uniform vec3 cameraPos;
 
 uniform sampler2D colourTexture;
 uniform sampler2D normalTexture;
+uniform sampler2D emissiveTexture;
 uniform sampler2D specularTexture;
 uniform sampler2D ShadowMap;
 
@@ -133,6 +134,7 @@ void main()
 	
 	vec3 eyeDir = normalize(cameraPos - fragmentWorldPosition_vertex.xyz);
 	vec3 texColour = pow(texture(colourTexture,texCoord_vertex).rgb, vec3(2.2f));
+	vec3 emissive = pow(texture(emissiveTexture,texCoord_vertex).rgb, vec3(2.2f));
 	
 	colour += DirectionalLightCalc(normal, eyeDir, DirectionalLight);
 	
@@ -143,6 +145,6 @@ void main()
 	
 	colour += SpotLightCalc(normal, eyeDir, SpotLight);
 	
-	fragColour = vec4((ambientColour*texColour) + colour, alpha);
+	fragColour = vec4((ambientColour*texColour) + colour + emissive, alpha);
 }
 

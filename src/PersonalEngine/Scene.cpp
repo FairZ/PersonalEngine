@@ -18,6 +18,7 @@
 #include "Flashlight.h"
 #include "Gun.h"
 #include "Asteroid.h"
+#include "AudioSource.h"
 #include <random>
 
 void Scene::Init()
@@ -55,22 +56,31 @@ bool Scene::LoadScene()
 	std::weak_ptr<Entity> cam = Entity::CreateEntity("Camera","Ship1");
 	std::weak_ptr<Entity> flashLight = Entity::CreateEntity("flashLight","Ship1",glm::vec3(0,0,1),glm::vec3(),glm::vec3(1.0f));
 
-	m_resourceManager->AddShader("Shaders/ModelVertexNormal.txt","Shaders/ModelFragmentNormal.txt","Normal");
+	m_resourceManager->AddShader("Shaders/ModelVertexNormal.txt","Shaders/ModelFragmentNormalSpecularEmissive.txt","NormalSpecEmis");
 	m_resourceManager->AddShader("Shaders/ModelVertexNormal.txt","Shaders/ModelFragmentNormalSpecular.txt","NormalSpec");
 	m_resourceManager->AddMesh("Models/Luminaris OBJ.obj","Ship", 0.05f);
 	m_resourceManager->AddMesh("Models/Meteor.obj","MeteorMesh", 1.0f);
-	m_resourceManager->AddMaterial(m_resourceManager->GetShader("NormalSpec"),"SpaceShip");
+	m_resourceManager->AddMaterial(m_resourceManager->GetShader("NormalSpecEmis"),"SpaceShip");
+	m_resourceManager->AddMaterial(m_resourceManager->GetShader("NormalSpecEmis"),"Bullet");
 	m_resourceManager->AddMaterial(m_resourceManager->GetShader("NormalSpec"),"Asteroid");
 	m_resourceManager->AddTexture("Textures/Luminaris Diffuse.tga", "ShipDiffuse");
 	m_resourceManager->AddTexture("Textures/Luminaris Normal.tga", "ShipNormal");
 	m_resourceManager->AddTexture("Textures/Luminaris Specular.tga", "ShipSpec");
+	m_resourceManager->AddTexture("Textures/Luminaris Emissive.tga", "ShipEmis");
 	m_resourceManager->AddTexture("Textures/Meteor_d.tga","AsteroidDiffuse");
 	m_resourceManager->AddTexture("Textures/Meteor_n.tga","AsteroidNormal");
 	m_resourceManager->AddTexture("Textures/Meteor_s.tga","AsteroidSpec");
+	m_resourceManager->AddSound("Sounds/Shoot.ogg","Shoot");
+	m_resourceManager->AddSound("Sounds/OutThere.ogg","Music");
 
 	m_resourceManager->GetMaterial("Asteroid").lock()->SetTexture("colourTexture", m_resourceManager->GetTexture("AsteroidDiffuse"));
 	m_resourceManager->GetMaterial("Asteroid").lock()->SetTexture("normalTexture", m_resourceManager->GetTexture("AsteroidNormal"));
 	m_resourceManager->GetMaterial("Asteroid").lock()->SetTexture("specularTexture", m_resourceManager->GetTexture("AsteroidSpec"));
+
+	m_resourceManager->GetMaterial("Bullet").lock()->SetTexture("colourTexture", m_resourceManager->GetTexture("ShipDiffuse"));
+	m_resourceManager->GetMaterial("Bullet").lock()->SetTexture("normalTexture", m_resourceManager->GetTexture("ShipNormal"));
+	m_resourceManager->GetMaterial("Bullet").lock()->SetTexture("specularTexture", m_resourceManager->GetTexture("ShipSpec"));
+	m_resourceManager->GetMaterial("Bullet").lock()->SetTexture("emissiveTexture", m_resourceManager->GetTexture("ShipDiffuse"));
 
 
 	std::weak_ptr<Camera> camComp = cam.lock()->AddComponent<Camera>();
@@ -79,6 +89,16 @@ bool Scene::LoadScene()
 	camComp.lock()->SetNearClipPlane(0.1f);
 	camComp.lock()->SetFarClipPlane(1000.0f);
 	cam.lock()->m_transform->Translate(glm::vec3(0,1,-4));
+
+	std::weak_ptr<AudioSource> audio = cam.lock()->AddComponent<AudioSource>();
+	audio.lock()->SetSound("Music");
+	audio.lock()->SetLooping(true);
+	audio.lock()->SetGain(0.7f);
+	audio.lock()->Play();
+
+	audio = ship1.lock()->AddComponent<AudioSource>();
+	audio.lock()->SetSound("Shoot");
+	audio.lock()->SetGain(1.5f);
 
 	std::weak_ptr<RigidBody> rb = ship1.lock()->AddComponent<RigidBody>();
 	rb.lock()->SetGravity(glm::vec3());
@@ -95,11 +115,12 @@ bool Scene::LoadScene()
 	mat.lock()->SetTexture("colourTexture",m_resourceManager->GetTexture("ShipDiffuse"));
 	mat.lock()->SetTexture("normalTexture",m_resourceManager->GetTexture("ShipNormal"));
 	mat.lock()->SetTexture("specularTexture",m_resourceManager->GetTexture("ShipSpec"));
+	mat.lock()->SetTexture("emissiveTexture",m_resourceManager->GetTexture("ShipEmis"));
 
 	std::weak_ptr<Light> light = dirLight.lock()->AddComponent<Light>();
 	light.lock()->SetDirection(glm::vec3(1.0f,0,0));
 	light.lock()->SetType(2);
-	light.lock()->SetColour(glm::vec3(0.1f,0.05f,0.05f));
+	light.lock()->SetColour(glm::vec3(0.2f,0.09f,0.05f));
 
 	flashLight.lock()->AddComponent<Flashlight>();
 
