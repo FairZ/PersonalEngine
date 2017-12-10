@@ -24,6 +24,7 @@ public:
 
 	std::string GetName();
 	std::weak_ptr<Scene> GetScene();
+	bool GetActive();
 
 	void Destroy();
 

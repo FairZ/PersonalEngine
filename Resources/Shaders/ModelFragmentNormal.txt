@@ -33,7 +33,7 @@ struct Spot_Light{
 
 uniform Spot_Light SpotLight;
 
-uniform vec3 ambientColour  = {0.1f,0.1f,0.1f};
+uniform vec3 ambientColour  = {0.1f,0.05f,0.05f};
 uniform float shininess     = 32.0f;
 uniform float alpha         = 1.0f;
 uniform vec3 cameraPos;
@@ -66,7 +66,7 @@ float ShadowCalc()
 	return shadow;
 }
 
-vec3 PointLightCalc(vec3 _normal, vec3 _eyeDir, vec3 _texColour, Light _light)
+vec3 PointLightCalc(vec3 _normal, vec3 _eyeDir, Light _light)
 {
 	vec3 toLight = _light.position.xyz - fragmentWorldPosition_vertex.xyz;
 	vec3 lightDir = normalize(toLight);
@@ -75,31 +75,31 @@ vec3 PointLightCalc(vec3 _normal, vec3 _eyeDir, vec3 _texColour, Light _light)
 	
 	float attenuation = 1.0 / (1.0f + _light.linear * distance + _light.quadratic * (distance * distance));
 	
-	vec3 diffuse = _texColour * _light.colour * max( dot(_normal, lightDir), 0) * attenuation;
+	vec3 diffuse = _light.colour * max( dot(_normal, lightDir), 0) * attenuation;
 	
 	vec3 halfVec = normalize( _eyeDir + lightDir );
 	
 	float specularPower = pow(max( dot( _normal, halfVec ), 0), shininess);
-	vec3 specular = _texColour * specularPower * _light.colour * attenuation;
+	vec3 specular = specularPower * _light.colour * attenuation;
 	
 	return specular + diffuse;
 }
 
-vec3 DirectionalLightCalc(vec3 _normal, vec3 _eyeDir, vec3 _texColour, Dir_Light _light)
+vec3 DirectionalLightCalc(vec3 _normal, vec3 _eyeDir, Dir_Light _light)
 {
 	vec3 lightDir = normalize(-_light.direction);
 	
-	vec3 diffuse = _texColour * _light.colour * max( dot(_normal, lightDir), 0);
+	vec3 diffuse = _light.colour * max( dot(_normal, lightDir), 0);
 	
 	vec3 halfVec = normalize( _eyeDir + lightDir );
 	
 	float specularPower = pow(max( dot( _normal, halfVec ), 0), shininess);
-	vec3 specular = _texColour * specularPower * _light.colour;
+	vec3 specular = specularPower * _light.colour;
 	
 	return (specular + diffuse) * ShadowCalc();
 }
 
-vec3 SpotLightCalc(vec3 _normal, vec3 _eyeDir, vec3 _texColour, Spot_Light _light)
+vec3 SpotLightCalc(vec3 _normal, vec3 _eyeDir, Spot_Light _light)
 {
 	vec3 toLight = _light.position.xyz - fragmentWorldPosition_vertex.xyz;
 	vec3 lightDir = normalize(toLight);
@@ -108,12 +108,12 @@ vec3 SpotLightCalc(vec3 _normal, vec3 _eyeDir, vec3 _texColour, Spot_Light _ligh
 	
 	float attenuation = 1.0 / (1.0f + _light.linear * distance + _light.quadratic * (distance * distance));
 	
-	vec3 diffuse = _texColour * _light.colour * max( dot(_normal, lightDir), 0) * attenuation;
+	vec3 diffuse = _light.colour * max( dot(_normal, lightDir), 0) * attenuation;
 	
 	vec3 halfVec = normalize( _eyeDir + lightDir );
 	
 	float specularPower = pow(max( dot( _normal, halfVec ), 0), shininess);
-	vec3 specular = _texColour * specularPower * _light.colour * attenuation;
+	vec3 specular = specularPower * _light.colour * attenuation;
 	
 	float theta = dot(lightDir, normalize(-_light.direction)); 
     float epsilon = (_light.inner - _light.outer);
@@ -130,17 +130,18 @@ void main()
 	normal = normalize(TBNMatrix * normal);
 	
 	vec3 eyeDir = normalize(cameraPos - fragmentWorldPosition_vertex.xyz);
-	vec3 texColour = vec3(texture(colourTexture,texCoord_vertex));
+	vec3 texColour = pow(texture(colourTexture,texCoord_vertex).rgb, vec3(2.2f));
 	
-	colour += DirectionalLightCalc(normal, eyeDir, texColour, DirectionalLight);
+	colour += DirectionalLightCalc(normal, eyeDir, DirectionalLight);
 	
 	for (int i = 0; i < NR_LIGHTS; i++)
 	{
-		colour += PointLightCalc(normal, eyeDir, texColour, Lights[i]);
+		colour += PointLightCalc(normal, eyeDir, Lights[i]);
 	}
 	
-	colour += SpotLightCalc(normal, eyeDir, texColour, SpotLight);
+	colour += SpotLightCalc(normal, eyeDir, SpotLight);
 	
-	fragColour = vec4((ambientColour*texColour)+colour, alpha);	
+	fragColour = vec4((ambientColour*texColour)+colour, alpha);
+
 }
 

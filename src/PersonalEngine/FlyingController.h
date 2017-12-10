@@ -5,6 +5,7 @@
 #include <glm/glm.hpp>
 
 class Transform;
+class RigidBody;
 
 class FlyingController : public Component
 {
@@ -14,9 +15,11 @@ private:
 	void Awake();
 	void Start();
 	void Update();
+	void FixedUpdate();
 	void SetReferences();
 
 	std::weak_ptr<Transform> m_transform;
+	std::weak_ptr<RigidBody> m_rb;
 
 	float m_speed;
 	float m_rotSpeed;

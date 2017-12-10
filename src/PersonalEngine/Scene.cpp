@@ -17,9 +17,12 @@
 #include "Light.h"
 #include "Flashlight.h"
 #include "Gun.h"
+#include "Asteroid.h"
+#include <random>
 
 void Scene::Init()
 {
+	
 	Entity::m_scene = Engine::GetCurrentScene();
 	m_resourceManager = std::make_shared<ResourceManager>();
 	m_collisionResolver = std::make_shared<CollisionResolver>();
@@ -45,33 +48,43 @@ std::weak_ptr<RenderController> Scene::GetRenderController()
 bool Scene::LoadScene()
 {
 	//temporary scene setup (would normally handle loading)
-
+	std::default_random_engine randGen;
 	
 	std::weak_ptr<Entity> ship1 = Entity::CreateEntity("Ship1");
-	std::weak_ptr<Entity> dirLight = Entity::CreateEntity("DirLight", "Ship1",glm::vec3(-2,0,0), glm::vec3(0), glm::vec3());
-	std::weak_ptr<Entity> Grass = Entity::CreateEntity("Grass");
+	std::weak_ptr<Entity> dirLight = Entity::CreateEntity("DirLight", "Ship1",glm::vec3(-10,0,0), glm::vec3(0), glm::vec3());
 	std::weak_ptr<Entity> cam = Entity::CreateEntity("Camera","Ship1");
 	std::weak_ptr<Entity> flashLight = Entity::CreateEntity("flashLight","Ship1",glm::vec3(0,0,1),glm::vec3(),glm::vec3(1.0f));
 
 	m_resourceManager->AddShader("Shaders/ModelVertexNormal.txt","Shaders/ModelFragmentNormal.txt","Normal");
 	m_resourceManager->AddShader("Shaders/ModelVertexNormal.txt","Shaders/ModelFragmentNormalSpecular.txt","NormalSpec");
 	m_resourceManager->AddMesh("Models/Luminaris OBJ.obj","Ship", 0.05f);
-	m_resourceManager->AddMesh("Models/Grass.obj","GrassMesh", 0.5f);
+	m_resourceManager->AddMesh("Models/Meteor.obj","MeteorMesh", 1.0f);
 	m_resourceManager->AddMaterial(m_resourceManager->GetShader("NormalSpec"),"SpaceShip");
-	m_resourceManager->AddMaterial(m_resourceManager->GetShader("Normal"),"Grass");
+	m_resourceManager->AddMaterial(m_resourceManager->GetShader("NormalSpec"),"Asteroid");
 	m_resourceManager->AddTexture("Textures/Luminaris Diffuse.tga", "ShipDiffuse");
 	m_resourceManager->AddTexture("Textures/Luminaris Normal.tga", "ShipNormal");
 	m_resourceManager->AddTexture("Textures/Luminaris Specular.tga", "ShipSpec");
-	m_resourceManager->AddTexture("Textures/Grass.png","GrassDiffuse");
-	m_resourceManager->AddTexture("Textures/Grass_normal.png","GrassNormal");
+	m_resourceManager->AddTexture("Textures/Meteor_d.tga","AsteroidDiffuse");
+	m_resourceManager->AddTexture("Textures/Meteor_n.tga","AsteroidNormal");
+	m_resourceManager->AddTexture("Textures/Meteor_s.tga","AsteroidSpec");
+
+	m_resourceManager->GetMaterial("Asteroid").lock()->SetTexture("colourTexture", m_resourceManager->GetTexture("AsteroidDiffuse"));
+	m_resourceManager->GetMaterial("Asteroid").lock()->SetTexture("normalTexture", m_resourceManager->GetTexture("AsteroidNormal"));
+	m_resourceManager->GetMaterial("Asteroid").lock()->SetTexture("specularTexture", m_resourceManager->GetTexture("AsteroidSpec"));
+
 
 	std::weak_ptr<Camera> camComp = cam.lock()->AddComponent<Camera>();
 	camComp.lock()->SetAsMainCamera();
 	camComp.lock()->SetFOV(75.0f);
 	camComp.lock()->SetNearClipPlane(0.1f);
-	camComp.lock()->SetFarClipPlane(100.0f);
+	camComp.lock()->SetFarClipPlane(1000.0f);
 	cam.lock()->m_transform->Translate(glm::vec3(0,1,-4));
 
+	std::weak_ptr<RigidBody> rb = ship1.lock()->AddComponent<RigidBody>();
+	rb.lock()->SetGravity(glm::vec3());
+	rb.lock()->SetDrag(0.5f);
+	std::weak_ptr<SphereCollider> sphere = ship1.lock()->AddComponent<SphereCollider>();
+	sphere.lock()->SetRadius(0.5f);
 	ship1.lock()->AddComponent<FlyingController>();
 
 	std::weak_ptr<MeshRenderer> meshrenderer = ship1.lock()->AddComponent<MeshRenderer>();
@@ -86,18 +99,26 @@ bool Scene::LoadScene()
 	std::weak_ptr<Light> light = dirLight.lock()->AddComponent<Light>();
 	light.lock()->SetDirection(glm::vec3(1.0f,0,0));
 	light.lock()->SetType(2);
-	light.lock()->SetColour(glm::vec3(0.5f,0.5f,0.5f));
+	light.lock()->SetColour(glm::vec3(0.1f,0.05f,0.05f));
 
 	flashLight.lock()->AddComponent<Flashlight>();
 
-	meshrenderer = Grass.lock()->AddComponent<MeshRenderer>();
-	meshrenderer.lock()->SetMesh("GrassMesh");
-	meshrenderer.lock()->SetMaterial(0,"Grass");
-	mat = meshrenderer.lock()->GetMaterial(0);
-	mat.lock()->SetTexture("colourTexture",m_resourceManager->GetTexture("GrassDiffuse"));
-	mat.lock()->SetTexture("normalTexture",m_resourceManager->GetTexture("GrassNormal"));
-
 	std::weak_ptr<Gun> gun = ship1.lock()->AddComponent<Gun>();
+
+	std::uniform_real_distribution<float> posX(-100.0f, 100.0f);
+	std::uniform_real_distribution<float> posY(-100.0f, 100.0f);
+	std::uniform_real_distribution<float> posZ(-100.0f, 100.0f);
+	std::uniform_real_distribution<float> rotX(glm::radians(-180.0f), glm::radians(180.0f));
+	std::uniform_real_distribution<float> rotY(glm::radians(-180.0f), glm::radians(180.0f));
+	std::uniform_real_distribution<float> rotZ(glm::radians(-180.0f), glm::radians(180.0f));
+	std::uniform_real_distribution<float> scale(0.5f,1.5f);
+
+	int astNum = 0;
+	for (astNum; astNum < 50; astNum++)
+	{
+		float scaler = scale(randGen);
+		Entity::InstantiatePrefab<Asteroid>("Ast" + std::to_string(astNum) , glm::vec3(posX(randGen), posY(randGen), posZ(randGen)), glm::vec3(rotX(randGen), rotY(randGen),rotZ(randGen)), glm::vec3(scaler));
+	}
 
 	m_renderController->Generate();
 

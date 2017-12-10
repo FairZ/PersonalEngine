@@ -2,6 +2,7 @@
 #include "Bullet.h"
 #include "Input.h"
 #include <string>
+#include "RigidBody.h"
 
 void Gun::Update()
 {
@@ -17,8 +18,7 @@ void Gun::Start()
 	m_resetting = false;
 	for(int i = 0; i < 30; i++)
 	{
-		std::weak_ptr<Bullet> bullet = Entity::InstantiatePrefab<Bullet>("Bullet",m_entity->GetName(), glm::vec3(0,0,1), glm::vec3(),glm::vec3(1.0f));
-		//bullet.lock()->SetActive(false);
+		std::weak_ptr<Bullet> bullet = Entity::InstantiatePrefab<Bullet>("Bullet",m_entity->GetName(), glm::vec3(0,0,5), glm::vec3(),glm::vec3(0.2f));
 		m_ammoPool.push_back(bullet);
 	}
 	SetReferences();
@@ -38,6 +38,8 @@ void Gun::Shoot()
 		m_ammoPool[m_ammoFired].lock()->SetActive(true);
 
 	m_ammoPool[m_ammoFired].lock()->m_transform->DetachFromParent();
+
+	m_ammoPool[m_ammoFired].lock()->GetComponent<RigidBody>().lock()->SetLinearVelocity(m_entity->m_transform->GetForward() * 25.0f);
 
 	m_ammoFired++;
 

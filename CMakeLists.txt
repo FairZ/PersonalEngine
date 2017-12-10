@@ -80,6 +80,10 @@ add_executable(PersonalEngine
   src/PersonalEngine/Gun.h
   src/PersonalEngine/Bullet.h
   src/PersonalEngine/Bullet.cpp
+  src/PersonalEngine/BulletBehaviour.h
+  src/PersonalEngine/BulletBehaviour.cpp
+  src/PersonalEngine/Asteroid.h
+  src/PersonalEngine/Asteroid.cpp
   
   #remove for final build:
   #src/PersonalEngine/plank.cpp

@@ -8,6 +8,7 @@ class RigidBody;
 
 class Collider : public Component
 {
+	friend class CollisionResolver;
 public:
 	glm::vec3 GetMin();
 	glm::vec3 GetMax();

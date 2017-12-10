@@ -36,6 +36,7 @@ void RenderController::Generate()
 {
 	m_resourceManager = Engine::m_currentScene->GetResourceManager();
 
+#pragma region Skybox setup
 	std::string paths[] = {"Textures/SpaceMap/leftImage.png", "Textures/SpaceMap/rightImage.png", "Textures/SpaceMap/upImage.png", "Textures/SpaceMap/downImage.png", "Textures/SpaceMap/frontImage.png", "Textures/SpaceMap/backImage.png"};
 
 	m_resourceManager.lock()->AddCubeMap(paths, "Skybox");
@@ -100,6 +101,9 @@ void RenderController::Generate()
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 	glBindVertexArray(0);
 
+#pragma endregion
+#pragma region Shadow Setup
+
 	m_shadowMat = m_resourceManager.lock()->GetMaterial("ShadowMat");
 	m_shadowRes = 2048;
 
@@ -122,33 +126,37 @@ void RenderController::Generate()
 	glDrawBuffer(GL_NONE);
 	glReadBuffer(GL_NONE);
 
+#pragma endregion
+#pragma region Geometry pass setup
+
 	glGenFramebuffers(1, &m_geomFrameBufferIndex);
 	glBindFramebuffer(GL_FRAMEBUFFER, m_geomFrameBufferIndex);
 
 	glGenTextures(1, &m_geomTextureBufferIndex);
 	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, m_geomTextureBufferIndex);
-	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE,4,GL_RGB16F,Window::GetWidth(),Window::GetHeight(),GL_TRUE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE,6,GL_RGB32F,Window::GetWidth(),Window::GetHeight(),GL_TRUE);
 	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE,0);
 
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, m_geomTextureBufferIndex, 0);
-
+	
 	glGenRenderbuffers(1, &m_geomRenderBufferIndex);
 	glBindRenderbuffer(GL_RENDERBUFFER,m_geomRenderBufferIndex);
-	glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH24_STENCIL8, Window::GetWidth(), Window::GetHeight());
+	glRenderbufferStorageMultisample(GL_RENDERBUFFER, 6, GL_DEPTH24_STENCIL8, Window::GetWidth(), Window::GetHeight());
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_geomRenderBufferIndex);
-
+	
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+#pragma endregion
+#pragma region PostProccess Setup
 
 	glGenFramebuffers(1, &m_finalFrameBufferIndex);
 	glBindFramebuffer(GL_FRAMEBUFFER, m_finalFrameBufferIndex);
 
 	glGenTextures(1, &m_finalTextureBufferIndex);
 	glBindTexture(GL_TEXTURE_2D, m_finalTextureBufferIndex);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, Window::GetWidth(), Window::GetHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, Window::GetWidth(), Window::GetHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_finalTextureBufferIndex, 0);
@@ -195,28 +203,25 @@ void RenderController::Generate()
 
 	m_postProcessShader = std::make_shared<Shader>("PPS","Shaders/PostProcessVertex.txt","Shaders/PostProcessFragment.txt");
 
+#pragma endregion
+
 }
 
 void RenderController::ResizeBuffer()
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, m_geomFrameBufferIndex);
-
+	
 	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, m_geomTextureBufferIndex);
-	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGB16F, Window::GetWidth(), Window::GetHeight(), GL_TRUE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glBindTexture(GL_TEXTURE_2D,0);
-
+	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 6, GL_RGB32F, Window::GetWidth(), Window::GetHeight(), GL_TRUE);
+	
 	glBindRenderbuffer(GL_RENDERBUFFER,m_geomRenderBufferIndex);
-	glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH24_STENCIL8,Window::GetWidth(),Window::GetHeight());
+	glRenderbufferStorageMultisample(GL_RENDERBUFFER, 6, GL_DEPTH24_STENCIL8,Window::GetWidth(),Window::GetHeight());
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, m_finalFrameBufferIndex);
 
 	glBindTexture(GL_TEXTURE_2D, m_finalTextureBufferIndex);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, Window::GetWidth(), Window::GetHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, Window::GetWidth(), Window::GetHeight(), 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -232,7 +237,7 @@ void RenderController::ShadowPass()
 		{
 			if (m_lights[l].lock()->m_type == 2)
 			{
-				glm::mat4 lightProjection = glm::ortho(-3.0f,3.0f,-3.0f,3.0f,1.0f,50.0f);
+				glm::mat4 lightProjection = glm::ortho(-10.0f,10.0f,-10.0f,10.0f,1.0f,50.0f);
 				glm::mat4 lightView = glm::lookAt(m_lights[l].lock()->GetTranslatedPos(), m_lights[l].lock()->GetTranslatedPos() + m_lights[l].lock()->GetLocalDir(), m_lights[l].lock()->GetUp());
 				lightMat = lightProjection * lightView;
 			}
@@ -245,9 +250,9 @@ void RenderController::ShadowPass()
 	glViewport(0,0,m_shadowRes,m_shadowRes);
 	glBindFramebuffer(GL_FRAMEBUFFER, m_shadowBufferIndex);
 	glClear(GL_DEPTH_BUFFER_BIT);
-	glDisable(GL_CULL_FACE);
+	glCullFace(GL_FRONT);
 	Engine::m_currentScene->ShadowPass();
-	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
 }
 
 void RenderController::GeomPass()
@@ -332,7 +337,7 @@ void RenderController::GeomPass()
 	glDepthFunc(GL_LESS);
 }
 
-void RenderController::FinalPass()
+void RenderController::PostProcessPass()
 {
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_geomFrameBufferIndex);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_finalFrameBufferIndex);
@@ -369,5 +374,5 @@ void RenderController::Render()
 
 	GeomPass();
 
-	FinalPass();
+	PostProcessPass();
 }

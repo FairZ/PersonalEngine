@@ -3,6 +3,7 @@
 #include "Collider.h"
 #include "Contact.h"
 #include "SphereCollider.h"
+#include "Entity.h"
 
 void CollisionResolver::ResolveCollisions()
 {
@@ -36,20 +37,26 @@ void CollisionResolver::BroadPhase()
 {
 	for (auto i = m_colliders.begin(); i != m_colliders.end(); i++)
 	{
-		glm::vec3 iMax = (*i).lock()->GetMax();
-		glm::vec3 iMin = (*i).lock()->GetMin();
-		for (auto j = i; j != m_colliders.end(); j++)
+		if (i->lock()->m_entity->GetActive())
 		{
-			if (j != i)
+			glm::vec3 iMax = (*i).lock()->GetMax();
+			glm::vec3 iMin = (*i).lock()->GetMin();
+			for (auto j = i; j != m_colliders.end(); j++)
 			{
-				glm::vec3 jMax = (*j).lock()->GetMax();
-				glm::vec3 jMin = (*j).lock()->GetMin();
-
-				if (!(iMax.x < jMin.x || iMin.x > jMax.x ||
-					iMax.y < jMin.y || iMin.y > jMax.y ||
-					iMax.z < jMin.z || iMin.z > jMax.z))
+				if (j->lock()->m_entity->GetActive())
 				{
-					m_broadCollisions.push_back(BroadCollision((*i), (*j)));
+					if (j != i)
+					{
+						glm::vec3 jMax = (*j).lock()->GetMax();
+						glm::vec3 jMin = (*j).lock()->GetMin();
+
+						if (!(iMax.x < jMin.x || iMin.x > jMax.x ||
+							iMax.y < jMin.y || iMin.y > jMax.y ||
+							iMax.z < jMin.z || iMin.z > jMax.z))
+						{
+							m_broadCollisions.push_back(BroadCollision((*i), (*j)));
+						}
+					}
 				}
 			}
 		}

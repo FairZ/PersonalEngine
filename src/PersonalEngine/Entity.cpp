@@ -17,6 +17,11 @@ std::weak_ptr<Scene> Entity::GetScene()
 	return m_scene;
 }
 
+bool Entity::GetActive()
+{
+	return m_active;
+}
+
 std::weak_ptr<Entity> Entity::CreateEntity(std::string _name, glm::vec3 _position, glm::vec3 _rotation, glm::vec3 _scale)
 {
 	std::weak_ptr<Entity> retval;

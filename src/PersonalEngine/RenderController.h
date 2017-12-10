@@ -25,7 +25,7 @@ private:
 	
 	void ShadowPass();
 	void GeomPass();
-	void FinalPass();
+	void PostProcessPass();
 	void Render();
 
 	void ResizeBuffer();
@@ -46,6 +46,7 @@ private:
 
 	GLuint m_QuadIndex;
 	GLuint m_boxIndex;
+
 	GLuint m_geomFrameBufferIndex;
 	GLuint m_geomTextureBufferIndex;
 	GLuint m_geomRenderBufferIndex;
