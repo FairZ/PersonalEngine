@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.6)
-project(PERSONALENGINE)
+project(FairEngine)
 
 # SETTING UP DIRECTORIES
 
@@ -19,78 +19,78 @@ endif()
 
 
 # SETTING UP PERSONAL ENGINE EXE
-add_executable(PersonalEngine
+add_executable(FairEngine
 
-  src/PersonalEngine/main.cpp
-  src/PersonalEngine/Engine.cpp
-  src/PersonalEngine/Engine.h
-  src/PersonalEngine/Window.cpp
-  src/PersonalEngine/Window.h
-  src/PersonalEngine/Input.cpp
-  src/PersonalEngine/Input.h
-  src/PersonalEngine/Component.cpp
-  src/PersonalEngine/Component.h
-  src/PersonalEngine/Entity.cpp
-  src/PersonalEngine/Entity.h
-  src/PersonalEngine/Transform.cpp
-  src/PersonalEngine/Transform.h
-  src/PersonalEngine/Scene.cpp
-  src/PersonalEngine/Scene.h
-  src/PersonalEngine/Camera.cpp
-  src/PersonalEngine/Camera.h
-  src/PersonalEngine/Shader.cpp
-  src/PersonalEngine/Shader.h
-  src/PersonalEngine/Material.cpp
-  src/PersonalEngine/Material.h
-  src/PersonalEngine/Resource.cpp
-  src/PersonalEngine/Resource.h
-  src/PersonalEngine/ResourceManager.cpp
-  src/PersonalEngine/ResourceManager.h
-  src/PersonalEngine/Mesh.cpp
-  src/PersonalEngine/Mesh.h
-  src/PersonalEngine/MeshRenderer.cpp
-  src/PersonalEngine/MeshRenderer.h
-  src/PersonalEngine/TurnTable.cpp
-  src/PersonalEngine/TurnTable.h
-  src/PersonalEngine/Texture.cpp
-  src/PersonalEngine/Texture.h
-  src/PersonalEngine/RenderController.cpp
-  src/PersonalEngine/RenderController.h
-  src/PersonalEngine/Time.cpp
-  src/PersonalEngine/Time.h
-  src/PersonalEngine/RigidBody.cpp
-  src/PersonalEngine/RigidBody.h
-  src/PersonalEngine/FlyingController.cpp
-  src/PersonalEngine/FlyingController.h
-  src/PersonalEngine/Collider.cpp
-  src/PersonalEngine/Collider.h
-  src/PersonalEngine/Jetpack.cpp
-  src/PersonalEngine/JetPack.h
-  src/PersonalEngine/SphereCollider.cpp
-  src/PersonalEngine/SphereCollider.h
-  src/PersonalEngine/CollisionResolver.cpp
-  src/PersonalEngine/CollisionResolver.h
-  src/PersonalEngine/Contact.cpp
-  src/PersonalEngine/Contact.h
-  src/PersonalEngine/Light.cpp
-  src/PersonalEngine/Light.h
-  src/PersonalEngine/FlashLight.cpp
-  src/PersonalEngine/FlashLight.h
-  src/PersonalEngine/Gun.cpp
-  src/PersonalEngine/Gun.h
-  src/PersonalEngine/Bullet.h
-  src/PersonalEngine/Bullet.cpp
-  src/PersonalEngine/BulletBehaviour.h
-  src/PersonalEngine/BulletBehaviour.cpp
-  src/PersonalEngine/Asteroid.h
-  src/PersonalEngine/Asteroid.cpp
-  src/PersonalEngine/Sound.h
-  src/PersonalEngine/Sound.cpp
-  src/PersonalEngine/AudioSource.h
-  src/PersonalEngine/AudioSource.cpp
+  src/FairEngine/main.cpp
+  src/FairEngine/Engine.cpp
+  src/FairEngine/Engine.h
+  src/FairEngine/Window.cpp
+  src/FairEngine/Window.h
+  src/FairEngine/Input.cpp
+  src/FairEngine/Input.h
+  src/FairEngine/Component.cpp
+  src/FairEngine/Component.h
+  src/FairEngine/Entity.cpp
+  src/FairEngine/Entity.h
+  src/FairEngine/Transform.cpp
+  src/FairEngine/Transform.h
+  src/FairEngine/Scene.cpp
+  src/FairEngine/Scene.h
+  src/FairEngine/Camera.cpp
+  src/FairEngine/Camera.h
+  src/FairEngine/Shader.cpp
+  src/FairEngine/Shader.h
+  src/FairEngine/Material.cpp
+  src/FairEngine/Material.h
+  src/FairEngine/Resource.cpp
+  src/FairEngine/Resource.h
+  src/FairEngine/ResourceManager.cpp
+  src/FairEngine/ResourceManager.h
+  src/FairEngine/Mesh.cpp
+  src/FairEngine/Mesh.h
+  src/FairEngine/MeshRenderer.cpp
+  src/FairEngine/MeshRenderer.h
+  src/FairEngine/TurnTable.cpp
+  src/FairEngine/TurnTable.h
+  src/FairEngine/Texture.cpp
+  src/FairEngine/Texture.h
+  src/FairEngine/RenderController.cpp
+  src/FairEngine/RenderController.h
+  src/FairEngine/Time.cpp
+  src/FairEngine/Time.h
+  src/FairEngine/RigidBody.cpp
+  src/FairEngine/RigidBody.h
+  src/FairEngine/FlyingController.cpp
+  src/FairEngine/FlyingController.h
+  src/FairEngine/Collider.cpp
+  src/FairEngine/Collider.h
+  src/FairEngine/Jetpack.cpp
+  src/FairEngine/JetPack.h
+  src/FairEngine/SphereCollider.cpp
+  src/FairEngine/SphereCollider.h
+  src/FairEngine/CollisionResolver.cpp
+  src/FairEngine/CollisionResolver.h
+  src/FairEngine/Contact.cpp
+  src/FairEngine/Contact.h
+  src/FairEngine/Light.cpp
+  src/FairEngine/Light.h
+  src/FairEngine/FlashLight.cpp
+  src/FairEngine/FlashLight.h
+  src/FairEngine/Gun.cpp
+  src/FairEngine/Gun.h
+  src/FairEngine/Bullet.h
+  src/FairEngine/Bullet.cpp
+  src/FairEngine/BulletBehaviour.h
+  src/FairEngine/BulletBehaviour.cpp
+  src/FairEngine/Asteroid.h
+  src/FairEngine/Asteroid.cpp
+  src/FairEngine/Sound.h
+  src/FairEngine/Sound.cpp
+  src/FairEngine/AudioSource.h
+  src/FairEngine/AudioSource.cpp
 )
 
 # LINKING NECESSARY Libraries
 if(WIN32)
-  target_link_libraries(PersonalEngine glew32 freeglut SOIL assimp openal libogg libvorbis libvorbisfile)
+  target_link_libraries(FairEngine glew32 freeglut SOIL assimp openal libogg libvorbis libvorbisfile)
 endif()
