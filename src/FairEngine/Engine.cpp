@@ -73,6 +73,7 @@ void Engine::Initialise(int argc, char* argv[])
 
 void Engine::Close()
 {
+	m_currentScene->Destroy();
 	//reset of scene will delete all smart pointers contained within to clear up any allocated memory
 	m_currentScene.reset();
 
@@ -162,7 +163,6 @@ void Engine::KeyDown(unsigned char _key, int _mouseX, int _mouseY)
 	if (_key == 27)
 	{
 		glutFullScreenToggle();
-		m_currentScene->Destroy();
 		glutLeaveMainLoop();
 	}
 }
